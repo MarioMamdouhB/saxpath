@@ -1,4 +1,8 @@
-# MVP Scope
+# Historical MVP Scope
+
+This file captures the original phase-1 boundary only.
+
+For the current project state, use [README.md](../README.md), [ROADMAP.md](./ROADMAP.md), and [MANUAL_TESTING.md](./MANUAL_TESTING.md).
 
 ## In Scope for Phase 1
 

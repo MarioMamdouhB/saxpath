@@ -1,6 +1,7 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import 'saxpath_brand_mark.dart';
 
 class SectionTitle extends StatelessWidget {
   const SectionTitle({
@@ -17,10 +18,13 @@ class SectionTitle extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const SaxPathBrandMark(),
+        const SizedBox(height: 12),
         Text(
           title,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w800,
+                height: 1.1,
               ),
         ),
         const SizedBox(height: 6),
@@ -34,7 +38,3 @@ class SectionTitle extends StatelessWidget {
     );
   }
 }
-
-
-
-

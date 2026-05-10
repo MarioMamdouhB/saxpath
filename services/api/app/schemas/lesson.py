@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 class LessonResponse(BaseModel):
     id: str
+    day_number: int
     type: str
     title: str
     note: str | None = None

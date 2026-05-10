@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
@@ -8,17 +8,24 @@ class PrimaryButton extends StatelessWidget {
   });
 
   final String label;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return FilledButton(
-      onPressed: onPressed,
-      child: Text(label),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final hasBoundedWidth = constraints.hasBoundedWidth;
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+            minWidth: hasBoundedWidth ? constraints.maxWidth : 0,
+            maxWidth: hasBoundedWidth ? constraints.maxWidth : 360,
+          ),
+          child: FilledButton(
+            onPressed: onPressed,
+            child: Text(label),
+          ),
+        );
+      },
     );
   }
 }
-
-
-
-

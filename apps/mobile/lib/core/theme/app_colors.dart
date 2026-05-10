@@ -1,15 +1,18 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 class AppColors {
-  static const offWhite = Color(0xFFF7F4EE);
-  static const deepTeal = Color(0xFF0F5C5B);
-  static const warmGold = Color(0xFFD4A756);
-  static const charcoal = Color(0xFF253239);
-  static const surface = Colors.white;
-  static const border = Color(0xFFE4DDD2);
-  static const muted = Color(0xFF5E6B70);
+  static const offWhite = Color(0xFFF8FAFD);
+  static const deepTeal = Color(0xFF0F2747);
+  static const navyLight = Color(0xFF29456E);
+  static const warmGold = Color(0xFF29456E);
+  static const charcoal = Color(0xFF0F2747);
+  static const surface = Color(0xFFFFFFFF);
+  static const border = Color(0xFFE2E8F2);
+  static const muted = Color(0xFF62708A);
+  static const softMint = Color(0xFFF2F5FA);
+  static const paleMint = Color(0xFFE7ECF6);
+  static const mistBlue = Color(0xFFF5F7FB);
+  static const peach = Color(0xFFF5F7FB);
+  static const success = Color(0xFF0F2747);
+  static const cardShadow = Color(0x140F2747);
 }
-
-
-
-

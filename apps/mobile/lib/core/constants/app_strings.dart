@@ -1,7 +1,3 @@
-﻿class AppStrings {
+class AppStrings {
   static const appName = 'SaxPath';
 }
-
-
-
-

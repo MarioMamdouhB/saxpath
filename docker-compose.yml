@@ -7,19 +7,55 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-saxpath}
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-saxpath} -d ${POSTGRES_DB:-saxpath}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  audio-engine:
+    build:
+      context: ./services/audio-engine
+    ports:
+      - "8010:8010"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8010/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   api:
     build:
       context: ./services/api
     environment:
+      ENVIRONMENT: ${ENVIRONMENT:-local}
       POSTGRES_DB: ${POSTGRES_DB:-saxpath}
       POSTGRES_USER: ${POSTGRES_USER:-saxpath}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-saxpath}
       POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      PERSISTENCE_BACKEND: ${PERSISTENCE_BACKEND:-postgres}
+      DEMO_LEARNER_ID: ${DEMO_LEARNER_ID:-demo}
+      DEMO_MODE: ${DEMO_MODE:-false}
+      RECORDING_STORAGE_DIR: ${RECORDING_STORAGE_DIR:-/app/data/recordings}
+      AUDIO_ENGINE_BASE_URL: ${AUDIO_ENGINE_BASE_URL:-http://audio-engine:8010}
       API_HOST: ${API_HOST:-0.0.0.0}
       API_PORT: ${API_PORT:-8000}
+      CORS_ALLOW_ORIGINS: ${CORS_ALLOW_ORIGINS:-["http://127.0.0.1:3000","http://localhost:3000","http://127.0.0.1:3001","http://localhost:3001","http://127.0.0.1:4130","http://localhost:4130"]}
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      audio-engine:
+        condition: service_healthy
     ports:
       - "8000:8000"
+    volumes:
+      - api-recordings:/app/data/recordings
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  api-recordings:

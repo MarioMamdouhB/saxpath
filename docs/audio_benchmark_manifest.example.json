@@ -1,0 +1,11 @@
+[
+  {
+    "label": "Clean long-tone G reference",
+    "path": "../services/api/data/recordings/rec_412eada509b44f92_smoke_g.wav",
+    "expected_note": "G",
+    "bpm": 60,
+    "rhythm_target": "quarter_note",
+    "min_pitch_score": 90,
+    "min_rhythm_score": 0
+  }
+]

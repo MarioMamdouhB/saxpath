@@ -2,7 +2,12 @@
 .idea/
 __pycache__/
 *.pyc
+*.log
+*.pid
 .pytest_cache/
+pytest-cache-files-*/
+.tmp-tests/
+services/api/data/
 .dart_tool/
 build/
 .flutter-plugins
@@ -10,3 +15,10 @@ build/
 .packages
 Thumbs.db
 Desktop.ini
+tmp/
+validation_tmp/
+.codex-smoke/
+services/api/tmp_pytest*/
+services/api/tmp_pytest_run/
+services/api/z_pytest_temp_*/
+apps/mobile/flutter-web.logpath
