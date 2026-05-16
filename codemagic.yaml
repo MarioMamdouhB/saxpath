@@ -1,0 +1,27 @@
+# SaxPath Codemagic Configuration
+workflows:
+  default-workflow:
+    name: SaxPath Empire Build
+    working_directory: apps/mobile
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      xcode: latest
+      groups:
+        - dummy_env # For future API keys
+    scripts:
+      - name: Install dependencies
+        script: |
+          flutter pub get
+      - name: Flutter build Android
+        script: |
+          flutter build apk --debug
+      - name: Flutter build iOS
+        script: |
+          # Only runs on Mac instances
+          flutter build ios --debug --no-codesign
+    artifacts:
+      - build/**/outputs/**/*.apk
+      - build/**/outputs/**/*.aab
+      - build/ios/iphoneos/*.app
