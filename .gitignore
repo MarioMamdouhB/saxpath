@@ -1,24 +1,29 @@
-.env
+# IDE files
 .idea/
-__pycache__/
-*.pyc
-*.log
-*.pid
-.pytest_cache/
-pytest-cache-files-*/
-.tmp-tests/
-services/api/data/
+.vscode/
+*.iml
+*.swp
+
+# Dart/Flutter
 .dart_tool/
-build/
+.packages
 .flutter-plugins
 .flutter-plugins-dependencies
-.packages
+build/
+*.pbp.json
+
+# Python/FastAPI
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+.pytest_cache/
+
+# OS files
+.DS_Store
 Thumbs.db
-Desktop.ini
-tmp/
-validation_tmp/
-.codex-smoke/
-services/api/tmp_pytest*/
-services/api/tmp_pytest_run/
-services/api/z_pytest_temp_*/
-apps/mobile/flutter-web.logpath
+
+# Project specific
+apps/mobile/build/
+services/api/__pycache__/

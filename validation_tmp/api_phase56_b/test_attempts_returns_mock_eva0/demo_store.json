@@ -1,0 +1,36 @@
+{
+  "completed_days": [],
+  "attempts": [
+    {
+      "attempt_id": "attempt_day_01_120",
+      "exercise_id": "practice_day_01_001",
+      "day_number": 1,
+      "duration_seconds": 120,
+      "audio_url": "mock://local-recording.wav",
+      "recording_id": null,
+      "pitch_accuracy": 78,
+      "rhythm_accuracy": 73,
+      "completion": 87,
+      "feedback_ar": "المحاولة مستقرة إجمالاً، لكن ما زال هناك هامش لتحسين الدقة. ثبّت نغمة G مع نبضة واضحة.",
+      "next_recommendation": "ارفع السرعة تدريجياً بمقدار 5 BPM إذا حافظت على نفس الثبات.",
+      "retry_reason": null,
+      "analysis": {
+        "pitch_score": 78,
+        "rhythm_score": 73,
+        "detected_notes": [
+          {
+            "note": "D",
+            "frequency_hz": 196.0,
+            "confidence": 0.82
+          }
+        ],
+        "timing_errors": [],
+        "confidence": 0.82,
+        "source": "deterministic_mock"
+      },
+      "created_at": "2026-05-08T18:43:58.740058+00:00"
+    }
+  ],
+  "analytics_events": [],
+  "recordings": {}
+}

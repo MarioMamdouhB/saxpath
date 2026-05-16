@@ -1,0 +1,77 @@
+{
+  "completed_days": [],
+  "attempts": [
+    {
+      "attempt_id": "attempt_day_02_010_c0ca8a69",
+      "exercise_id": "task_day_02_practice_aagg",
+      "day_number": 2,
+      "duration_seconds": 10,
+      "audio_url": "mock://recordings/day_02_take_2.wav",
+      "recording_id": null,
+      "pitch_accuracy": 71,
+      "rhythm_accuracy": 66,
+      "completion": 72,
+      "feedback_ar": "المحاولة مستقرة إجمالاً، لكن ما زال هناك هامش لتحسين الدقة. حافظ على الفرق بين A و G من غير استعجال.",
+      "next_recommendation": "خفّض السرعة إلى BPM 50 وركّز على العدّ الداخلي قبل العزف.",
+      "retry_reason": "rhythm_needs_work",
+      "analysis": {
+        "pitch_score": 71,
+        "rhythm_score": 66,
+        "detected_notes": [
+          {
+            "note": "G",
+            "frequency_hz": 196.0,
+            "confidence": 0.68
+          }
+        ],
+        "timing_errors": [
+          {
+            "onset_seconds": 1.0,
+            "expected_seconds": 0.75,
+            "error_ms": 250.0
+          }
+        ],
+        "confidence": 0.68,
+        "source": "deterministic_mock"
+      },
+      "created_at": "2026-05-08T18:53:27.746272+00:00"
+    },
+    {
+      "attempt_id": "attempt_day_02_010_53cf421b",
+      "exercise_id": "task_day_02_practice_aagg",
+      "day_number": 2,
+      "duration_seconds": 10,
+      "audio_url": "mock://recordings/day_02_take_1.wav",
+      "recording_id": null,
+      "pitch_accuracy": 71,
+      "rhythm_accuracy": 66,
+      "completion": 72,
+      "feedback_ar": "المحاولة مستقرة إجمالاً، لكن ما زال هناك هامش لتحسين الدقة. حافظ على الفرق بين A و G من غير استعجال.",
+      "next_recommendation": "خفّض السرعة إلى BPM 50 وركّز على العدّ الداخلي قبل العزف.",
+      "retry_reason": "rhythm_needs_work",
+      "analysis": {
+        "pitch_score": 71,
+        "rhythm_score": 66,
+        "detected_notes": [
+          {
+            "note": "G",
+            "frequency_hz": 196.0,
+            "confidence": 0.68
+          }
+        ],
+        "timing_errors": [
+          {
+            "onset_seconds": 1.0,
+            "expected_seconds": 0.75,
+            "error_ms": 250.0
+          }
+        ],
+        "confidence": 0.68,
+        "source": "deterministic_mock"
+      },
+      "created_at": "2026-05-08T18:53:27.666381+00:00"
+    }
+  ],
+  "analytics_events": [],
+  "recordings": {}
+}

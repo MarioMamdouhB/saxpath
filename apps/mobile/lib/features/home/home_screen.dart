@@ -5,26 +5,23 @@ import 'package:saxpath_mobile/core/theme/app_colors.dart';
 import 'package:saxpath_mobile/data/models/analytics_event.dart';
 import 'package:saxpath_mobile/data/models/attempt_history_entry.dart';
 import 'package:saxpath_mobile/data/models/daily_plan.dart';
-import 'package:saxpath_mobile/data/models/lesson.dart';
+import 'package:saxpath_mobile/data/models/practice_session.dart';
 import 'package:saxpath_mobile/data/saxpath_api_client.dart';
-import 'package:saxpath_mobile/features/academy/jazz_academy_screen.dart';
-import 'package:saxpath_mobile/features/foundation/sax_foundation_screen.dart';
-import 'package:saxpath_mobile/features/home/library_screen.dart';
-import 'package:saxpath_mobile/features/home/practice_room_screen.dart';
 import 'package:saxpath_mobile/features/home/practice_setup_screen.dart';
-import 'package:saxpath_mobile/features/home/record_feedback_screen.dart';
 import 'package:saxpath_mobile/features/progress/attempt_details_screen.dart';
 import 'package:saxpath_mobile/features/progress/state/app_progress_controller.dart';
 import 'package:saxpath_mobile/features/progress/state/app_progress_scope.dart';
-import 'package:saxpath_mobile/shared/education/curriculum_service.dart';
-import 'package:saxpath_mobile/shared/education/jazz_curriculum_repository.dart';
+import 'package:saxpath_mobile/features/session/guided_session_runner_screen.dart';
 import 'package:saxpath_mobile/shared/widgets/primary_button.dart';
 import 'package:saxpath_mobile/shared/widgets/sax_card.dart';
 import 'package:saxpath_mobile/shared/widgets/saxpath_brand_mark.dart';
-import 'package:saxpath_mobile/shared/widgets/section_title.dart';
+import 'package:saxpath_mobile/shared/music/ai_melody_generator.dart';
+import 'package:saxpath_mobile/shared/widgets/note_staff_card.dart';
+import 'package:saxpath_mobile/shared/widgets/video_masterclass_card.dart';
+import 'package:saxpath_mobile/shared/services/language_scope.dart';
+import 'package:saxpath_mobile/shared/services/settings_scope.dart';
+import 'package:saxpath_mobile/shared/education/sax_foundation_models.dart' show SaxType;
 
-import '../academy/mvp_curriculum_screen.dart';
-import '../lessons/note_lesson_screen.dart';
 import '../progress/progress_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -44,15 +41,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   static const _onboardingDismissedKey = 'home_onboarding_dismissed';
 
-  final JazzCurriculumRepository _curriculumRepository =
-      const JazzCurriculumRepository();
-  final CurriculumService _curriculumService = const CurriculumService();
   final ScrollController _scrollController = ScrollController();
   late Future<DailyPlan> _dailyPlanFuture;
-  late Future<List<Lesson>> _lessonsFuture;
   late Future<_HomeInsights> _homeInsightsFuture;
   int? _loadedDayNumber;
   bool _showOnboardingCard = false;
+  int? _lastKnownLevel;
 
   @override
   void initState() {
@@ -64,6 +58,50 @@ class _HomeScreenState extends State<HomeScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _ensurePreferredDayLoaded();
+    _checkLevelUp();
+  }
+
+  void _checkLevelUp() {
+    final progress = AppProgressScope.of(context);
+    if (_lastKnownLevel == null) {
+      _lastKnownLevel = progress.level;
+      return;
+    }
+
+    if (progress.level > _lastKnownLevel!) {
+      _lastKnownLevel = progress.level;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showLevelUpDialog(progress.level);
+      });
+    }
+  }
+
+  void _showLevelUpDialog(int newLevel) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('🎉 مبروك! لقد ارتقيت', textAlign: TextAlign.center),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.stars_rounded, size: 80, color: Colors.amber),
+            const SizedBox(height: 16),
+            Text(
+              'أنت الآن في المستوى $newLevel',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text('استمر في التدريب لتحقيق أهدافك الموسيقية!'),
+          ],
+        ),
+        actions: [
+          PrimaryButton(
+            label: 'رائع!',
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -75,7 +113,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void _loadDataForDay(int dayNumber) {
     _loadedDayNumber = dayNumber;
     _dailyPlanFuture = widget.apiClient.getDailyPlan(dayNumber);
-    _lessonsFuture = widget.apiClient.getLessons(dayNumber: dayNumber);
     _homeInsightsFuture = _loadInsights();
   }
 
@@ -95,10 +132,12 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final latestAttempts = await widget.apiClient.getAttemptHistory(limit: 1);
       final latestEvents = await widget.apiClient.getAnalyticsEvents(limit: 1);
+      final session = await widget.apiClient.getTodayPracticeSession();
 
       return _HomeInsights(
         latestAttempt: latestAttempts.isEmpty ? null : latestAttempts.first,
         latestEvent: latestEvents.isEmpty ? null : latestEvents.first,
+        practiceSession: session,
       );
     } catch (_) {
       return const _HomeInsights();
@@ -162,10 +201,47 @@ class _HomeScreenState extends State<HomeScreen> {
   void _openTodaySession(DailyPlan displayPlan) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => NoteLessonScreen(
+        builder: (_) => GuidedSessionRunnerScreen(
           apiClient: widget.apiClient,
           dayPlan: displayPlan,
-          lessonsFuture: _lessonsFuture,
+        ),
+      ),
+    );
+  }
+
+  void _showInstrumentSelector() {
+    final settings = SettingsScope.of(context);
+    final lang = LanguageScope.of(context);
+    final current = settings.saxType;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(lang.translate('اختر آلتك', 'Select Your Instrument'), textAlign: TextAlign.right),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ...SaxType.values.map((type) {
+              final isSelected = current == type;
+              return ListTile(
+                title: Text(type == SaxType.altoEb ? 'Alto (Eb) - ساكس ألتو' : 'Tenor (Bb) - ساكس تينور'),
+                trailing: isSelected ? const Icon(Icons.check_circle, color: AppColors.deepTeal) : null,
+                onTap: () {
+                  settings.setSaxType(type);
+                  Navigator.pop(context);
+                },
+              );
+            }),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.language_rounded),
+              title: Text(lang.translate('تغيير اللغة (English)', 'Switch to Arabic')),
+              onTap: () {
+                lang.setLanguage(lang.locale.languageCode == 'ar' ? 'en' : 'ar');
+                Navigator.pop(context);
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -182,6 +258,11 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const SaxPathBrandMark(compact: true),
         actions: [
+          IconButton(
+            tooltip: 'اختر الآلة',
+            onPressed: _showInstrumentSelector,
+            icon: const Icon(Icons.settings_input_component_rounded),
+          ),
           IconButton(
             tooltip: 'الإعدادات',
             onPressed: () {
@@ -241,21 +322,33 @@ class _HomeScreenState extends State<HomeScreen> {
                     controller: _scrollController,
                     padding: const EdgeInsets.all(20),
                     children: [
-                      SectionTitle(
-                        title: 'مرحباً، ${displayPlan.userName}',
-                        subtitle:
-                            'ابدأ من جلسة اليوم أولاً. بعد ذلك ستجد بقية الأقسام للمراجعة والدعم عند الحاجة.',
-                      ),
+                      _HomeTopBanner(streak: progressController.currentStreakDays),
                       const SizedBox(height: 20),
                       _TodaySessionCard(
                         dayPlan: displayPlan,
                         practiceTask: practiceTask,
+                        focusTask: _focusTaskForPlan(displayPlan),
+                        practiceSession: insights.practiceSession?.dayNumber ==
+                                displayPlan.dayNumber
+                            ? insights.practiceSession
+                            : null,
                         continueDay: continueDay,
                         isUnlocked: isUnlocked,
                         isCompleted: isCompleted,
                         onStartToday: () => _openTodaySession(displayPlan),
                         onContinue: () => _openHomeDay(continueDay),
                       ),
+                      const SizedBox(height: 24),
+                      _QuickStartBigButton(
+                        onPressed: isUnlocked ? () => _openTodaySession(displayPlan) : null,
+                        label: isCompleted ? 'راجع تمرين اليوم' : 'تمرّن الآن (ابدأ فوراً)',
+                      ),
+                      const SizedBox(height: 24),
+                      const _AiDailyChallengeCard(),
+                      const SizedBox(height: 16),
+                      const _DailyVideoTipCard(),
+                      const SizedBox(height: 16),
+                      _V31FocusReasonCard(displayPlan: displayPlan),
                       const SizedBox(height: 16),
                       _HomeSyncBanner(
                         syncState: progressController.syncState,
@@ -267,6 +360,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             progressController.completedDaysCount,
                         currentStreakDays:
                             progressController.currentStreakDays,
+                        xpPoints: progressController.xpPoints,
+                        level: progressController.level,
+                        levelProgress: progressController.levelProgress,
                       ),
                       if (_showOnboardingCard) ...[
                         const SizedBox(height: 16),
@@ -330,102 +426,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   MaterialPageRoute(
                                     builder: (_) => AttemptDetailsScreen(
                                       entry: insights.latestAttempt!,
+                                      apiClient: widget.apiClient,
                                     ),
                                   ),
                                 );
                               },
                         onOpenProgress: _openProgress,
-                      ),
-                      const SizedBox(height: 16),
-                      const SectionTitle(
-                        title: 'مسارات مساعدة',
-                        subtitle:
-                            'بعد إنهاء جلسة اليوم، استخدم هذه المسارات للمراجعة والتوسّع والتدريب الحر.',
-                      ),
-                      const SizedBox(height: 12),
-                      Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
-                        children: [
-                          _PrimaryNavCard(
-                            title: 'التعلّم',
-                            subtitle:
-                                'التأسيس، أكاديمية الجاز، ومنهج الثلاثين يوم.',
-                            icon: Icons.school_rounded,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => _LearnHubScreen(
-                                    apiClient: widget.apiClient,
-                                    curriculumRepository:
-                                        _curriculumRepository,
-                                    curriculumService: _curriculumService,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          _PrimaryNavCard(
-                            title: 'أدوات التدريب',
-                            subtitle:
-                                'ميترونوم، تدريبات إيقاع، تنقل بين المقامات، ومسارات مساندة.',
-                            icon: Icons.tune_rounded,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const PracticeRoomScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                          _PrimaryNavCard(
-                            title: 'المكتبة',
-                            subtitle:
-                                'مراجع سريعة، كروت نغمات، ومساحات قراءة تدعم تمرين اليوم.',
-                            icon: Icons.library_music_rounded,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => LibraryScreen(
-                                    apiClient: widget.apiClient,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          _PrimaryNavCard(
-                            title: 'التسجيل والتقييم',
-                            subtitle:
-                                'ادخل مباشرة للتسجيل، المراجعة، والتحليل على مادة اليوم.',
-                            icon: Icons.mic_rounded,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => RecordFeedbackScreen(
-                                    apiClient: widget.apiClient,
-                                    dayPlan: displayPlan,
-                                    lessonsFuture: _lessonsFuture,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          _PrimaryNavCard(
-                            title: 'التقدم',
-                            subtitle:
-                                'الأيام المفتوحة، النتائج السابقة، والمؤشرات الأساسية.',
-                            icon: Icons.insights_rounded,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => ProgressScreen(
-                                    apiClient: widget.apiClient,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
                       ),
                     ],
                   ),
@@ -495,12 +501,57 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  DailyTask? _focusTaskForPlan(DailyPlan plan) {
+    for (final task in plan.tasks) {
+      if (task.isFocusTask) {
+        return task;
+      }
+    }
+    return plan.tasks.isEmpty ? null : plan.tasks.first;
+  }
+
   void _scheduleScrollReset() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.jumpTo(0);
       }
     });
+  }
+}
+
+class _HomeTopBanner extends StatelessWidget {
+  final int streak;
+  const _HomeTopBanner({required this.streak});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('مرحباً بك يا بطل!', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
+            Text('يومك الـ $streak في رحلة الاحتراف', style: const TextStyle(color: AppColors.muted)),
+          ],
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.orange.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.fireplace_rounded, color: Colors.orange),
+              const SizedBox(width: 4),
+              Text('$streak', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.orange)),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -658,23 +709,60 @@ class _HomeProgressSnapshot extends StatelessWidget {
     required this.currentDayNumber,
     required this.completedDaysCount,
     required this.currentStreakDays,
+    required this.xpPoints,
+    required this.level,
+    required this.levelProgress,
   });
 
   final int currentDayNumber;
   final int completedDaysCount;
   final int currentStreakDays;
+  final int xpPoints;
+  final int level;
+  final double levelProgress;
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
+    return Column(
       children: [
-        _StatusPill(label: 'اليوم المفتوح', value: '$currentDayNumber'),
-        _StatusPill(label: 'الأيام المكتملة', value: '$completedDaysCount'),
-        _StatusPill(
-          label: 'سلسلة الالتزام',
-          value: '$currentStreakDays يوم',
+        SaxCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'المستوى $level',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  Text(
+                    '$xpPoints XP',
+                    style: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              LinearProgressIndicator(
+                value: levelProgress,
+                minHeight: 8,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            _StatusPill(label: 'اليوم المفتوح', value: '$currentDayNumber'),
+            _StatusPill(label: 'الأيام المكتملة', value: '$completedDaysCount'),
+            _StatusPill(
+              label: 'سلسلة الالتزام',
+              value: '$currentStreakDays يوم',
+            ),
+          ],
         ),
       ],
     );
@@ -730,6 +818,8 @@ class _TodaySessionCard extends StatelessWidget {
   const _TodaySessionCard({
     required this.dayPlan,
     required this.practiceTask,
+    required this.focusTask,
+    required this.practiceSession,
     required this.continueDay,
     required this.isUnlocked,
     required this.isCompleted,
@@ -739,6 +829,8 @@ class _TodaySessionCard extends StatelessWidget {
 
   final DailyPlan dayPlan;
   final DailyTask practiceTask;
+  final DailyTask? focusTask;
+  final PracticeSession? practiceSession;
   final int continueDay;
   final bool isUnlocked;
   final bool isCompleted;
@@ -811,6 +903,42 @@ class _TodaySessionCard extends StatelessWidget {
             backgroundColor: Colors.white,
           ),
           const SizedBox(height: 12),
+          if (practiceSession != null) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withValues(
+                      alpha: 0.08,
+                    ),
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    practiceSession!.stageTitle,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(practiceSession!.stageSubtitleAr),
+                  const SizedBox(height: 10),
+                  LinearProgressIndicator(
+                    value: practiceSession!.stageProgressPercent / 100,
+                    minHeight: 8,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(practiceSession!.guidedPathLabel),
+                  if (practiceSession!.adaptationReasonAr != null) ...[
+                    const SizedBox(height: 8),
+                    Text(practiceSession!.adaptationReasonAr!),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
           Text(
             isCompleted
                 ? 'أنهيت هذه الجلسة بالفعل. راجعها أو انتقل مباشرة إلى اليوم المفتوح التالي.'
@@ -818,6 +946,47 @@ class _TodaySessionCard extends StatelessWidget {
                     ? 'ابدأ الآن من درس النغمة، وبعدها سيقودك التطبيق تلقائياً عبر الإيقاع والتمرين حتى النتيجة.'
                     : 'ابدأ من اليوم المفتوح الحالي أولًا.',
           ),
+          if (practiceTask.adaptationReasonAr != null) ...[
+            const SizedBox(height: 10),
+            Text(
+              practiceTask.adaptationReasonAr!,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+          if (practiceTask.recommendedLoopTarget != null ||
+              practiceTask.targetBpm != null ||
+              practiceTask.supportsWaitMode) ...[
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                if (practiceTask.targetBpm != null)
+                  _TodayInfoChip(label: 'BPM ${practiceTask.targetBpm}'),
+                if (practiceTask.recommendedLoopTarget != null)
+                  _TodayInfoChip(
+                    label: '${practiceTask.recommendedLoopTarget} loops',
+                  ),
+                if (practiceTask.supportsWaitMode)
+                  const _TodayInfoChip(label: 'Wait Mode'),
+                if (practiceTask.isFocusTask)
+                  const _TodayInfoChip(label: 'Focus Task'),
+              ],
+            ),
+          ],
+          if (focusTask != null) ...[
+            const SizedBox(height: 10),
+            Text(
+              'بداية الجلسة اليوم: ${_focusEntryLabel(focusTask!)}',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
           const SizedBox(height: 16),
           PrimaryButton(
             label: isCompleted ? 'راجع جلسة اليوم' : 'ابدأ جلسة اليوم',
@@ -833,6 +1002,15 @@ class _TodaySessionCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _focusEntryLabel(DailyTask task) {
+    return switch (task.blockType) {
+      'note_fingering' => 'Note / Fingering',
+      'rhythm_call_response' => 'Rhythm / Call-and-Response',
+      'record_check' => 'Practice / Record Check',
+      _ => 'Warm-up',
+    };
   }
 }
 
@@ -881,6 +1059,29 @@ class _DailyFlowCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _TodayInfoChip extends StatelessWidget {
+  const _TodayInfoChip({
+    required this.label,
+  });
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
       ),
     );
   }
@@ -1008,121 +1209,90 @@ class _FocusCard extends StatelessWidget {
   }
 }
 
-class _PrimaryNavCard extends StatelessWidget {
-  const _PrimaryNavCard({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.onTap,
-  });
+class _V31FocusReasonCard extends StatelessWidget {
+  final DailyPlan displayPlan;
 
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final VoidCallback onTap;
+  const _V31FocusReasonCard({required this.displayPlan});
+
+  @override
+  Widget build(BuildContext context) {
+    return SaxCard(
+      child: Row(
+        children: [
+          const Icon(Icons.info_outline_rounded, color: AppColors.deepTeal, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'تركيز اليوم: ${displayPlan.tasks.first.title}. هذا التمرين يهدف لتثبيت ${displayPlan.tasks.first.skillTags.join(", ")}.',
+              style: const TextStyle(fontSize: 13, color: AppColors.muted),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _QuickStartBigButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final String label;
+
+  const _QuickStartBigButton({this.onPressed, required this.label});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 260,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(24),
-        onTap: onTap,
-        child: SaxCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(icon, color: AppColors.deepTeal),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  color: AppColors.muted,
-                  height: 1.45,
-                ),
-              ),
-            ],
-          ),
+      width: double.infinity,
+      height: 80,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.deepTeal,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          elevation: 8,
+          shadowColor: AppColors.deepTeal.withValues(alpha: 0.4),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.play_arrow_rounded, size: 36),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _LearnHubScreen extends StatelessWidget {
-  const _LearnHubScreen({
-    required this.apiClient,
-    required this.curriculumRepository,
-    required this.curriculumService,
-  });
-
-  final SaxPathApiClient apiClient;
-  final JazzCurriculumRepository curriculumRepository;
-  final CurriculumService curriculumService;
+class _AiDailyChallengeCard extends StatelessWidget {
+  const _AiDailyChallengeCard();
 
   @override
   Widget build(BuildContext context) {
-    final pillars = curriculumRepository.getPillars();
-
-    return Scaffold(
-      appBar: AppBar(title: const Text('التعلّم')),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
+    final melody = AiMelodyGenerator.generateDailyChallenge();
+    return SaxCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionTitle(
-            title: 'مركز التعلّم',
-            subtitle:
-                'ابدأ من التأسيس، أو ادخل إلى أكاديمية الجاز، أو امشِ على منهج الثلاثين يوم.',
-          ),
-          const SizedBox(height: 16),
-          _PrimaryNavCard(
-            title: 'تأسيس الساكسفون',
-            subtitle: 'وضع اليد، جدول الأصابع، أول النغمات، ومسار البداية.',
-            icon: Icons.music_note_rounded,
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const SaxFoundationScreen(),
-                ),
-              );
-            },
+          const Row(
+            children: [
+              Icon(Icons.auto_awesome_rounded, color: Colors.purple, size: 20),
+              SizedBox(width: 8),
+              Text('تحدي اليوم (مؤلف آلياً)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.purple)),
+            ],
           ),
           const SizedBox(height: 12),
-          _PrimaryNavCard(
-            title: 'أكاديمية الجاز',
-            subtitle:
-                '${pillars.length} محاور تعليمية للغة الجاز، البلوز، الإيقاع، والارتجال.',
-            icon: Icons.auto_stories_rounded,
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => JazzAcademyScreen(apiClient: apiClient),
-                ),
-              );
-            },
-          ),
+          NoteStaffCard(noteLabel: melody, title: 'اعزف هذه المقطوعة الجديدة'),
           const SizedBox(height: 12),
-          _PrimaryNavCard(
-            title: 'منهج الثلاثين يوم',
-            subtitle:
-                'برنامج الشهر الأول: الصوت، السوينج، البلوز، guide tones، و ii-V-I.',
-            icon: Icons.calendar_month_rounded,
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => MvpCurriculumScreen(
-                    curriculumService: curriculumService,
-                  ),
-                ),
-              );
+          PrimaryButton(
+            label: 'ابدأ التحدي',
+            onPressed: () {
+              // Open Runner with custom melody
             },
           ),
         ],
@@ -1131,14 +1301,28 @@ class _LearnHubScreen extends StatelessWidget {
   }
 }
 
+class _DailyVideoTipCard extends StatelessWidget {
+  const _DailyVideoTipCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return const VideoMasterclassCard(
+      title: 'نصيحة اليوم: كيفية تنظيف الساكسفون',
+      videoUrl: 'https://example.com/tip.mp4',
+    );
+  }
+}
+
 class _HomeInsights {
   const _HomeInsights({
     this.latestAttempt,
     this.latestEvent,
+    this.practiceSession,
   });
 
   final AttemptHistoryEntry? latestAttempt;
   final AnalyticsEvent? latestEvent;
+  final PracticeSession? practiceSession;
 }
 
 class _HomeErrorState extends StatelessWidget {

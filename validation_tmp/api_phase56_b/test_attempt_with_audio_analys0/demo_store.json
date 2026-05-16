@@ -1,0 +1,52 @@
+{
+  "completed_days": [],
+  "attempts": [
+    {
+      "attempt_id": "attempt_day_01_008",
+      "exercise_id": "task_day_01_practice_ggaa",
+      "day_number": 1,
+      "duration_seconds": 8,
+      "audio_url": "/api/v1/recordings/rec_2740a02b359b4e6d/file",
+      "recording_id": "rec_2740a02b359b4e6d",
+      "pitch_accuracy": 70,
+      "rhythm_accuracy": 65,
+      "completion": 73,
+      "feedback_ar": "المحاولة مستقرة إجمالاً، لكن ما زال هناك هامش لتحسين الدقة. ثبّت نغمة G مع نبضة واضحة.",
+      "next_recommendation": "خفّض السرعة إلى BPM 50 وركّز على العدّ الداخلي قبل العزف.",
+      "retry_reason": "rhythm_needs_work",
+      "analysis": {
+        "pitch_score": 70,
+        "rhythm_score": 65,
+        "detected_notes": [
+          {
+            "note": "G",
+            "frequency_hz": 196.0,
+            "confidence": 0.68
+          }
+        ],
+        "timing_errors": [
+          {
+            "onset_seconds": 1.0,
+            "expected_seconds": 0.75,
+            "error_ms": 250.0
+          }
+        ],
+        "confidence": 0.68,
+        "source": "deterministic_mock_fallback"
+      },
+      "created_at": "2026-05-08T18:44:03.718926+00:00"
+    }
+  ],
+  "analytics_events": [],
+  "recordings": {
+    "rec_2740a02b359b4e6d": {
+      "recording_id": "rec_2740a02b359b4e6d",
+      "filename": "take.wav",
+      "duration_seconds": 8,
+      "storage_path": "C:\\Users\\Dell\\Desktop\\sax path\\saxpath\\validation_tmp\\api_phase56_b\\test_attempt_with_audio_analys0\\recordings\\rec_2740a02b359b4e6d_take.wav",
+      "playback_url": "/api/v1/recordings/rec_2740a02b359b4e6d/file",
+      "content_type": "audio/wav",
+      "created_at": "2026-05-08T18:44:03.552810+00:00"
+    }
+  }
+}

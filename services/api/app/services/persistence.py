@@ -11,6 +11,7 @@ from app.schemas.attempt import (
     AttemptCreateRequest,
     AttemptEvaluationResponse,
     AttemptHistoryEntry,
+    TeacherReview,
 )
 from app.schemas.analytics import (
     AnalyticsEventCreateRequest,
@@ -56,6 +57,49 @@ def list_attempt_history(limit: int = 20) -> list[AttemptHistoryEntry]:
         AttemptHistoryEntry(**entry)
         for entry in state["attempts"][: max(1, limit)]
     ]
+
+
+def get_attempt_detail(attempt_id: str) -> AttemptHistoryEntry | None:
+    if _use_postgres():
+        return _get_attempt_detail_postgres(attempt_id)
+
+    with _STORE_LOCK:
+        state = _read_state()
+
+    attempts = state["attempts"]
+    if not isinstance(attempts, list):
+        return None
+
+    for entry in attempts:
+        if isinstance(entry, dict) and entry.get("attempt_id") == attempt_id:
+            return AttemptHistoryEntry(**entry)
+    return None
+
+
+def update_teacher_review(
+    attempt_id: str,
+    teacher_review: TeacherReview,
+) -> AttemptHistoryEntry | None:
+    if _use_postgres():
+        return _update_teacher_review_postgres(attempt_id, teacher_review)
+
+    with _STORE_LOCK:
+        state = _read_state()
+        attempts = state["attempts"]
+        if not isinstance(attempts, list):
+            return None
+
+        for index, entry in enumerate(attempts):
+            if not isinstance(entry, dict) or entry.get("attempt_id") != attempt_id:
+                continue
+
+            updated_entry = dict(entry)
+            updated_entry["teacher_review"] = teacher_review.model_dump()
+            attempts[index] = updated_entry
+            _write_state(state)
+            return AttemptHistoryEntry(**updated_entry)
+
+    return None
 
 
 def record_recording(recording: RecordingResponse) -> RecordingResponse:
@@ -108,6 +152,28 @@ def get_learner_progress(total_days: int = 30) -> LearnerProgressResponse:
         total_days=total_days,
         completion_log=completion_log,
     )
+
+
+def load_skill_mastery_state() -> dict[str, object]:
+    if _use_postgres():
+        return _load_skill_mastery_state_postgres()
+
+    with _STORE_LOCK:
+        state = _read_state()
+
+    return _normalize_skill_mastery_state(state.get("skill_mastery"))
+
+
+def save_skill_mastery_state(skill_mastery: dict[str, object]) -> None:
+    normalized = _normalize_skill_mastery_state(skill_mastery)
+    if _use_postgres():
+        _save_skill_mastery_state_postgres(normalized)
+        return
+
+    with _STORE_LOCK:
+        state = _read_state()
+        state["skill_mastery"] = normalized
+        _write_state(state)
 
 
 def complete_day(day_number: int, total_days: int = 30) -> LearnerProgressResponse:
@@ -214,18 +280,27 @@ def _record_attempt_postgres(
                 id, learner_id, exercise_id, day_number, duration_seconds,
                 audio_url, recording_id, pitch_accuracy, rhythm_accuracy,
                 completion, feedback_ar, next_recommendation, retry_reason,
-                analysis, created_at
+                analysis, mastery_delta, recommended_retry_block,
+                teacher_review,
+                confidence_label, created_at
             )
             VALUES (
                 %(id)s, %(learner_id)s, %(exercise_id)s, %(day_number)s,
                 %(duration_seconds)s, %(audio_url)s, %(recording_id)s,
                 %(pitch_accuracy)s, %(rhythm_accuracy)s, %(completion)s,
                 %(feedback_ar)s, %(next_recommendation)s, %(retry_reason)s,
-                %(analysis)s::jsonb, %(created_at)s
+                %(analysis)s::jsonb, %(mastery_delta)s::jsonb,
+                %(recommended_retry_block)s, %(teacher_review)s::jsonb,
+                %(confidence_label)s,
+                %(created_at)s
             )
             ON CONFLICT (id) DO UPDATE SET
                 completion = EXCLUDED.completion,
-                analysis = EXCLUDED.analysis
+                analysis = EXCLUDED.analysis,
+                mastery_delta = EXCLUDED.mastery_delta,
+                recommended_retry_block = EXCLUDED.recommended_retry_block,
+                teacher_review = EXCLUDED.teacher_review,
+                confidence_label = EXCLUDED.confidence_label
             """,
             {
                 "id": entry.attempt_id,
@@ -242,6 +317,18 @@ def _record_attempt_postgres(
                 "next_recommendation": entry.next_recommendation,
                 "retry_reason": entry.retry_reason,
                 "analysis": json.dumps(analysis_payload, ensure_ascii=False),
+                "mastery_delta": json.dumps(
+                    [delta.model_dump() for delta in entry.mastery_delta],
+                    ensure_ascii=False,
+                ),
+                "recommended_retry_block": entry.recommended_retry_block,
+                "teacher_review": json.dumps(
+                    entry.teacher_review.model_dump()
+                    if entry.teacher_review is not None
+                    else {},
+                    ensure_ascii=False,
+                ),
+                "confidence_label": entry.confidence_label,
                 "created_at": entry.created_at,
             },
         )
@@ -270,6 +357,10 @@ def _list_attempt_history_postgres(limit: int) -> list[AttemptHistoryEntry]:
                 next_recommendation,
                 retry_reason,
                 analysis,
+                mastery_delta,
+                recommended_retry_block,
+                teacher_review,
+                confidence_label,
                 created_at
             FROM attempts
             WHERE learner_id = %s
@@ -280,6 +371,90 @@ def _list_attempt_history_postgres(limit: int) -> list[AttemptHistoryEntry]:
         ).fetchall()
 
     return [_attempt_from_row(row) for row in rows]
+
+
+def _get_attempt_detail_postgres(attempt_id: str) -> AttemptHistoryEntry | None:
+    _ensure_postgres_schema()
+    learner_id = get_settings().demo_learner_id
+
+    with _connect(row_factory=dict_row) as connection:
+        row = connection.execute(
+            """
+            SELECT
+                id AS attempt_id,
+                exercise_id,
+                day_number,
+                duration_seconds,
+                audio_url,
+                recording_id,
+                pitch_accuracy,
+                rhythm_accuracy,
+                completion,
+                feedback_ar,
+                next_recommendation,
+                retry_reason,
+                analysis,
+                mastery_delta,
+                recommended_retry_block,
+                teacher_review,
+                confidence_label,
+                created_at
+            FROM attempts
+            WHERE learner_id = %s AND id = %s
+            """,
+            (learner_id, attempt_id),
+        ).fetchone()
+
+    if row is None:
+        return None
+
+    return _attempt_from_row(row)
+
+
+def _update_teacher_review_postgres(
+    attempt_id: str,
+    teacher_review: TeacherReview,
+) -> AttemptHistoryEntry | None:
+    _ensure_postgres_schema()
+    learner_id = get_settings().demo_learner_id
+
+    with _connect(row_factory=dict_row) as connection:
+        row = connection.execute(
+            """
+            UPDATE attempts
+            SET teacher_review = %s::jsonb
+            WHERE learner_id = %s AND id = %s
+            RETURNING
+                id AS attempt_id,
+                exercise_id,
+                day_number,
+                duration_seconds,
+                audio_url,
+                recording_id,
+                pitch_accuracy,
+                rhythm_accuracy,
+                completion,
+                feedback_ar,
+                next_recommendation,
+                retry_reason,
+                analysis,
+                mastery_delta,
+                recommended_retry_block,
+                teacher_review,
+                confidence_label,
+                created_at
+            """,
+            (
+                json.dumps(teacher_review.model_dump(), ensure_ascii=False),
+                learner_id,
+                attempt_id,
+            ),
+        ).fetchone()
+
+    if row is None:
+        return None
+
+    return _attempt_from_row(row)
 
 
 def _record_recording_postgres(recording: RecordingResponse) -> RecordingResponse:
@@ -519,6 +694,10 @@ def _build_attempt_history_entry(
         next_recommendation=evaluation.next_recommendation,
         retry_reason=evaluation.retry_reason,
         analysis=evaluation.analysis,
+        mastery_delta=evaluation.mastery_delta,
+        recommended_retry_block=evaluation.recommended_retry_block,
+        confidence_label=evaluation.confidence_label,
+        teacher_review=evaluation.teacher_review,
         created_at=datetime.now(timezone.utc).isoformat(),
     )
 
@@ -544,6 +723,7 @@ def _default_state() -> dict[str, object]:
         "analytics_events": [],
         "recordings": {},
         "completion_log": {},
+        "skill_mastery": {},
     }
 
 
@@ -566,6 +746,7 @@ def _read_state() -> dict[str, object]:
         "analytics_events": payload.get("analytics_events", []),
         "recordings": payload.get("recordings", {}),
         "completion_log": payload.get("completion_log", {}),
+        "skill_mastery": payload.get("skill_mastery", {}),
     }
 
 
@@ -573,11 +754,16 @@ def _write_state(state: dict[str, object]) -> None:
     path = get_store_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     temp_path = path.with_suffix(f"{path.suffix}.tmp")
+    payload = json.dumps(state, ensure_ascii=False, indent=2)
     temp_path.write_text(
-        json.dumps(state, ensure_ascii=False, indent=2),
+        payload,
         encoding="utf-8",
     )
-    temp_path.replace(path)
+    try:
+        temp_path.replace(path)
+    except PermissionError:
+        path.write_text(payload, encoding="utf-8")
+        temp_path.unlink(missing_ok=True)
 
 
 def _ensure_postgres_schema() -> None:
@@ -630,6 +816,10 @@ def _ensure_postgres_schema() -> None:
                     next_recommendation TEXT NOT NULL,
                     retry_reason TEXT,
                     analysis JSONB,
+                    mastery_delta JSONB NOT NULL DEFAULT '[]',
+                    recommended_retry_block TEXT,
+                    teacher_review JSONB NOT NULL DEFAULT '{}',
+                    confidence_label TEXT NOT NULL DEFAULT 'medium',
                     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
                 )
                 """
@@ -640,6 +830,7 @@ def _ensure_postgres_schema() -> None:
                     learner_id TEXT PRIMARY KEY REFERENCES learners(id),
                     completed_days INTEGER[] NOT NULL DEFAULT '{}',
                     completion_log JSONB NOT NULL DEFAULT '{}',
+                    mastery JSONB NOT NULL DEFAULT '{}',
                     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
                 )
                 """
@@ -648,6 +839,36 @@ def _ensure_postgres_schema() -> None:
                 """
                 ALTER TABLE progress
                 ADD COLUMN IF NOT EXISTS completion_log JSONB NOT NULL DEFAULT '{}'
+                """
+            )
+            connection.execute(
+                """
+                ALTER TABLE progress
+                ADD COLUMN IF NOT EXISTS mastery JSONB NOT NULL DEFAULT '{}'
+                """
+            )
+            connection.execute(
+                """
+                ALTER TABLE attempts
+                ADD COLUMN IF NOT EXISTS mastery_delta JSONB NOT NULL DEFAULT '[]'
+                """
+            )
+            connection.execute(
+                """
+                ALTER TABLE attempts
+                ADD COLUMN IF NOT EXISTS recommended_retry_block TEXT
+                """
+            )
+            connection.execute(
+                """
+                ALTER TABLE attempts
+                ADD COLUMN IF NOT EXISTS confidence_label TEXT NOT NULL DEFAULT 'medium'
+                """
+            )
+            connection.execute(
+                """
+                ALTER TABLE attempts
+                ADD COLUMN IF NOT EXISTS teacher_review JSONB NOT NULL DEFAULT '{}'
                 """
             )
             connection.execute(
@@ -851,6 +1072,10 @@ def _attempt_from_row(row: dict[str, Any]) -> AttemptHistoryEntry:
         next_recommendation=row["next_recommendation"],
         retry_reason=row["retry_reason"],
         analysis=row["analysis"],
+        mastery_delta=row.get("mastery_delta") or [],
+        recommended_retry_block=row.get("recommended_retry_block"),
+        confidence_label=row.get("confidence_label") or "medium",
+        teacher_review=row.get("teacher_review") or None,
         created_at=_serialize_datetime(row["created_at"]),
     )
 
@@ -859,3 +1084,53 @@ def _serialize_datetime(value: object) -> str:
     if isinstance(value, datetime):
         return value.isoformat()
     return str(value)
+
+
+def _load_skill_mastery_state_postgres() -> dict[str, object]:
+    _ensure_postgres_schema()
+    learner_id = get_settings().demo_learner_id
+
+    with _connect(row_factory=dict_row) as connection:
+        _ensure_learner(connection, learner_id)
+        row = connection.execute(
+            "SELECT mastery FROM progress WHERE learner_id = %s",
+            (learner_id,),
+        ).fetchone()
+
+    return _normalize_skill_mastery_state(row["mastery"] if row else {})
+
+
+def _save_skill_mastery_state_postgres(skill_mastery: dict[str, object]) -> None:
+    _ensure_postgres_schema()
+    learner_id = get_settings().demo_learner_id
+
+    with _connect() as connection:
+        _ensure_learner(connection, learner_id)
+        connection.execute(
+            """
+            UPDATE progress
+            SET mastery = %s::jsonb, updated_at = NOW()
+            WHERE learner_id = %s
+            """,
+            (
+                json.dumps(skill_mastery, ensure_ascii=False),
+                learner_id,
+            ),
+        )
+
+
+def _normalize_skill_mastery_state(skill_mastery: object) -> dict[str, object]:
+    if not isinstance(skill_mastery, dict):
+        return {}
+
+    normalized: dict[str, object] = {}
+    for key, value in skill_mastery.items():
+        if not isinstance(key, str) or not isinstance(value, dict):
+            continue
+        normalized[key] = {
+            "score": value.get("score", 0),
+            "last_updated_at": value.get("last_updated_at"),
+            "focus_label": value.get("focus_label"),
+            "status": value.get("status"),
+        }
+    return normalized

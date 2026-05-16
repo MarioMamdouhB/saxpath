@@ -11,3 +11,4 @@ class LessonResponse(BaseModel):
     rhythm: str | None = None
     description_ar: str
     duration_minutes: int
+    video_url: str | None = None

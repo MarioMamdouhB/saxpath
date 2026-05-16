@@ -1,0 +1,39 @@
+INFO:     127.0.0.1:56514 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56528 - "GET /api/v1/practice-sessions/today HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56531 - "GET /api/v1/daily-plan/day/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56530 - "GET /api/v1/lessons?day_number=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56532 - "GET /api/v1/attempts/history?limit=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56532 - "GET /api/v1/analytics/events?limit=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56534 - "GET /api/v1/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56534 - "GET /api/v1/daily-plan/day/2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56535 - "GET /api/v1/lessons?day_number=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56536 - "GET /api/v1/attempts/history?limit=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56536 - "GET /api/v1/analytics/events?limit=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56544 - "OPTIONS /api/v1/analytics/events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56544 - "POST /api/v1/analytics/events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56616 - "OPTIONS /api/v1/attempts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56616 - "POST /api/v1/attempts HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:56649 - "GET /api/v1/daily-plan/day/2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56651 - "GET /api/v1/lessons?day_number=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56663 - "POST /api/v1/attempts HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:56671 - "POST /api/v1/attempts HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:56836 - "POST /api/v1/attempts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56853 - "GET /api/v1/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56900 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56922 - "GET /api/v1/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56992 - "GET /api/v1/practice-sessions/today HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56996 - "GET /api/v1/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56996 - "GET /api/v1/practice-sessions/today?track=beginner HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56996 - "GET /api/v1/mastery HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57010 - "GET /api/v1/attempts/history?limit=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57009 - "GET /api/v1/lessons?day_number=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57008 - "GET /api/v1/daily-plan/day/2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57008 - "GET /api/v1/analytics/events?limit=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57013 - "OPTIONS /api/v1/analytics/events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57013 - "POST /api/v1/analytics/events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57025 - "OPTIONS /api/v1/attempts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57025 - "POST /api/v1/attempts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57025 - "POST /api/v1/analytics/events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57530 - "GET / HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57530 - "GET / HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57682 - "GET /health HTTP/1.1" 200 OK

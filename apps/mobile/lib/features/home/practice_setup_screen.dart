@@ -1,7 +1,10 @@
+import 'package:saxpath_mobile/shared/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:saxpath_mobile/core/theme/app_colors.dart';
+import 'package:saxpath_mobile/features/progress/state/app_progress_controller.dart';
+import 'package:saxpath_mobile/features/progress/state/app_progress_scope.dart';
 import 'package:saxpath_mobile/shared/education/sax_foundation_models.dart';
 import 'package:saxpath_mobile/shared/widgets/primary_button.dart';
 import 'package:saxpath_mobile/shared/widgets/sax_card.dart';
@@ -26,8 +29,11 @@ class _PracticeSetupScreenState extends State<PracticeSetupScreen> {
   SaxType _saxType = SaxType.altoEb;
   String _experience = 'beginner';
   String _subscription = 'free';
+  int _dailyGoal = 10;
   bool _isLoading = true;
   bool _isSaving = false;
+  AppProgressController? _progressController;
+  TimeOfDay _reminderTime = const TimeOfDay(hour: 18, minute: 0);
 
   @override
   void initState() {
@@ -39,6 +45,12 @@ class _PracticeSetupScreenState extends State<PracticeSetupScreen> {
   void dispose() {
     _nameController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _progressController ??= AppProgressScope.of(context);
   }
 
   @override
@@ -216,6 +228,60 @@ class _PracticeSetupScreenState extends State<PracticeSetupScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
+                SaxCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'الهدف اليومي',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'حدد كم دقيقة تريد التمرّن يومياً. سنقوم بتذكيرك وتحفيزك بناءً على هذا الهدف.',
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (final goal in [5, 10, 20, 30])
+                            _ChoicePill(
+                              label: '$goal دقيقة',
+                              selected: _dailyGoal == goal,
+                              onTap: () => setState(() => _dailyGoal = goal),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SaxCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'تذكير التدريب اليومي',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text('اختر الوقت المفضل لاستلام تنبيه لبدء جلستك.'),
+                      const SizedBox(height: 12),
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(Icons.alarm_rounded, color: AppColors.deepTeal),
+                        title: Text('وقت التذكير: ${_reminderTime.format(context)}'),
+                        trailing: const Icon(Icons.edit_calendar_rounded),
+                        onTap: _selectTime,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
                 const SaxCard(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,6 +323,8 @@ class _PracticeSetupScreenState extends State<PracticeSetupScreen> {
     _experience = preferences.getString(_experienceKey) ?? 'beginner';
     _subscription = preferences.getString(_subscriptionKey) ?? 'free';
 
+    _dailyGoal = _progressController?.dailyGoalMinutes ?? _dailyGoal;
+
     final storedSaxType = preferences.getString(_saxTypeKey);
     _saxType = SaxType.values.firstWhere(
       (value) => value.name == storedSaxType,
@@ -273,6 +341,9 @@ class _PracticeSetupScreenState extends State<PracticeSetupScreen> {
   }
 
   Future<void> _savePreferences() async {
+    final progress = _progressController;
+    final messenger = ScaffoldMessenger.of(context);
+
     setState(() {
       _isSaving = true;
     });
@@ -288,14 +359,31 @@ class _PracticeSetupScreenState extends State<PracticeSetupScreen> {
       return;
     }
 
+    if (progress != null) {
+      await progress.setDailyGoal(_dailyGoal);
+    }
+
     setState(() {
       _isSaving = false;
     });
-    ScaffoldMessenger.of(context).showSnackBar(
+
+    await NotificationService().scheduleDailyReminder(_reminderTime.hour, _reminderTime.minute);
+
+    messenger.showSnackBar(
       const SnackBar(
-        content: Text('تم حفظ الإعدادات الأساسية لهذا الجهاز.'),
+        content: Text('تم حفظ الإعدادات بنحو صحيح وتفعيل التذكير.'),
       ),
     );
+  }
+
+  Future<void> _selectTime() async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _reminderTime,
+    );
+    if (picked != null && picked != _reminderTime) {
+      setState(() => _reminderTime = picked);
+    }
   }
 
   String _saxTypeLabel(SaxType saxType) {

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'package:saxpath_mobile/core/theme/app_colors.dart';
+import 'package:saxpath_mobile/features/tuner/tuner_screen.dart';
 import 'package:saxpath_mobile/shared/audio/generated_audio.dart';
+import 'package:saxpath_mobile/shared/widgets/primary_button.dart';
 import 'package:saxpath_mobile/shared/widgets/metronome_card.dart';
 import 'package:saxpath_mobile/shared/widgets/mock_playback_card.dart';
 import 'package:saxpath_mobile/shared/widgets/sax_card.dart';
@@ -47,6 +50,48 @@ class _PracticeRoomScreenState extends State<PracticeRoomScreen> {
                 'أدوات مباشرة للوقت، السمع، التكرار، والتنقل بين المفاتيح',
           ),
           const SizedBox(height: 16),
+          SaxCard(
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.tune_rounded,
+                  size: 40,
+                  color: AppColors.deepTeal,
+                ),
+                const SizedBox(width: 16),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'دوزان الساكسفون (Tuner)',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'اضبط نغماتك بدقة قبل البدء.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.muted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                PrimaryButton(
+                  label: 'افتح',
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const TunerScreen()),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
           MetronomeCard(
             initialBpm: _currentBpm,
             linkedPlaybackTitle: 'Loop Trainer',
@@ -89,11 +134,7 @@ class _PracticeRoomScreenState extends State<PracticeRoomScreen> {
                       ChoiceChip(
                         label: Text(key),
                         selected: _selectedKey == key,
-                        onSelected: (_) {
-                          setState(() {
-                            _selectedKey = key;
-                          });
-                        },
+                        onSelected: (_) => setState(() => _selectedKey = key),
                       ),
                   ],
                 ),
@@ -134,12 +175,10 @@ class _PracticeRoomScreenState extends State<PracticeRoomScreen> {
                       ChoiceChip(
                         label: Text('${_tempoSteps[i]}'),
                         selected: _tempoLadderIndex == i,
-                        onSelected: (_) {
-                          setState(() {
-                            _tempoLadderIndex = i;
-                            _currentBpm = _tempoSteps[i];
-                          });
-                        },
+                        onSelected: (_) => setState(() {
+                          _tempoLadderIndex = i;
+                          _currentBpm = _tempoSteps[i];
+                        }),
                       ),
                   ],
                 ),

@@ -12,8 +12,11 @@ from app.api.routes.attempts import router as attempts_router
 from app.api.routes.daily_plan import router as daily_plan_router
 from app.api.routes.health import router as health_router
 from app.api.routes.lessons import router as lessons_router
+from app.api.routes.mastery import router as mastery_router
+from app.api.routes.practice_sessions import router as practice_sessions_router
 from app.api.routes.progress import router as progress_router
 from app.api.routes.recordings import router as recordings_router
+from app.api.routes.tracks import router as tracks_router
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -60,3 +63,6 @@ app.include_router(recordings_router, prefix=settings.api_v1_prefix)
 app.include_router(audio_analysis_router, prefix=settings.api_v1_prefix)
 app.include_router(analytics_router, prefix=settings.api_v1_prefix)
 app.include_router(progress_router, prefix=settings.api_v1_prefix)
+app.include_router(mastery_router, prefix=settings.api_v1_prefix)
+app.include_router(practice_sessions_router, prefix=settings.api_v1_prefix)
+app.include_router(tracks_router, prefix=settings.api_v1_prefix)

@@ -1,0 +1,25 @@
+{
+  "completed_days": [],
+  "attempts": [],
+  "analytics_events": [
+    {
+      "event_id": "event_f81b9874864a",
+      "event_name": "lesson_start",
+      "day_number": null,
+      "task_id": null,
+      "attempt_id": null,
+      "metadata": {},
+      "created_at": "2026-05-08T18:54:22.841129+00:00"
+    },
+    {
+      "event_id": "event_cdeb14b624e4",
+      "event_name": "lesson_start",
+      "day_number": null,
+      "task_id": null,
+      "attempt_id": null,
+      "metadata": {},
+      "created_at": "2026-05-08T18:54:22.801427+00:00"
+    }
+  ],
+  "recordings": {}
+}

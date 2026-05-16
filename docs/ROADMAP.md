@@ -120,3 +120,18 @@ Tasks:
 - Use beta feedback to prioritize real audio, retention, and usability work
 - Current state: the main learner flow, progress syncing, fallback-vs-real recording gating, and results decision UX are now implemented and covered by local tests
 - Remaining gate: complete one real-device or real-runtime manual smoke run with true recording plus Docker/Postgres persistence before calling V1 closed
+
+## Next Major Execution Order
+
+Status: defined
+
+Reference:
+- `docs/NEXT_PRODUCT_EXECUTION_ORDER.md`
+
+Ordered next product steps:
+- `Adaptive Practice Engine`
+- `Real Session Runner`
+- `Mastery Timeline`
+- `Teacher Review Workflow`
+- `Content Scaling System`
+- `Retention Analytics + Beta Readiness`

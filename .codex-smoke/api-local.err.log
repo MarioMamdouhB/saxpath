@@ -1,0 +1,137 @@
+INFO:     Started server process [10772]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/health", "status_code": 200, "duration_ms": 145.7}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/practice-sessions/today", "status_code": 200, "duration_ms": 8.29}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/daily-plan/day/1", "status_code": 200, "duration_ms": 10.42}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/lessons", "status_code": 200, "duration_ms": 10.96}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/attempts/history", "status_code": 200, "duration_ms": 14.14}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/analytics/events", "status_code": 200, "duration_ms": 3.43}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/progress", "status_code": 200, "duration_ms": 4.47}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/daily-plan/day/2", "status_code": 200, "duration_ms": 1.6}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/lessons", "status_code": 200, "duration_ms": 1.44}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/attempts/history", "status_code": 200, "duration_ms": 4.26}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/analytics/events", "status_code": 200, "duration_ms": 2.85}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "OPTIONS", "path": "/api/v1/analytics/events", "status_code": 200, "duration_ms": 0.3}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "POST", "path": "/api/v1/analytics/events", "status_code": 200, "duration_ms": 15.12}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "OPTIONS", "path": "/api/v1/attempts", "status_code": 200, "duration_ms": 0.32}
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 415, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 56, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\applications.py", line 1159, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\base.py", line 191, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+                                   ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_utils.py", line 87, in collapse_excgroups
+    raise exc
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\base.py", line 193, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Dell\Desktop\sax path\saxpath\services\api\app\main.py", line 39, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\base.py", line 168, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 134, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 120, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 674, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 330, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\anyio\to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\anyio\_backends\_asyncio.py", line 2502, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\site-packages\anyio\_backends\_asyncio.py", line 986, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Dell\Desktop\sax path\saxpath\services\api\app\api\routes\attempts.py", line 36, in create_attempt
+    mastery_delta = apply_attempt_mastery(
+                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Dell\Desktop\sax path\saxpath\services\api\app\services\mastery.py", line 112, in apply_attempt_mastery
+    persistence.save_skill_mastery_state(state)
+  File "C:\Users\Dell\Desktop\sax path\saxpath\services\api\app\services\persistence.py", line 149, in save_skill_mastery_state
+    _write_state(state)
+  File "C:\Users\Dell\Desktop\sax path\saxpath\services\api\app\services\persistence.py", line 670, in _write_state
+    temp_path.write_text(
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\pathlib.py", line 1048, in write_text
+    return f.write(data)
+           ^^^^^^^^^^^^^
+OSError: [Errno 28] No space left on device
+--- Logging error ---
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/daily-plan/day/2", "status_code": 200, "duration_ms": 1.76}
+--- Logging error ---
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/lessons", "status_code": 200, "duration_ms": 1.35}
+--- Logging error ---
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "POST", "path": "/api/v1/attempts", "status_code": 422, "duration_ms": 0.94}
+--- Logging error ---
+--- Logging error ---
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "POST", "path": "/api/v1/attempts", "status_code": 200, "duration_ms": 28.53}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/progress", "status_code": 200, "duration_ms": 3.83}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/health", "status_code": 200, "duration_ms": 1.39}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/progress", "status_code": 200, "duration_ms": 4.23}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/practice-sessions/today", "status_code": 200, "duration_ms": 6.67}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/progress", "status_code": 200, "duration_ms": 3.2}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/practice-sessions/today", "status_code": 200, "duration_ms": 5.15}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/mastery", "status_code": 200, "duration_ms": 27.54}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/attempts/history", "status_code": 200, "duration_ms": 600.46}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/lessons", "status_code": 200, "duration_ms": 606.18}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/daily-plan/day/2", "status_code": 200, "duration_ms": 609.62}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/api/v1/analytics/events", "status_code": 200, "duration_ms": 3.22}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "OPTIONS", "path": "/api/v1/analytics/events", "status_code": 200, "duration_ms": 0.25}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "POST", "path": "/api/v1/analytics/events", "status_code": 200, "duration_ms": 12.4}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "OPTIONS", "path": "/api/v1/attempts", "status_code": 200, "duration_ms": 0.25}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "POST", "path": "/api/v1/attempts", "status_code": 200, "duration_ms": 28.43}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "POST", "path": "/api/v1/analytics/events", "status_code": 200, "duration_ms": 10.37}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/", "status_code": 404, "duration_ms": 9.33}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/", "status_code": 404, "duration_ms": 0.6}
+INFO:saxpath.api:{"event": "http_request", "service": "saxpath-api", "method": "GET", "path": "/health", "status_code": 200, "duration_ms": 1.73}

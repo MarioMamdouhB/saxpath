@@ -23,20 +23,20 @@ class CurriculumService {
     final weeks = List.generate(4, (index) {
       final weekNumber = index + 1;
       final title = switch (weekNumber) {
-        1 => 'Week 1 · Sound and Time',
-        2 => 'Week 2 · Blues Language',
-        3 => 'Week 3 · Dominant and Guide Tones',
-        _ => 'Week 4 · ii-V-I and First Solo',
+        1 => 'الأسبوع 1 · الصوت والوقت',
+        2 => 'الأسبوع 2 · لغة البلوز',
+        3 => 'الأسبوع 3 · نغمات الدومينانت والدليل',
+        _ => 'الأسبوع 4 · الـ ii-V-I وأول عزف منفرد',
       };
       final summary = switch (weekNumber) {
         1 =>
-          'Tone basics, long tones, minor pentatonic, swing eighths, and rhythm on one note.',
+          'أساسيات النغمة، نغمات طويلة، الخماسي الصغير، السوينغ كروش، والإيقاع على نغمة واحدة.',
         2 =>
-          '12-bar blues, blues scale, call and response, phrase shape, space, and repetition.',
+          'بلوز الـ 12 مازورة، سلم البلوز، الاستجابة والنداء، شكل الجملة، المساحات، والتكرار.',
         3 =>
-          'Dominant 7th sound, 3rds and 7ths, guide tones, jazz blues, and simple voice leading.',
+          'صوت الدومينانت السابع، الثالث والسابع، نغمات الدليل، جاز بلوز، والقيادة الصوتية البسيطة.',
         _ =>
-          'ii-V-I, simple bebop approaches, first full chorus solo, record/evaluate, and a personal 2-bar phrase.',
+          'الـ ii-V-I، مداخل بيبوب بسيطة، أول عزف منفرد كامل، التسجيل والتقييم، وجملة شخصية من مازورتين.',
       };
 
       return MvpCurriculumWeek(
@@ -51,9 +51,9 @@ class CurriculumService {
 
     return MvpCurriculumProgram(
       id: 'mvp_30_day_curriculum',
-      title: '30-Day Jazz Sax MVP Curriculum',
+      title: 'منهج الـ 30 يوماً لمبتدئي الساكسفون',
       summary:
-          'A serious first-month path that keeps sound, swing, blues, ear training, theory, improvisation, and recording connected.',
+          'مسار جاد للشهر الأول يربط بين الصوت، السوينغ، البلوز، تدريب الأذن، النظرية، الارتجال والتسجيل.',
       modules: _modules,
       weeks: weeks,
     );
@@ -189,69 +189,69 @@ const List<MvpCurriculumModule> _modules = [
   MvpCurriculumModule(
     id: 'sax_setup_tone_basics',
     order: 1,
-    title: 'Sax setup + tone basics',
-    summary: 'Posture, breath, embouchure, long tones, and tone center.',
+    title: 'تجهيز الساكس + أساسيات النغمة',
+    summary: 'الوضعية، التنفس، شكل الفم، النغمات الطويلة، ومركز النغمة.',
   ),
   MvpCurriculumModule(
     id: 'swing_rhythm_trainer',
     order: 2,
-    title: 'Swing rhythm trainer',
+    title: 'مدرب إيقاع السوينغ',
     summary:
-        'Quarter-note pulse, swing eighths, one-note rhythm, and placement.',
+        'نبض الربع نوار، كروش السوينغ، الإيقاع على نغمة واحدة، والتموضع.',
   ),
   MvpCurriculumModule(
     id: 'blues_course',
     order: 3,
-    title: 'Blues course',
+    title: 'دورة البلوز',
     summary:
-        '12-bar form, blues scale, phrase logic, space, repetition, and response.',
+        'قالب الـ 12 مازورة، سلم البلوز، منطق الجملة، المساحة، التكرار، والاستجابة.',
   ),
   MvpCurriculumModule(
     id: 'ii_v_i_course',
     order: 4,
-    title: 'ii-V-I course',
+    title: 'دورة الـ ii-V-I',
     summary:
-        'Guide tones, dominant color, simple voice leading, and first lines.',
+        'نغمات الدليل، لون الدومينانت، القيادة الصوتية البسيطة، وأول الخطوط العزفية.',
   ),
   MvpCurriculumModule(
     id: 'backing_tracks',
     order: 5,
-    title: 'Backing tracks',
+    title: 'المسارات المصاحبة',
     summary:
-        'Original loops for blues, swing pulse, jazz blues, and ii-V-I study.',
+        'حلقات أصلية للبلوز، نبض السوينغ، جاز بلوز، ودراسة الـ ii-V-I.',
   ),
   MvpCurriculumModule(
     id: 'record_feedback',
     order: 6,
-    title: 'Record & timing feedback',
+    title: 'التسجيل وملاحظات التوقيت',
     summary:
-        'Record, hear, evaluate, retry slower, and save clear corrections.',
+        'سجل، اسمع، قيم، أعد المحاولة ببطء، واحفظ التصحيحات الواضحة.',
   ),
   MvpCurriculumModule(
     id: 'twelve_key_trainer',
     order: 7,
-    title: '12-key pattern trainer',
-    summary: 'Move simple cells through keys without losing tone or time.',
+    title: 'مدرب الأنماط في 12 مقام',
+    summary: 'تحريك الخلايا البسيطة عبر المقامات دون فقدان النغمة أو الوقت.',
   ),
   MvpCurriculumModule(
     id: 'transposition_bb_eb',
     order: 8,
-    title: 'Transposition for Bb/Eb sax',
-    summary: 'Concert, tenor, and alto views of the same lesson material.',
+    title: 'النقل للساكسفون Bb/Eb',
+    summary: 'عرض الكونسيرت، التينور، والألتو لنفس مادة الدرس.',
   ),
   MvpCurriculumModule(
     id: 'daily_practice_generator',
     order: 9,
-    title: 'Daily practice generator',
+    title: 'مولد التدريب اليومي',
     summary:
-        'Small, adaptive plans built from weakness, tempo, and current course.',
+        'خطط صغيرة متكيفة مبنية من الضعف، السرعة، والدورة الحالية.',
   ),
   MvpCurriculumModule(
     id: 'progress_dashboard',
     order: 10,
-    title: 'Progress dashboard',
+    title: 'لوحة التقدم',
     summary:
-        'Tone, timing, ear, theory, improvisation, repertoire, and streak.',
+        'النغمة، التوقيت، الأذن، النظرية، الارتجال، المقطوعات، والسلسلة.',
   ),
 ];
 
@@ -259,37 +259,37 @@ final List<_DaySeed> _week1Seeds = [
   const _DaySeed(
     dayNumber: 1,
     weekNumber: 1,
-    title: 'Sax Setup and Tone Center',
-    focus: 'Tone basics and instrument setup',
+    title: 'تجهيز الساكس ومركز النغمة',
+    focus: 'أساسيات النغمة وتجهيز الآلة',
     description:
-        'Build the first sound with posture, air, embouchure, and stable center.',
+        'ابنِ أول صوت بوضعية الجسم الصحيحة، الهواء، شكل الفم، ومركز نغمة مستقر.',
     skillAreas: [SkillArea.tone, SkillArea.technique],
     concepts: ['tone basics', 'air support', 'embouchure'],
     moduleIds: ['sax_setup_tone_basics', 'progress_dashboard'],
     exerciseType: ExerciseType.longTone,
     level: DifficultyLevel.beginner,
     tempoRange: TempoRange(minBpm: 56, maxBpm: 66),
-    whatDoIHear: 'A centered single note with no wobble and no pinched attack.',
+    whatDoIHear: 'نغمة واحدة مركزة بدون اهتزاز وبدون بداية مشدودة.',
     whatDoIPlay:
-        'Long tones on one stable note with clean starts and relaxed air.',
+        'نغمات طويلة على نغمة واحدة مستقرة مع بدايات نظيفة وهواء مسترخٍ.',
     whyDoesItWork:
-        'Because tone starts from air direction and voicing before finger movement.',
+        'لأن النغمة تبدأ من توجيه الهواء وشكل الفم الداخلي قبل حركة الأصابع.',
     whereInRealJazz:
-        'Every strong jazz saxophonist carries this center even in soft ballads and medium swing.',
+        'كل عازف ساكسفون جاز قوي يحمل هذا المركز حتى في الألحان الهادئة والسوينغ المتوسط.',
     howDoIUseItInMySolo:
-        'I keep the same tone center when phrases get louder, softer, or more rhythmic.',
+        'أحافظ على نفس مركز النغمة عندما تصبح الجمل أعلى، أهدأ، أو أكثر إيقاعية.',
     listeningAssignment:
-        'Listen for whether the note blooms or collapses after the attack.',
+        'استمع لما إذا كانت النغمة تتفتح أو تنهار بعد البداية.',
     improvisationAssignment:
-        'Play one note with three dynamic shapes and make each one musical.',
+        'اعزف نغمة واحدة بثلاثة أشكال ديناميكية (قوة الصوت) واجعل كل منها موسيقياً.',
   ),
   const _DaySeed(
     dayNumber: 2,
     weekNumber: 1,
-    title: 'Long Tones with Dynamic Arc',
-    focus: 'Long tones and dynamic control',
+    title: 'نغمات طويلة مع قوس ديناميكي',
+    focus: 'النغمات الطويلة والتحكم في قوة الصوت',
     description:
-        'Expand one note from pp to ff and back without losing center.',
+        'قم بتوسيع نغمة واحدة من الهدوء الشديد إلى القوة القصوى والعودة دون فقدان المركز.',
     skillAreas: [SkillArea.tone, SkillArea.feedback],
     concepts: ['long tones', 'dynamics', 'stability'],
     moduleIds: ['sax_setup_tone_basics', 'record_feedback'],
@@ -297,54 +297,54 @@ final List<_DaySeed> _week1Seeds = [
     level: DifficultyLevel.beginner,
     tempoRange: TempoRange(minBpm: 52, maxBpm: 62),
     whatDoIHear:
-        'A note that stays in tune as the air gets wider and stronger.',
-    whatDoIPlay: 'Sustained notes with crescendos and decrescendos.',
+        'نغمة تبقى مضبوطة (in tune) بينما يصبح الهواء أوسع وأقوى.',
+    whatDoIPlay: 'نغمات ممتدة مع زيادة ونقصان تدريجي في قوة الصوت.',
     whyDoesItWork:
-        'Dynamic control teaches breath support and pitch stability at the same time.',
+        'التحكم الديناميكي يعلم دعم التنفس واستقرار حدة النغمة في نفس الوقت.',
     whereInRealJazz:
-        'Ballads, intros, and held notes at phrase endings need this control.',
+        'الألحان الهادئة، المقدمات، والنغمات الممتدة في نهايات الجمل تحتاج لهذا التحكم.',
     howDoIUseItInMySolo:
-        'I shape phrase endings with controlled dynamics instead of just stopping the note.',
+        'أقوم بتشكيل نهايات الجمل بديناميكيات محكومة بدلاً من مجرد إيقاف النغمة.',
     listeningAssignment:
-        'Notice whether the pitch rises at loud points or drops at soft points.',
+        'لاحظ ما إذا كانت حدة النغمة ترتفع عند النقاط العالية أو تنخفض عند النقاط الهادئة.',
     improvisationAssignment:
-        'End two short phrases with a held note that swells then releases.',
+        'أنهِ جملتين قصيرتين بنغمة ممتدة تقوى ثم تتلاشى.',
     recordCheckpoint:
-        'Record one long tone with dynamic arc and compare the start, middle, and release.',
+        'سجل نغمة طويلة واحدة مع قوس ديناميكي وقارن بين البداية والمنتصف والنهاية.',
   ),
   const _DaySeed(
     dayNumber: 3,
     weekNumber: 1,
-    title: 'Basic Articulation Start',
-    focus: 'Basic articulation',
+    title: 'بداية النطق الأساسي',
+    focus: 'النطق الأساسي (Articulation)',
     description:
-        'Start notes with light tongue and connected air, not hard attacks.',
+        'ابدأ النغمات بلمسة لسان خفيفة وهواء متصل، وليس بهجوم قاصٍ.',
     skillAreas: [SkillArea.articulation, SkillArea.tone],
     concepts: ['basic articulation', 'tongue placement', 'connected air'],
     moduleIds: ['sax_setup_tone_basics', 'record_feedback'],
     exerciseType: ExerciseType.articulation,
     level: DifficultyLevel.beginner,
     tempoRange: TempoRange(minBpm: 64, maxBpm: 78),
-    whatDoIHear: 'A clear start with no click and no gap after the tongue.',
+    whatDoIHear: 'بداية واضحة بدون صوت "كليك" وبدون فجوة بعد اللسان.',
     whatDoIPlay:
-        'Repeated articulated notes on one pitch, legato first then light detached.',
+        'نغمات منطوقة متكررة على درجة صوتية واحدة، "ليغاتو" أولاً ثم مفصولة بخفة.',
     whyDoesItWork:
-        'The tongue releases the air; it should not replace the air stream.',
-    whereInRealJazz: 'Even simple swing heads need clarity without harshness.',
+        'اللسان يحرر الهواء؛ لا ينبغي أن يحل محل تيار الهواء.',
+    whereInRealJazz: 'حتى مقطوعات السوينغ البسيطة تحتاج لوضوح بدون خشونة.',
     howDoIUseItInMySolo:
-        'I choose lighter or firmer starts to shape phrase character.',
+        'أختار بدايات أخف أو أقوى لتشكيل طابع الجملة.',
     listeningAssignment:
-        'Listen for whether the note speaks immediately after the tongue or feels choked.',
+        'استمع لما إذا كانت النغمة تنطق فوراً بعد اللسان أو تبدو "مخنوقة".',
     improvisationAssignment:
-        'Play one tiny call-and-response using only articulation contrast.',
+        'اعزف نداء واستجابة صغيراً جداً باستخدام تباين النطق فقط.',
   ),
   const _DaySeed(
     dayNumber: 4,
     weekNumber: 1,
-    title: 'Minor Pentatonic Shape 1',
-    focus: 'Minor pentatonic foundation',
+    title: 'شكل الخماسي الصغير 1',
+    focus: 'تأسيس السلم الخماسي الصغير',
     description:
-        'Learn one compact pentatonic sound and hear it as phrase material, not scale running.',
+        'تعلم صوتاً خماسياً واحداً مضغوطاً واسمعه كمادة للجمل، وليس كمجرد صعود سلم.',
     skillAreas: [SkillArea.blues, SkillArea.improvisation, SkillArea.theory],
     concepts: ['minor pentatonic', 'small cell', 'phrase shape'],
     moduleIds: ['blues_course', 'twelve_key_trainer'],
@@ -352,27 +352,27 @@ final List<_DaySeed> _week1Seeds = [
     level: DifficultyLevel.beginner,
     tempoRange: TempoRange(minBpm: 68, maxBpm: 84),
     whatDoIHear:
-        'A tight five-note sound with blues gravity and no extra clutter.',
+        'صوت خماسي من خمس نغمات محكم مع جاذبية البلوز وبدون فوضى زائدة.',
     whatDoIPlay:
-        'A small pentatonic cell ascending and descending with space between repeats.',
+        'خلية خماسية صغيرة صعوداً وهبوطاً مع مساحة بين التكرارات.',
     whyDoesItWork:
-        'A limited note set helps rhythm and sound become the focus.',
+        'مجموعة نغمات محدودة تساعد الإيقاع والصوت ليصبحا هما التركيز.',
     whereInRealJazz:
-        'Blues, funk, minor vamp contexts, and early improvisation language.',
+        'البلوز، الفانك، سياقات الـ minor vamp، ولغة الارتجال المبكرة.',
     howDoIUseItInMySolo:
-        'I take only 3–4 notes from the set and make a phrase instead of running all 5.',
+        'آخذ فقط 3-4 نغمات من المجموعة وأصنع جملة بدلاً من عزف الخمس نغمات كلها.',
     listeningAssignment:
-        'Hear which note sounds like home and which one wants to push forward.',
+        'اسمع أي نغمة تبدو كأنها "البيت" (القرار) وأي واحدة تريد الدفع للأمام.',
     improvisationAssignment:
-        'Improvise 2 bars using only three pentatonic notes.',
+        'ارتجل مازورتين باستخدام ثلاث نغمات خماسية فقط.',
   ),
   const _DaySeed(
     dayNumber: 5,
     weekNumber: 1,
-    title: 'Swing Eighth Feel',
-    focus: 'Swing eighths',
+    title: 'إحساس السوينغ كروش',
+    focus: 'كروش السوينغ (Swing Eighths)',
     description:
-        'Learn that swing is placement and feel, not a fixed triplet math formula.',
+        'تعلم أن السوينغ هو تموضع وإحساس، وليس صيغة رياضية ثابتة للثلاثيات.',
     skillAreas: [SkillArea.swing, SkillArea.rhythm],
     concepts: ['swing eighths', 'offbeat placement', 'pulse'],
     moduleIds: ['swing_rhythm_trainer', 'backing_tracks'],
@@ -380,53 +380,53 @@ final List<_DaySeed> _week1Seeds = [
     level: DifficultyLevel.beginner,
     tempoRange: TempoRange(minBpm: 76, maxBpm: 92),
     whatDoIHear:
-        'Offbeats that sit inside the pulse instead of sounding stiff or straight.',
+        'نغمات الـ offbeat التي تستقر داخل النبض بدلاً من أن تبدو جامدة أو مستقيمة.',
     whatDoIPlay:
-        'Two-bar swing rhythms on one note, first clapped, then played.',
+        'إيقاعات سوينغ من مازورتين على نغمة واحدة، مصفقة أولاً، ثم معزوفة.',
     whyDoesItWork:
-        'Good swing comes from relation to pulse, not from memorizing a ratio.',
-    whereInRealJazz: 'Medium swing phrasing, heads, riffs, and simple fills.',
+        'السوينغ الجيد يأتي من العلاقة بالنبض، وليس من حفظ النسبة.',
+    whereInRealJazz: 'جمل السوينغ المتوسطة، المقطوعات، واللازمات البسيطة.',
     howDoIUseItInMySolo:
-        'I keep the same rhythm and change only pitches once the placement feels right.',
+        'أحافظ على نفس الإيقاع وأغير الدرجات الصوتية فقط بمجرد أن يشعر التموضع بالصحة.',
     listeningAssignment:
-        'Compare your offbeats against a metronome on 2 and 4.',
+        'قارن نغمات الـ offbeat الخاصة بك مع الميترونوم على 2 و 4.',
     improvisationAssignment:
-        'Play one rhythmic cell three times with the same swing feel.',
+        'اعزف خلية إيقاعية واحدة ثلاث مرات بنفس إحساس السوينغ.',
   ),
   const _DaySeed(
     dayNumber: 6,
     weekNumber: 1,
-    title: 'Rhythm on One Note',
-    focus: 'Rhythm on one note',
+    title: 'الإيقاع على نغمة واحدة',
+    focus: 'الإيقاع على نغمة واحدة',
     description:
-        'Take pitch out of the problem and train time feel, articulation, and phrase shape.',
+        'أبعد الدرجة الصوتية عن المشكلة ودرب إحساس الوقت، النطق، وشكل الجملة.',
     skillAreas: [SkillArea.rhythm, SkillArea.articulation, SkillArea.swing],
     concepts: ['one-note rhythm', 'pulse consistency', 'phrase ending'],
     moduleIds: ['swing_rhythm_trainer', 'record_feedback'],
     exerciseType: ExerciseType.rhythmPlayback,
     level: DifficultyLevel.beginner,
     tempoRange: TempoRange(minBpm: 80, maxBpm: 96),
-    whatDoIHear: 'Rhythm as the musical message even when pitch never changes.',
+    whatDoIHear: 'الإيقاع كرسالة موسيقية حتى عندما لا تتغير الدرجة الصوتية أبداً.',
     whatDoIPlay:
-        'Short rhythmic phrases on one note with clear starts and endings.',
+        'جمل إيقاعية قصيرة على نغمة واحدة مع بدايات ونهايات واضحة.',
     whyDoesItWork:
-        'It isolates the real jazz engine: time, shape, and articulation.',
+        'إنه يعزل محرك الجاز الحقيقي: الوقت، الشكل، والنطق.',
     whereInRealJazz:
-        'Riffs, shout figures, repeated motifs, and early solo development.',
+        'اللازمات (Riffs)، أشكال الـ shout، والموتيفات المتكررة.',
     howDoIUseItInMySolo:
-        'I can keep one rhythmic idea and move it later to new notes.',
+        'يمكنني الاحتفاظ بفكرة إيقاعية واحدة ونقلها لاحقاً إلى نغمات جديدة.',
     listeningAssignment:
-        'Listen for whether all attacks sit in the same pocket.',
+        'استمع لما إذا كانت كل الهجمات تقع في نفس "الجيب" (المكان الصحيح).',
     improvisationAssignment:
-        'Improvise 4 bars on one note and make it feel intentional.',
+        'ارتجل 4 موازير على نغمة واحدة واجعلها تبدو مقصودة.',
   ),
   const _DaySeed(
     dayNumber: 7,
     weekNumber: 1,
-    title: 'Week 1 Integration',
-    focus: 'Tone + articulation + rhythm review',
+    title: 'دمج الأسبوع الأول',
+    focus: 'مراجعة النغمة + النطق + الإيقاع',
     description:
-        'Combine stable tone, light articulation, one-note rhythm, and minor pentatonic color.',
+        'اجمع بين النغمة المستقرة، النطق الخفيف، إيقاع النغمة الواحدة، ولون الخماسي الصغير.',
     skillAreas: [SkillArea.tone, SkillArea.rhythm, SkillArea.swing],
     concepts: ['integration', 'review', 'first mini solo'],
     moduleIds: [
@@ -438,18 +438,18 @@ final List<_DaySeed> _week1Seeds = [
     level: DifficultyLevel.beginner,
     tempoRange: TempoRange(minBpm: 78, maxBpm: 92),
     whatDoIHear:
-        'A simple phrase that still sounds musical because tone and time are organized.',
-    whatDoIPlay: 'One-note rhythm first, then a tiny pentatonic answer.',
+        'جملة بسيطة لا تزال تبدو موسيقية لأن الصوت والوقت منظمان.',
+    whatDoIPlay: 'إيقاع نغمة واحدة أولاً، ثم إجابة خماسية صغيرة.',
     whyDoesItWork:
-        'Week 1 works only if sound and time stay connected from the first phrase.',
+        'الأسبوع الأول ينجح فقط إذا ظل الصوت والوقت متصلين من أول جملة.',
     whereInRealJazz:
-        'Simple intros, student jam sessions, and early riff improvisation.',
+        'المقدمات البسيطة، جلسات العزف للطلاب، وارتجال اللازمات المبكر.',
     howDoIUseItInMySolo:
-        'I build short phrases from rhythm first, then add just enough pitch motion.',
+        'أبني جملاً قصيرة من الإيقاع أولاً، ثم أضيف حركة كافية من الدرجات الصوتية.',
     listeningAssignment:
-        'Listen back and ask whether the answer phrase really contrasts with the call.',
-    improvisationAssignment: 'Create a 2-bar call and a 2-bar answer.',
-    recordCheckpoint: 'Record the week-1 review and save it as your baseline.',
+        'استمع مرة أخرى واسأل ما إذا كانت جملة الإجابة تتناقض حقاً مع النداء.',
+    improvisationAssignment: 'أنشئ نداءً من مازورتين وإجابة من مازورتين.',
+    recordCheckpoint: 'سجل مراجعة الأسبوع الأول واحفظها كمرجع أساسي لك.',
   ),
 ];
 
@@ -457,9 +457,9 @@ final List<_DaySeed> _week2Seeds = [
   const _DaySeed(
     dayNumber: 8,
     weekNumber: 2,
-    title: '12-Bar Blues Map',
-    focus: '12-bar blues form',
-    description: 'Hear the structure before trying to fill it with notes.',
+    title: 'خريطة بلوز الـ 12 مازورة',
+    focus: 'قالب البلوز المكون من 12 مازورة',
+    description: 'اسمع الهيكل قبل محاولة ملئه بالنغمات.',
     skillAreas: [SkillArea.blues, SkillArea.theory, SkillArea.repertoire],
     concepts: ['12-bar blues', 'form', 'I7 IV7 V7'],
     moduleIds: ['blues_course', 'backing_tracks', 'transposition_bb_eb'],
@@ -467,24 +467,24 @@ final List<_DaySeed> _week2Seeds = [
     level: DifficultyLevel.beginner,
     tempoRange: TempoRange(minBpm: 76, maxBpm: 94),
     whatDoIHear:
-        'The home sound, the move to IV, and the energy shift in bars 9–10.',
-    whatDoIPlay: 'Roots and simple guide points through the whole form.',
-    whyDoesItWork: 'If the form is unclear, every lick loses meaning.',
-    whereInRealJazz: 'Blues heads, jam sessions, riffs, and solo structures.',
+        'صوت القرار (I)، الانتقال للرابع (IV)، وتحول الطاقة في الموازير 9-10.',
+    whatDoIPlay: 'نغمات الأساس (Roots) ونقاط دليل بسيطة عبر القالب بالكامل.',
+    whyDoesItWork: 'إذا لم يكن القالب واضحاً، تفقد كل جملة معناها.',
+    whereInRealJazz: 'مقطوعات البلوز، جلسات الارتجال، اللازمات، وهياكل السولو.',
     howDoIUseItInMySolo:
-        'I mark key bars with rhythm and space instead of filling every measure.',
+        'أقوم بتحديد الموازير الرئيسية بالإيقاع والمساحة بدلاً من ملء كل مازورة.',
     listeningAssignment:
-        'Clap bar 1, bar 5, and bar 9 while listening to the loop.',
+        'صفّق عند المازورة 1، المازورة 5، والمازورة 9 أثناء الاستماع للحلقة.',
     improvisationAssignment:
-        'Play one note only, but show the form with your rhythm.',
+        'اعزف نغمة واحدة فقط، لكن أظهر القالب من خلال إيقاعك.',
   ),
   const _DaySeed(
     dayNumber: 9,
     weekNumber: 2,
-    title: 'Blues Scale Sound',
-    focus: 'Blues scale',
+    title: 'صوت سلم البلوز',
+    focus: 'سلم البلوز',
     description:
-        'Use the blues scale as sound and color, not as a nonstop run.',
+        'استخدم سلم البلوز كصوت ولون، وليس كمجرد صعود ونزول مستمر.',
     skillAreas: [SkillArea.blues, SkillArea.improvisation],
     concepts: ['blues scale', 'blue note', 'color tone'],
     moduleIds: ['blues_course', 'twelve_key_trainer'],
@@ -492,25 +492,25 @@ final List<_DaySeed> _week2Seeds = [
     level: DifficultyLevel.beginner,
     tempoRange: TempoRange(minBpm: 78, maxBpm: 96),
     whatDoIHear:
-        'A strong blues color with the blue note acting like tension, not home base.',
+        'لون بلوز قوي مع "نغمة البلوز" (Blue Note) التي تعمل كتوتر، وليس كقاعدة أساسية.',
     whatDoIPlay:
-        'Short blues-scale cells in one key, then a second nearby key.',
+        'خلايا قصيرة من سلم البلوز في مقام واحد، ثم في مقام قريب آخر.',
     whyDoesItWork:
-        'The blue note is expressive because of where and how you place it.',
-    whereInRealJazz: 'Blues solos, funk lines, and simple crossover phrasing.',
+        'نغمة البلوز تعبيرية بسبب مكان وكيفية وضعك لها.',
+    whereInRealJazz: 'سولوهات البلوز، خطوط الفانك، وجمل الكروس أوفر البسيطة.',
     howDoIUseItInMySolo:
-        'I touch the blue note briefly, then resolve or repeat it rhythmically.',
-    listeningAssignment: 'Hear whether the blue note sounds placed or random.',
+        'ألمس نغمة البلوز لفترة وجيزة، ثم أحلّها أو أكررها إيقاعياً.',
+    listeningAssignment: 'اسمع ما إذا كانت نغمة البلوز تبدو موضوعة بعناية أم عشوائية.',
     improvisationAssignment:
-        'Play two 2-bar ideas using the blue note once in each idea.',
+        'اعزف فكرتين من مازورتين باستخدام نغمة البلوز مرة واحدة في كل فكرة.',
   ),
   const _DaySeed(
     dayNumber: 10,
     weekNumber: 2,
-    title: 'Call and Response in Blues',
-    focus: 'Call and response',
+    title: 'النداء والاستجابة في البلوز',
+    focus: 'النداء والاستجابة (Call and Response)',
     description:
-        'Make short phrases talk to each other instead of sounding like separate licks.',
+        'اجعل الجمل القصيرة تتحدث مع بعضها البعض بدلاً من أن تبدو كجمل منفصلة.',
     skillAreas: [
       SkillArea.blues,
       SkillArea.improvisation,
@@ -522,25 +522,25 @@ final List<_DaySeed> _week2Seeds = [
     level: DifficultyLevel.beginner,
     tempoRange: TempoRange(minBpm: 82, maxBpm: 98),
     whatDoIHear:
-        'A first phrase asking something and a second phrase answering with shape or rhythm change.',
-    whatDoIPlay: 'Two-bar call, two-bar response, then silence.',
+        'جملة أولى تسأل شيئاً وجملة ثانية تجيب بتغيير في الشكل أو الإيقاع.',
+    whatDoIPlay: 'نداء من مازورتين، استجابة من مازورتين، ثم صمت.',
     whyDoesItWork:
-        'Conversation creates direction better than disconnected ideas.',
+        'المحادثة تخلق اتجاهاً أفضل من الأفكار المنفصلة.',
     whereInRealJazz:
-        'Blues choruses, riff bands, and vocal-influenced sax phrasing.',
+        'كورس البلوز، فرق اللازمات، وجمل الساكس المتأثرة بالغناء.',
     howDoIUseItInMySolo:
-        'I answer my own phrase with contrast in rhythm, space, or register.',
-    listeningAssignment: 'Sing the answer before you play it.',
+        'أجيب على جملتي الخاصة بتباين في الإيقاع، المساحة، أو المنطقة الصوتية.',
+    listeningAssignment: 'غنِّ الاستجابة قبل أن تعزفها.',
     improvisationAssignment:
-        'Create three different responses to the same call.',
+        'أنشئ ثلاث استجابات مختلفة لنفس النداء.',
   ),
   const _DaySeed(
     dayNumber: 11,
     weekNumber: 2,
-    title: 'Simple Blues Phrase 1',
-    focus: 'Simple blues phrases',
+    title: 'جملة بلوز بسيطة 1',
+    focus: 'جمل بلوز بسيطة',
     description:
-        'Build one compact phrase with clear ending and repeat it in time.',
+        'ابنِ جملة واحدة محكمة بنهاية واضحة وكررها في الوقت الصحيح.',
     skillAreas: [
       SkillArea.blues,
       SkillArea.articulation,
@@ -552,50 +552,50 @@ final List<_DaySeed> _week2Seeds = [
     level: DifficultyLevel.beginner,
     tempoRange: TempoRange(minBpm: 84, maxBpm: 100),
     whatDoIHear:
-        'A phrase short enough to remember but strong enough to repeat.',
+        'جملة قصيرة بما يكفي لتذكرها ولكنها قوية بما يكفي لتكرارها.',
     whatDoIPlay:
-        'A 2-bar blues phrase with one clear contour and one clear ending.',
+        'جملة بلوز من مازورتين مع مسار واحد واضح ونهاية واحدة واضحة.',
     whyDoesItWork:
-        'Simple material becomes convincing when rhythm and ending are clear.',
-    whereInRealJazz: 'Blues heads, beginner solos, and shout-style riffs.',
+        'المادة البسيطة تصبح مقنعة عندما يكون الإيقاع والنهاية واضحين.',
+    whereInRealJazz: 'مقطوعات البلوز، سولوهات المبتدئين، ولازمات الـ shout.',
     howDoIUseItInMySolo:
-        'I repeat the phrase with one small change instead of abandoning it.',
+        'أكرر الجملة مع تغيير واحد صغير بدلاً من التخلي عنها.',
     listeningAssignment:
-        'Check whether the phrase stops cleanly or fades weakly.',
+        'تأكد مما إذا كانت الجملة تتوقف بوضوح أم تتلاشى بضعف.',
     improvisationAssignment:
-        'Repeat your phrase three times with one tiny change each time.',
+        'كرر جملتك ثلاث مرات مع تغيير بسيط جداً في كل مرة.',
   ),
   const _DaySeed(
     dayNumber: 12,
     weekNumber: 2,
-    title: 'Space in Blues Soloing',
-    focus: 'Space and pacing',
-    description: 'Leave silence on purpose so the phrase can mean something.',
+    title: 'المساحة في ارتجال البلوز',
+    focus: 'المساحة والوتيرة (Pacing)',
+    description: 'اترك صمتاً عن قصد لكي تعني الجملة شيئاً ما.',
     skillAreas: [SkillArea.blues, SkillArea.improvisation, SkillArea.rhythm],
     concepts: ['space', 'pacing', 'breath planning'],
     moduleIds: ['blues_course', 'record_feedback'],
     exerciseType: ExerciseType.backingTrackImprovisation,
     level: DifficultyLevel.beginner,
     tempoRange: TempoRange(minBpm: 76, maxBpm: 92),
-    whatDoIHear: 'Silence as part of the phrase, not an empty mistake.',
-    whatDoIPlay: 'One short phrase, one breath, then rest.',
+    whatDoIHear: 'الصمت كجزء من الجملة، وليس كخطأ فارغ.',
+    whatDoIPlay: 'جملة قصيرة واحدة، نفس واحد، ثم استراحة.',
     whyDoesItWork:
-        'Space lets the listener hear shape, time, and response in the rhythm section.',
+        'المساحة تسمح للمستمع بسماع الشكل، الوقت، والاستجابة في قسم الإيقاع.',
     whereInRealJazz:
-        'Strong blues solos, ballad phrasing, and vocal-style lines.',
+        'سولوهات البلوز القوية، جمل الألحان الهادئة، والخطوط بأسلوب الغناء.',
     howDoIUseItInMySolo:
-        'I stop before I run out of ideas so the next phrase starts stronger.',
+        'أتوقف قبل أن تنفد أفكاري لكي تبدأ الجملة التالية بشكل أقوى.',
     listeningAssignment:
-        'Hear whether the rest creates tension or just sounds accidental.',
-    improvisationAssignment: 'Play only three short phrases in one chorus.',
+        'اسمع ما إذا كانت الاستراحة تخلق توتراً أم تبدو مجرد صدفة.',
+    improvisationAssignment: 'اعزف ثلاث جمل قصيرة فقط في كورس واحد كامل.',
   ),
   const _DaySeed(
     dayNumber: 13,
     weekNumber: 2,
-    title: 'Repetition with Variation',
-    focus: 'Repetition and development',
+    title: 'التكرار مع التنويع',
+    focus: 'التكرار والتطوير',
     description:
-        'Repeat a phrase because it means something, then bend it slightly.',
+        'كرر جملة لأنها تعني شيئاً، ثم قم بثنيها قليلاً.',
     skillAreas: [SkillArea.blues, SkillArea.improvisation],
     concepts: ['repetition', 'variation', 'motivic development'],
     moduleIds: ['blues_course', 'daily_practice_generator'],
@@ -603,24 +603,24 @@ final List<_DaySeed> _week2Seeds = [
     level: DifficultyLevel.beginner,
     tempoRange: TempoRange(minBpm: 80, maxBpm: 98),
     whatDoIHear:
-        'A recognizable idea coming back with one change in rhythm, ending, or register.',
-    whatDoIPlay: 'The same blues idea three times with controlled variation.',
-    whyDoesItWork: 'Repetition creates identity; variation creates motion.',
+        'فكرة يمكن التعرف عليها تعود مع تغيير واحد في الإيقاع، النهاية، أو المنطقة الصوتية.',
+    whatDoIPlay: 'نفس فكرة البلوز ثلاث مرات مع تنويع محكوم.',
+    whyDoesItWork: 'التكرار يخلق الهوية؛ التنويع يخلق الحركة.',
     whereInRealJazz:
-        'Blues solos, riffs, and even bebop phrases at slower tempos.',
+        'سولوهات البلوز، اللازمات، وحتى جمل البيبوب بسرعات أبطأ.',
     howDoIUseItInMySolo:
-        'I keep a motif alive across bars instead of inventing a new idea every second.',
+        'أحافظ على الموتيف حياً عبر الموازير بدلاً من اختراع فكرة جديدة كل ثانية.',
     listeningAssignment:
-        'See whether the listener can still recognize the idea after your variation.',
-    improvisationAssignment: 'Take a 2-bar idea and state it three ways.',
+        'انظر ما إذا كان المستمع لا يزال بإمكانه التعرف على الفكرة بعد تنويعك.',
+    improvisationAssignment: 'خذ فكرة من مازورتين وعبّر عنها بثلاث طرق.',
   ),
   const _DaySeed(
     dayNumber: 14,
     weekNumber: 2,
-    title: 'Week 2 Blues Chorus',
-    focus: 'Blues integration',
+    title: 'كورس بلوز الأسبوع 2',
+    focus: 'دمج مهارات البلوز',
     description:
-        'Play one short blues chorus using form, space, response, and phrase memory.',
+        'اعزف كورس بلوز قصيراً واحداً باستخدام القالب، المساحة، الاستجابة، وذاكرة الجملة.',
     skillAreas: [
       SkillArea.blues,
       SkillArea.improvisation,
@@ -637,20 +637,20 @@ final List<_DaySeed> _week2Seeds = [
     level: DifficultyLevel.beginner,
     tempoRange: TempoRange(minBpm: 84, maxBpm: 102),
     whatDoIHear:
-        'A full chorus that still sounds organized because bars and phrase roles are clear.',
-    whatDoIPlay: 'One complete 12-bar chorus over blues backing.',
+        'كورس كامل لا يزال يبدو منظماً لأن الموازير وأدوار الجمل واضحة.',
+    whatDoIPlay: 'كورس كامل من 12 مازورة فوق مسار بلوز مصاحب.',
     whyDoesItWork:
-        'A full chorus teaches memory, pacing, and form at the same time.',
+        'الكورس الكامل يعلم الذاكرة، الوتيرة، والقالب في نفس الوقت.',
     whereInRealJazz:
-        'Jam blues, simple solo spots, and ensemble trading sections.',
+        'جلسات البلوز الجماعية، مواقع السولو البسيطة، وأقسام التبادل في الفرقة.',
     howDoIUseItInMySolo:
-        'I build a chorus from 2-bar ideas instead of random note strings.',
+        'أبني الكورس من أفكار ذات مازورتين بدلاً من سلاسل نغمات عشوائية.',
     listeningAssignment:
-        'After recording, mark where your strongest and weakest bars happened.',
+        'بعد التسجيل، حدد أين حدثت أقوى وأضعف موازيرك.',
     improvisationAssignment:
-        'Play one full chorus and keep one repeated idea alive for at least 4 bars.',
+        'اعزف كورس واحد كامل وحافظ على فكرة متكررة واحدة حية لمدة 4 موازير على الأقل.',
     recordCheckpoint:
-        'Record your first blues chorus and save it for Week 4 comparison.',
+        'سجل أول كورس بلوز لك واحفظه للمقارنة في الأسبوع الرابع.',
   ),
 ];
 
@@ -658,10 +658,10 @@ final List<_DaySeed> _week3Seeds = [
   const _DaySeed(
     dayNumber: 15,
     weekNumber: 3,
-    title: 'Dominant 7th Chord Sound',
-    focus: 'Dominant 7th chords',
+    title: 'صوت كورد الدومينانت السابع',
+    focus: 'كوردات الدومينانت السابع (Dominant 7th)',
     description:
-        'Hear dominant as tension wanting to move, not just as a scale label.',
+        'اسمع الدومينانت كتوتر يريد التحرك، وليس مجرد تسمية سلم.',
     skillAreas: [
       SkillArea.theory,
       SkillArea.earTraining,
@@ -673,25 +673,25 @@ final List<_DaySeed> _week3Seeds = [
     level: DifficultyLevel.earlyIntermediate,
     tempoRange: TempoRange(minBpm: 74, maxBpm: 90),
     whatDoIHear:
-        'A chord that wants to resolve because of its 3rd and 7th pull.',
-    whatDoIPlay: 'Root, 3rd, 5th, and 7th in slow rhythmic patterns.',
+        'كورد يريد الاستقرار بسبب سحب نغمتي الثالث والسابع فيه.',
+    whatDoIPlay: 'نغمات الأساس، الثالث، الخامس، والسابع في أنماط إيقاعية بطيئة.',
     whyDoesItWork:
-        'Chord tones define the harmony before any scale color appears.',
+        'نغمات الكورد تحدد الهارموني قبل ظهور أي لون من السلم.',
     whereInRealJazz:
-        'Blues, ii-V-I, turnarounds, and secondary dominants everywhere.',
+        'البلوز، ii-V-I، والتحولات في كل مكان.',
     howDoIUseItInMySolo:
-        'I target the 3rd or 7th first before adding color tones.',
+        'أستهدف نغمة الثالث أو السابع أولاً قبل إضافة نغمات ملونة.',
     listeningAssignment:
-        'Sing the 3rd and 7th alone and hear the pull without the root.',
+        'غنِّ الثالث والسابع وحدهما واسمع السحب بدون نغمة الأساس.',
     improvisationAssignment:
-        'Improvise 2 bars using only dominant chord tones.',
+        'ارتجل مازورتين باستخدام نغمات كورد الدومينانت فقط.',
   ),
   const _DaySeed(
     dayNumber: 16,
     weekNumber: 3,
-    title: '3rds and 7ths First',
-    focus: '3rds and 7ths',
-    description: 'Make the 3rd and 7th your first map before any extra notes.',
+    title: 'الثالث والسابع أولاً',
+    focus: 'نغمات الثالث والسابع',
+    description: 'اجعل الثالث والسابع خريطتك الأولى قبل أي نغمات إضافية.',
     skillAreas: [SkillArea.theory, SkillArea.improvisation],
     concepts: ['3rds', '7ths', 'target notes'],
     moduleIds: ['ii_v_i_course', 'twelve_key_trainer'],
@@ -699,23 +699,23 @@ final List<_DaySeed> _week3Seeds = [
     level: DifficultyLevel.earlyIntermediate,
     tempoRange: TempoRange(minBpm: 76, maxBpm: 92),
     whatDoIHear:
-        'Only the notes that tell major, minor, and dominant quality immediately.',
-    whatDoIPlay: '3rds-only and 7ths-only patterns over short progressions.',
+        'فقط النغمات التي تخبرك بنوع الكورد (كبير، صغير، أو دومينانت) فوراً.',
+    whatDoIPlay: 'أنماط تعتمد على الثالث فقط والسابع فقط عبر تتابعات قصيرة.',
     whyDoesItWork:
-        'These tones outline function and resolution with minimal material.',
-    whereInRealJazz: 'Comping logic, solos, and internal hearing of harmony.',
-    howDoIUseItInMySolo: 'I start from guide points and then decorate them.',
+        'هذه النغمات تحدد الوظيفة والاستقرار بأقل قدر من المادة.',
+    whereInRealJazz: 'منطق المصاحبة، السولوهات، والسماع الداخلي للهرموني.',
+    howDoIUseItInMySolo: 'أبدأ من نقاط الدليل ثم أقوم بزخرفتها.',
     listeningAssignment:
-        'Listen whether the chord quality is still clear when you remove roots and fifths.',
-    improvisationAssignment: 'Play a 2-bar line using only 3rds and 7ths.',
+        'استمع ما إذا كان نوع الكورد لا يزال واضحاً عند إزالة الأساس والخامس.',
+    improvisationAssignment: 'اعزف خطاً من مازورتين باستخدام الثالث والسابع فقط.',
   ),
   const _DaySeed(
     dayNumber: 17,
     weekNumber: 3,
-    title: 'Guide Tones through Blues Motion',
-    focus: 'Guide tones',
+    title: 'نغمات الدليل عبر حركة البلوز',
+    focus: 'نغمات الدليل (Guide Tones)',
     description:
-        'Move smoothly from one guide tone target to the next through blues harmony.',
+        'تحرك بسلاسة من هدف نغمة دليل إلى التالي عبر هارموني البلوز.',
     skillAreas: [SkillArea.theory, SkillArea.improvisation, SkillArea.blues],
     concepts: ['guide tones', 'voice leading', 'blues harmony'],
     moduleIds: ['ii_v_i_course', 'blues_course'],
@@ -723,26 +723,26 @@ final List<_DaySeed> _week3Seeds = [
     level: DifficultyLevel.earlyIntermediate,
     tempoRange: TempoRange(minBpm: 78, maxBpm: 94),
     whatDoIHear:
-        'Notes resolving by step or common tone instead of jumping randomly.',
-    whatDoIPlay: 'Simple guide-tone lines through key bars of a blues.',
+        'نغمات تستقر بالخطوة أو النغمة المشتركة بدلاً من القفز العشوائي.',
+    whatDoIPlay: 'خطوط بسيطة من نغمات الدليل عبر الموازير الرئيسية للبلوز.',
     whyDoesItWork:
-        'Voice leading makes the line sound connected to the harmony.',
+        'القيادة الصوتية تجعل الخط يبدو متصلاً بالهارموني.',
     whereInRealJazz:
-        'Jazz blues, standard progressions, and inside bebop language.',
+        'الجاز بلوز، التتابعات القياسية، وداخل لغة البيبوب.',
     howDoIUseItInMySolo:
-        'I let the next chord pull the line instead of forcing patterns.',
+        'أترك الكورد التالي يسحب الخط بدلاً من إجبار الأنماط.',
     listeningAssignment:
-        'Hear whether each note belongs to the next chord, not just the current one.',
+        'اسمع ما إذا كانت كل نغمة تنتمي للكورد التالي، وليس الحالي فقط.',
     improvisationAssignment:
-        'Connect four bars using only guide tones plus one passing tone.',
+        'اربط أربع موازير باستخدام نغمات الدليل فقط بلس نغمة عبور واحدة.',
   ),
   const _DaySeed(
     dayNumber: 18,
     weekNumber: 3,
-    title: 'Jazz Blues Changes',
-    focus: 'Jazz blues',
+    title: 'تغييرات جاز بلوز',
+    focus: 'الجاز بلوز',
     description:
-        'Upgrade the basic blues form with movement, turnarounds, and stronger harmony.',
+        'قم بترقية قالب البلوز الأساسي بحركة، تحولات، وهارموني أقوى.',
     skillAreas: [SkillArea.blues, SkillArea.theory, SkillArea.repertoire],
     concepts: ['jazz blues', 'turnaround', 'dominant movement'],
     moduleIds: ['blues_course', 'backing_tracks', 'ii_v_i_course'],
@@ -750,25 +750,25 @@ final List<_DaySeed> _week3Seeds = [
     level: DifficultyLevel.earlyIntermediate,
     tempoRange: TempoRange(minBpm: 86, maxBpm: 104),
     whatDoIHear:
-        'More movement than basic blues, especially in the turnaround areas.',
-    whatDoIPlay: 'Short phrases that respect the added chord movement.',
+        'حركة أكثر من البلوز الأساسي، خاصة في مناطق التحول (Turnaround).',
+    whatDoIPlay: 'جمل قصيرة تحترم حركة الكوردات المضافة.',
     whyDoesItWork:
-        'Jazz blues adds forward motion, which demands clearer targets.',
+        'الجاز بلوز يضيف حركة للأمام، والتي تتطلب أهدافاً أوضح.',
     whereInRealJazz:
-        'Jam sessions, classic blues heads, and early bebop repertoire.',
+        'جلسات الارتجال، مقطوعات البلوز الكلاسيكية، وريبورتوار البيبوب المبكر.',
     howDoIUseItInMySolo:
-        'I simplify by hearing the strong targets instead of chasing every chord symbol.',
+        'أقوم بالتبسيط من خلال سماع الأهداف القوية بدلاً من مطاردة كل رمز كورد.',
     listeningAssignment:
-        'Listen for where the harmony speeds up and where it relaxes.',
+        'استمع للمكان الذي يتسارع فيه الهارموني والمكان الذي يسترخي فيه.',
     improvisationAssignment:
-        'Play one chorus and mark bars 4, 8, and 11 with clear targets.',
+        'اعزف كورس واحد وحدد الموازير 4، 8، و 11 بأهداف واضحة.',
   ),
   const _DaySeed(
     dayNumber: 19,
     weekNumber: 3,
-    title: 'Simple Voice Leading',
-    focus: 'Simple voice leading',
-    description: 'Connect nearby notes smoothly through changing chords.',
+    title: 'قيادة صوتية بسيطة',
+    focus: 'القيادة الصوتية البسيطة (Voice Leading)',
+    description: 'اربط النغمات القريبة بسلاسة عبر الكوردات المتغيرة.',
     skillAreas: [SkillArea.theory, SkillArea.improvisation],
     concepts: ['voice leading', 'nearest note', 'resolution'],
     moduleIds: ['ii_v_i_course', 'daily_practice_generator'],
@@ -776,24 +776,24 @@ final List<_DaySeed> _week3Seeds = [
     level: DifficultyLevel.earlyIntermediate,
     tempoRange: TempoRange(minBpm: 74, maxBpm: 90),
     whatDoIHear:
-        'Lines moving with purpose because each target comes from the last one naturally.',
-    whatDoIPlay: 'Nearest-note movement through short chord chains.',
-    whyDoesItWork: 'Good lines feel inevitable when motion is economical.',
+        'خطوط تتحرك بهدف لأن كل هدف يأتي من الهدف السابق بشكل طبيعي.',
+    whatDoIPlay: 'حركة لأقرب نغمة عبر سلاسل كوردات قصيرة.',
+    whyDoesItWork: 'الخطوط الجيدة تبدو حتمية عندما تكون الحركة اقتصادية.',
     whereInRealJazz:
-        'Guide-tone lines, bebop phrases, and arranged sax soli writing.',
+        'خطوط نغمات الدليل، جمل البيبوب، وكتابة الساكس المنظمة.',
     howDoIUseItInMySolo:
-        'I move to the closest important note instead of restarting from the root.',
+        'أتحرك لأقرب نغمة مهمة بدلاً من إعادة البدء من الأساس (Root).',
     listeningAssignment:
-        'Ask whether the line still sings if you play it slowly with no rhythm section.',
+        'اسأل ما إذا كان الخط لا يزال يغني إذا عزفته ببطء بدون قسم إيقاع.',
     improvisationAssignment:
-        'Build a 4-note line that resolves twice without leaps.',
+        'ابنِ خطاً من 4 نغمات يستقر مرتين بدون قفزات.',
   ),
   const _DaySeed(
     dayNumber: 20,
     weekNumber: 3,
-    title: 'Guide Tones in 3 Keys',
-    focus: 'Guide tones in multiple keys',
-    description: 'Move one small guide-tone cell through three practical keys.',
+    title: 'نغمات الدليل في 3 مقامات',
+    focus: 'نغمات الدليل في مقامات متعددة',
+    description: 'حرك خلية نغمات دليل صغيرة عبر ثلاث مقامات عملية.',
     skillAreas: [
       SkillArea.theory,
       SkillArea.improvisation,
@@ -804,25 +804,25 @@ final List<_DaySeed> _week3Seeds = [
     exerciseType: ExerciseType.guideTone,
     level: DifficultyLevel.earlyIntermediate,
     tempoRange: TempoRange(minBpm: 76, maxBpm: 92),
-    whatDoIHear: 'The same harmonic function surviving a new key center.',
-    whatDoIPlay: 'A two-note guide-tone cell in C, F, and Bb.',
-    whyDoesItWork: 'Real fluency begins when the idea survives transposition.',
+    whatDoIHear: 'نفس الوظيفة الهارمونية تنجو في مركز مقامي جديد.',
+    whatDoIPlay: 'خلية نغمات دليل من نغمتين في مقامات C، F، و Bb.',
+    whyDoesItWork: 'الطلاقة الحقيقية تبدأ عندما تنجو الفكرة من النقل (Transposition).',
     whereInRealJazz:
-        'Standards in different keys, rehearsals, and educational pattern work.',
+        'المقطوعات بمقامات مختلفة، البروفات، وعمل الأنماط التعليمية.',
     howDoIUseItInMySolo:
-        'I carry the concept into a new key instead of starting over from scratch.',
+        'أحمل المفهوم إلى مقام جديد بدلاً من البدء من الصفر.',
     listeningAssignment:
-        'Check whether the function still feels the same after transposing.',
+        'تأكد مما إذا كانت الوظيفة لا تزال تشعر بنفس الشيء بعد النقل.',
     improvisationAssignment:
-        'Play the same 2-bar guide-tone idea in three keys.',
+        'اعزف نفس فكرة نغمات الدليل ذات المازورتين في ثلاث مقامات.',
   ),
   const _DaySeed(
     dayNumber: 21,
     weekNumber: 3,
-    title: 'Week 3 Dominant Review',
-    focus: 'Dominant and guide-tone review',
+    title: 'مراجعة الدومينانت الأسبوع 3',
+    focus: 'مراجعة الدومينانت ونغمات الدليل',
     description:
-        'Combine dominant sound, 3rds/7ths, jazz blues awareness, and voice leading.',
+        'اجمع بين صوت الدومينانت، الثالث/السابع، الوعي بالجاز بلوز، والقيادة الصوتية.',
     skillAreas: [SkillArea.theory, SkillArea.improvisation, SkillArea.blues],
     concepts: ['dominant summary', 'guide tone control', 'inside line'],
     moduleIds: [
@@ -835,17 +835,17 @@ final List<_DaySeed> _week3Seeds = [
     level: DifficultyLevel.earlyIntermediate,
     tempoRange: TempoRange(minBpm: 82, maxBpm: 98),
     whatDoIHear:
-        'A line that sounds connected to harmony even when rhythm is simple.',
-    whatDoIPlay: 'One short chorus using guide tones as anchor points.',
-    whyDoesItWork: 'Harmony sounds clear when target notes are deliberate.',
-    whereInRealJazz: 'Early inside soloing on blues and standards.',
+        'خط يبدو متصلاً بالهارموني حتى عندما يكون الإيقاع بسيطاً.',
+    whatDoIPlay: 'كورس قصير واحد باستخدام نغمات الدليل كنقاط مرساة.',
+    whyDoesItWork: 'الهرموني يبدو واضحاً عندما تكون نغمات الهدف مدروسة.',
+    whereInRealJazz: 'الارتجال المبكر "داخل" الكوردات في البلوز والمقطوعات.',
     howDoIUseItInMySolo:
-        'I can now aim for targets and let rhythm shape the rest.',
+        'يمكنني الآن التصويب نحو الأهداف وترك الإيقاع يشكل الباقي.',
     listeningAssignment:
-        'Listen back and identify which bars had the clearest targets.',
+        'استمع مرة أخرى وحدد الموازير التي كانت فيها الأهداف أكثر وضوحاً.',
     improvisationAssignment:
-        'Build one chorus with one guide-tone idea returning twice.',
-    recordCheckpoint: 'Record a guide-tone chorus over jazz blues and save it.',
+        'ابنِ كورس واحد مع فكرة نغمات دليل واحدة تعود مرتين.',
+    recordCheckpoint: 'سجل كورس نغمات دليل فوق جاز بلوز واحفظه.',
   ),
 ];
 
@@ -853,10 +853,10 @@ final List<_DaySeed> _week4Seeds = [
   const _DaySeed(
     dayNumber: 22,
     weekNumber: 4,
-    title: 'ii-V-I Chord Sound',
-    focus: 'ii-V-I sound',
+    title: 'صوت كورد ii-V-I',
+    focus: 'صوت تتابع ii-V-I',
     description:
-        'Hear ii-V-I as a complete motion, not three separate theory boxes.',
+        'اسمع ii-V-I كحركة كاملة، وليس كثلاث صناديق نظرية منفصلة.',
     skillAreas: [
       SkillArea.theory,
       SkillArea.earTraining,
@@ -868,50 +868,50 @@ final List<_DaySeed> _week4Seeds = [
     level: DifficultyLevel.intermediate,
     tempoRange: TempoRange(minBpm: 76, maxBpm: 92),
     whatDoIHear:
-        'Preparation, tension, and resolution as one musical sentence.',
+        'التمهيد، التوتر، والاستقرار كجملة موسيقية واحدة.',
     whatDoIPlay:
-        'Roots, then guide tones, then chord tones through the cadence.',
-    whyDoesItWork: 'Function explains why the line wants to go somewhere.',
+        'نغمات الأساس، ثم نغمات الدليل، ثم نغمات الكورد عبر التتابع.',
+    whyDoesItWork: 'الوظيفة تفسر لماذا يريد الخط الموسيقي الذهاب لمكان ما.',
     whereInRealJazz:
-        'Standards, bebop tunes, turnarounds, and cadential phrases.',
+        'المقطوعات القياسية، مقطوعات البيبوب، والتحولات.',
     howDoIUseItInMySolo:
-        'I outline the resolution first, then add approach tones later.',
+        'أحدد الاستقرار أولاً، ثم أضيف نغمات الاقتراب لاحقاً.',
     listeningAssignment:
-        'Sing the resolution note before you play the V chord.',
-    improvisationAssignment: 'Improvise 4 bars around one ii-V-I only.',
+        'غنِّ نغمة الاستقرار قبل أن تعزف كورد الـ V.',
+    improvisationAssignment: 'ارتجل 4 موازير حول تتابع ii-V-I واحد فقط.',
   ),
   const _DaySeed(
     dayNumber: 23,
     weekNumber: 4,
-    title: 'ii-V-I Guide Tone Lesson',
-    focus: 'ii-V-I guide tones',
+    title: 'درس نغمات الدليل في ii-V-I',
+    focus: 'نغمات الدليل في ii-V-I',
     description:
-        'Hear and play 3rds and 7ths resolving cleanly through the cadence.',
+        'اسمع واعزف نغمات الثالث والسابع وهي تستقر بوضوح عبر التتابع.',
     skillAreas: [SkillArea.theory, SkillArea.improvisation],
     concepts: ['guide tones', 'ii-V-I', '3rds and 7ths'],
     moduleIds: ['ii_v_i_course', 'transposition_bb_eb'],
     exerciseType: ExerciseType.guideTone,
     level: DifficultyLevel.intermediate,
     tempoRange: TempoRange(minBpm: 78, maxBpm: 94),
-    whatDoIHear: 'F → F → E and C → B → B as structural resolution.',
-    whatDoIPlay: 'Guide-tone pairs over Dm7–G7–Cmaj7 and transposed versions.',
+    whatDoIHear: 'F ← F ← E و C ← B ← Bb كاستقرار هيكلي.',
+    whatDoIPlay: 'أزواج نغمات الدليل فوق Dm7–G7–Cmaj7 والنسخ المنقولة.',
     whyDoesItWork:
-        'Guide tones carry the function even before full chord tones arrive.',
+        'نغمات الدليل تحمل الوظيفة حتى قبل وصول نغمات الكورد الكاملة.',
     whereInRealJazz:
-        'Inside jazz language, comping logic, and early bebop voice leading.',
+        'داخل لغة الجاز، منطق المصاحبة، والقيادة الصوتية المبكرة في البيبوب.',
     howDoIUseItInMySolo:
-        'I start from guide tones, then add rhythm, passing tones, and enclosure later.',
-    listeningAssignment: 'Sing both guide-tone lines before touching the horn.',
+        'أبدأ من نغمات الدليل، ثم أضيف الإيقاع، نغمات العبور، والإحاطة (Enclosure) لاحقاً.',
+    listeningAssignment: 'غنِّ خطي نغمات الدليل قبل لمس الآلة.',
     improvisationAssignment:
-        'Use only guide tones plus one passing tone in 4 bars.',
+        'استخدم نغمات الدليل فقط بلس نغمة عبور واحدة في 4 موازير.',
   ),
   const _DaySeed(
     dayNumber: 24,
     weekNumber: 4,
-    title: 'Simple Bebop Approaches',
-    focus: 'Simple bebop approaches',
+    title: 'مداخل بيبوب بسيطة',
+    focus: 'مداخل بيبوب بسيطة (Approaches)',
     description:
-        'Add one chromatic approach to a strong target instead of running a whole altered scale.',
+        'أضف اقتراباً كروماتيكياً واحداً لهدف قوي بدلاً من عزف سلم كامل.',
     skillAreas: [
       SkillArea.improvisation,
       SkillArea.theory,
@@ -923,24 +923,24 @@ final List<_DaySeed> _week4Seeds = [
     level: DifficultyLevel.intermediate,
     tempoRange: TempoRange(minBpm: 82, maxBpm: 96),
     whatDoIHear:
-        'Tension that resolves immediately into a target, not random outside notes.',
-    whatDoIPlay: 'One-note chromatic approaches into 3rds or 7ths.',
+        'توتر يحل فوراً في هدف، وليس نغمات خارجية عشوائية.',
+    whatDoIPlay: 'اقترابات كروماتيكية من نغمة واحدة إلى الثالث أو السابع.',
     whyDoesItWork:
-        'Chromaticism sounds logical when the target is clear and the timing is strong.',
-    whereInRealJazz: 'Bebop lines, turnarounds, and compact ii-V-I vocabulary.',
+        'الكروماتيكية تبدو منطقية عندما يكون الهدف واضحاً والتوقيت قوياً.',
+    whereInRealJazz: 'خطوط البيبوب، التحولات، ومفردات ii-V-I المدمجة.',
     howDoIUseItInMySolo:
-        'I decorate one important target rather than filling every beat chromatically.',
+        'أقوم بزخرفة هدف واحد مهم بدلاً من ملء كل نبضة كروماتيكياً.',
     listeningAssignment:
-        'Hear whether the approach note sounds intentional or just late.',
-    improvisationAssignment: 'Use one approach note in each 2-bar phrase.',
+        'اسمع ما إذا كانت نغمة الاقتراب تبدو مقصودة أم مجرد تأخير.',
+    improvisationAssignment: 'استخدم نغمة اقتراب واحدة في كل جملة من مازورتين.',
   ),
   const _DaySeed(
     dayNumber: 25,
     weekNumber: 4,
-    title: 'ii-V-I in 3 Keys',
-    focus: 'Move ii-V-I through keys',
+    title: 'ii-V-I في 3 مقامات',
+    focus: 'تحريك ii-V-I عبر المقامات',
     description:
-        'Carry the same guide-tone logic into three common practice keys.',
+        'انقل نفس منطق نغمات الدليل إلى ثلاث مقامات تدريب شائعة.',
     skillAreas: [
       SkillArea.technique,
       SkillArea.theory,
@@ -951,25 +951,25 @@ final List<_DaySeed> _week4Seeds = [
     exerciseType: ExerciseType.iiVI,
     level: DifficultyLevel.intermediate,
     tempoRange: TempoRange(minBpm: 76, maxBpm: 90),
-    whatDoIHear: 'The same cadence function independent of pitch height.',
-    whatDoIPlay: 'One small ii-V-I cell in C, F, and Bb.',
+    whatDoIHear: 'نفس وظيفة التتابع بغض النظر عن حدة النغمات.',
+    whatDoIPlay: 'خلية ii-V-I صغيرة واحدة في C، F، و Bb.',
     whyDoesItWork:
-        'Key transfer is how a concept becomes usable beyond one exercise room key.',
-    whereInRealJazz: 'Real tunes, rehearsals, and transposed study.',
+        'نقل المقامات هو كيف يصبح المفهوم قابلاً للاستخدام خارج غرفة التدريب.',
+    whereInRealJazz: 'المقطوعات الحقيقية، البروفات، والدراسة المنقولة.',
     howDoIUseItInMySolo:
-        'I can take a favorite 2-bar idea into nearby keys quickly.',
+        'يمكنني أخذ فكرة مفضلة ذات مازورتين إلى المقامات القريبة بسرعة.',
     listeningAssignment:
-        'Check whether you still hear the resolution when the key changes.',
+        'تأكد مما إذا كنت لا تزال تسمع الاستقرار عند تغيير المقام.',
     improvisationAssignment:
-        'Play the same cadence idea in 3 keys with steady time.',
+        'اعزف نفس فكرة التتابع في 3 مقامات بوقت ثابت.',
   ),
   const _DaySeed(
     dayNumber: 26,
     weekNumber: 4,
-    title: 'First Full Chorus Solo',
-    focus: 'First full chorus solo',
+    title: 'أول كورس سولو كامل',
+    focus: 'أول كورس سولو كامل',
     description:
-        'Assemble tone, time, form, guide tones, blues color, and small bebop approaches into one chorus.',
+        'اجمع بين النغمة، الوقت، القالب، نغمات الدليل، لون البلوز، ومداخل البيبوب الصغيرة في كورس واحد.',
     skillAreas: [
       SkillArea.improvisation,
       SkillArea.repertoire,
@@ -981,26 +981,26 @@ final List<_DaySeed> _week4Seeds = [
     level: DifficultyLevel.intermediate,
     tempoRange: TempoRange(minBpm: 84, maxBpm: 100),
     whatDoIHear:
-        'A full chorus with phrases that relate to harmony and still breathe.',
-    whatDoIPlay: 'One chorus over jazz blues or a short ii-V-I based loop.',
+        'كورس كامل بجمل تتعلق بالهارموني ولا تزال تتنفس.',
+    whatDoIPlay: 'كورس واحد فوق جاز بلوز أو حلقة تعتمد على ii-V-I.',
     whyDoesItWork:
-        'The chorus becomes coherent when each phrase knows its role.',
+        'الكورس يصبح متماسكاً عندما تعرف كل جملة دورها.',
     whereInRealJazz:
-        'Any small solo spot where one chorus has to say something complete.',
+        'أي سولو صغير حيث يجب أن يقول كورس واحد شيئاً كاملاً.',
     howDoIUseItInMySolo:
-        'I start thinking in connected phrase blocks instead of separate licks.',
+        'أبدأ التفكير في كتل جمل متصلة بدلاً من "ليكات" منفصلة.',
     listeningAssignment:
-        'Mark where your phrase peaks and where you left useful space.',
+        'حدد أين ذروة جملتك وأين تركت مساحة مفيدة.',
     improvisationAssignment:
-        'Build a full chorus using at least one repeated idea.',
+        'ابنِ كورس كامل باستخدام فكرة متكررة واحدة على الأقل.',
   ),
   const _DaySeed(
     dayNumber: 27,
     weekNumber: 4,
-    title: 'Record and Evaluate',
-    focus: 'Record and evaluate',
+    title: 'سجل وقيم',
+    focus: 'سجل وقيم أداءك',
     description:
-        'Use recording as a teacher for timing, sound, phrase endings, and form.',
+        'استخدم التسجيل كمعلم للتوقيت، الصوت، نهايات الجمل، والقالب.',
     skillAreas: [SkillArea.feedback, SkillArea.rhythm, SkillArea.tone],
     concepts: ['self-evaluation', 'timing feedback', 'retry slower'],
     moduleIds: ['record_feedback', 'progress_dashboard'],
@@ -1008,28 +1008,28 @@ final List<_DaySeed> _week4Seeds = [
     level: DifficultyLevel.intermediate,
     tempoRange: TempoRange(minBpm: 80, maxBpm: 96),
     whatDoIHear:
-        'Whether your real time feel matches what you imagined while playing.',
+        'ما إذا كان إحساسك الحقيقي بالوقت يطابق ما تخيلته أثناء العزف.',
     whatDoIPlay:
-        'The same chorus twice: first natural, second after one clear correction.',
+        'نفس الكورس مرتين: الأولى طبيعية، والثانية بعد تصحيح واحد واضح.',
     whyDoesItWork:
-        'Recording exposes timing, tone, and phrasing truth better than memory.',
+        'التسجيل يكشف حقيقة التوقيت، النغمة، والجمل بشكل أفضل من الذاكرة.',
     whereInRealJazz:
-        'Practice rooms, lesson prep, remote submissions, and self-directed growth.',
+        'غرف التدريب، التحضير للدروس، والنمو الموجه ذاتياً.',
     howDoIUseItInMySolo:
-        'I turn one weak area into the next day’s first drill instead of guessing.',
+        'أحول نقطة ضعف واحدة إلى أول تدريب في اليوم التالي بدلاً من التخمين.',
     listeningAssignment:
-        'Listen once for timing only and once for phrase shape only.',
+        'استمع مرة للتوقيت فقط ومرة لشكل الجملة فقط.',
     improvisationAssignment:
-        'Retry the same chorus 10–15 BPM slower after one correction.',
+        'أعد نفس الكورس بـ 10-15 BPM أبطأ بعد تصحيح واحد.',
     recordCheckpoint:
-        'Save take 1 and take 2 and write one concrete improvement sentence.',
+        'احفظ المحاولة 1 والمحاولة 2 واكتب جملة تحسين ملموسة واحدة.',
   ),
   const _DaySeed(
     dayNumber: 28,
     weekNumber: 4,
-    title: 'Personal 2-Bar Phrase',
-    focus: 'Create a personal 2-bar phrase',
-    description: 'Design a phrase you can actually remember, repeat, and own.',
+    title: 'جملة شخصية من مازورتين',
+    focus: 'إنشاء جملة شخصية من مازورتين',
+    description: 'صمم جملة يمكنك تذكرها حقاً، تكرارها، وامتلاكها.',
     skillAreas: [SkillArea.improvisation, SkillArea.saxLanguage],
     concepts: ['personal phrase', 'identity', 'motivic cell'],
     moduleIds: ['ii_v_i_course', 'twelve_key_trainer'],
@@ -1037,26 +1037,26 @@ final List<_DaySeed> _week4Seeds = [
     level: DifficultyLevel.intermediate,
     tempoRange: TempoRange(minBpm: 84, maxBpm: 98),
     whatDoIHear:
-        'A phrase that sounds like one complete thought rather than borrowed fragments.',
-    whatDoIPlay: 'A 2-bar idea with clear beginning, peak, and ending.',
+        'جملة تبدو كفكرة كاملة واحدة بدلاً من شظايا مستعارة.',
+    whatDoIPlay: 'فكرة من مازورتين مع بداية، ذروة، ونهاية واضحة.',
     whyDoesItWork:
-        'Personal vocabulary grows from small phrases you understand deeply.',
+        'المفردات الشخصية تنمو من جمل صغيرة تفهمها بعمق.',
     whereInRealJazz:
-        'Signature licks, repeated motifs, and personal style beginnings.',
+        'اللازمات المميزة، الموتيفات المتكررة، وبدايات الأسلوب الشخصي.',
     howDoIUseItInMySolo:
-        'I return to this phrase and reshape it in different places.',
+        'أعود لهذه الجملة وأعيد تشكيلها في أماكن مختلفة.',
     listeningAssignment:
-        'Sing your phrase away from the horn; if you can’t, it is not yours yet.',
+        'غنِّ جملتك بعيداً عن الآلة؛ إذا لم تستطع، فهي ليست ملكك بعد.',
     improvisationAssignment:
-        'State your 2-bar phrase, then answer it with a variation.',
+        'اذكر جملتك ذات المازورتين، ثم أجب عليها بتنويع.',
   ),
   const _DaySeed(
     dayNumber: 29,
     weekNumber: 4,
-    title: '12-Key Phrase Transfer',
-    focus: '12-key pattern trainer',
+    title: 'نقل الجملة عبر 12 مقام',
+    focus: 'مدرب الأنماط في 12 مقام',
     description:
-        'Move your personal cell and one ii-V-I cell through practical keys without losing feel.',
+        'حرك خليتك الشخصية وخلية ii-V-I واحدة عبر المقامات العملية دون فقدان الإحساس.',
     skillAreas: [
       SkillArea.technique,
       SkillArea.improvisation,
@@ -1072,26 +1072,26 @@ final List<_DaySeed> _week4Seeds = [
     level: DifficultyLevel.intermediate,
     tempoRange: TempoRange(minBpm: 72, maxBpm: 88),
     whatDoIHear:
-        'The same idea keeping its function and shape while the key moves.',
+        'نفس الفكرة تحافظ على وظيفتها وشكلها أثناء تحرك المقام.',
     whatDoIPlay:
-        'A personal 2-bar phrase and a guide-tone cell in several keys.',
+        'جملة شخصية من مازورتين وخلية نغمات دليل في عدة مقامات.',
     whyDoesItWork:
-        'Transfer proves whether the idea is learned or only memorized.',
-    whereInRealJazz: 'Warm-ups, technical drills, and real tune preparation.',
+        'النقل يثبت ما إذا كانت الفكرة قد تعلمت أم حفظت فقط.',
+    whereInRealJazz: 'الإحماء، التدريبات التقنية، والتحضير للمقطوعات الحقيقية.',
     howDoIUseItInMySolo:
-        'I can pull the same phrase concept into new tunes faster.',
+        'يمكنني سحب نفس مفهوم الجملة إلى مقطوعات جديدة بشكل أسرع.',
     listeningAssignment:
-        'Listen for whether the swing feel survives the key change.',
+        'استمع لما إذا كان إحساس السوينغ ينجو من تغيير المقام.',
     improvisationAssignment:
-        'Take your phrase into 4 keys with identical rhythm.',
+        'خذ جملتك إلى 4 مقامات بإيقاع متطابق.',
   ),
   const _DaySeed(
     dayNumber: 30,
     weekNumber: 4,
-    title: 'MVP Capstone Review',
-    focus: '30-day integration',
+    title: 'مراجعة ختامية للمنهج',
+    focus: 'دمج الـ 30 يوماً',
     description:
-        'Close the first month by combining tone, swing, blues, guide tones, ii-V-I, recording, and personal phrase logic.',
+        'اختم الشهر الأول بدمج النغمة، السوينغ، البلوز، نغمات الدليل، ii-V-I، التسجيل، ومنطق الجملة الشخصية.',
     skillAreas: [
       SkillArea.tone,
       SkillArea.rhythm,
@@ -1112,21 +1112,21 @@ final List<_DaySeed> _week4Seeds = [
     level: DifficultyLevel.intermediate,
     tempoRange: TempoRange(minBpm: 84, maxBpm: 102),
     whatDoIHear:
-        'A player who now thinks in sound, pulse, phrase, and harmonic direction together.',
+        'عازف يفكر الآن في الصوت، النبض، الجملة، والاتجاه الهارموني معاً.',
     whatDoIPlay:
-        'One chorus plus one personal phrase reprise and one slow corrective take.',
+        'كورس واحد بلس إعادة للجملة الشخصية ومحاولة تصحيحية بطيئة واحدة.',
     whyDoesItWork:
-        'The month matters only if the parts connect into real playing.',
+        'الشهر يهم فقط إذا اتصلت الأجزاء في عزف حقيقي.',
     whereInRealJazz:
-        'Any serious practice routine moving toward real tunes and real solos.',
+        'أي روتين تدريب جاد ينتقل نحو المقطوعات الحقيقية والسولوهات الحقيقية.',
     howDoIUseItInMySolo:
-        'I take the strongest ideas from this month and keep developing them in the next course block.',
+        'آخذ أقوى الأفكار من هذا الشهر وأستمر في تطويرها في مجمع الدورة القادم.',
     listeningAssignment:
-        'Compare day 7, day 14, day 21, and day 30 recordings.',
+        'قارن تسجيلات اليوم 7، اليوم 14، اليوم 21، واليوم 30.',
     improvisationAssignment:
-        'Play one chorus that includes one repeated motif and one clear cadence target.',
+        'اعزف كورس واحد يتضمن موتيراً متكرراً واحداً وهدف استقرار (Cadence) واضحاً.',
     recordCheckpoint:
-        'Save your capstone take and write the next two weaknesses to address.',
+        'احفظ محاولتك الختامية واكتب نقطتي الضعف التاليتين للعمل عليهما.',
   ),
 ];
 
@@ -1182,63 +1182,63 @@ List<LessonStep> _buildLessonSteps(_DaySeed seed) {
   return [
     LessonStep(
       type: LessonStepType.listen,
-      title: 'What do I hear?',
+      title: 'ماذا أسمع؟',
       description: seed.whatDoIHear,
       minutes: 4,
       listenPrompt: seed.listeningAssignment,
     ),
     LessonStep(
       type: LessonStepType.understand,
-      title: 'Why does it work?',
+      title: 'لماذا ينجح هذا؟',
       description: seed.whyDoesItWork,
       minutes: 4,
     ),
     LessonStep(
       type: LessonStepType.sing,
-      title: 'Sing it first',
+      title: 'غنِّها أولاً',
       description: 'غنِّ الفكرة أو الـ pulse قبل العزف حتى ترتبط الأذن بالجسم.',
       minutes: 3,
       singPrompt: seed.whatDoIHear,
     ),
     LessonStep(
       type: LessonStepType.play,
-      title: 'What do I play?',
+      title: 'ماذا أعزف؟',
       description: seed.whatDoIPlay,
       minutes: 8,
       playPrompt: seed.whatDoIPlay,
     ),
     LessonStep(
       type: LessonStepType.analyze,
-      title: 'Where in real jazz?',
+      title: 'أين تظهر في الجاز؟',
       description: seed.whereInRealJazz,
       minutes: 3,
     ),
     LessonStep(
       type: LessonStepType.improvise,
-      title: 'How do I use it in my own solo?',
+      title: 'كيف أستخدمها في عزفي؟',
       description: seed.howDoIUseItInMySolo,
       minutes: 6,
       playPrompt: seed.improvisationAssignment,
     ),
     LessonStep(
       type: LessonStepType.record,
-      title: 'Record',
+      title: 'سجّل',
       description: seed.recordCheckpoint ??
           'سجّل take قصيرة لهذه الفكرة وراجعها مباشرة.',
       minutes: 4,
     ),
     const LessonStep(
       type: LessonStepType.evaluate,
-      title: 'Evaluate',
+      title: 'قيّم',
       description:
-          'قيّم tone, timing, articulation, and phrase logic before adding new notes.',
+          'قيّم النغمة، التوقيت، النطق، ومنطق الجملة قبل إضافة نغمات جديدة.',
       minutes: 3,
       evaluatePrompt:
-          'هل حققت sound, time, and harmonic clarity أم ما زال أحدها أضعف؟',
+          'هل حققت الصوت، الوقت، والوضوح الهارموني أم ما زال أحدها أضعف؟',
     ),
     const LessonStep(
       type: LessonStepType.repeat,
-      title: 'Repeat',
+      title: 'كرر',
       description:
           'أعد المحاولة أبطأ أو بمادة أصغر إذا احتجت، ثم ارفع الصعوبة تدريجياً.',
       minutes: 2,

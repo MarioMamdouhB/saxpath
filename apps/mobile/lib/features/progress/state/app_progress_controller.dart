@@ -14,13 +14,19 @@ class AppProgressController extends ChangeNotifier {
     Iterable<int> completedDays = const <int>[],
     int currentStreakDays = 0,
     DateTime? lastCompletedAt,
+    int xpPoints = 0,
+    int dailyGoalMinutes = 10,
   })  : _completedDays = Set<int>.from(completedDays),
         _currentStreakDays = currentStreakDays,
-        _lastCompletedAt = lastCompletedAt;
+        _lastCompletedAt = lastCompletedAt,
+        _xpPoints = xpPoints,
+        _dailyGoalMinutes = dailyGoalMinutes;
 
   static const _completedDaysKey = 'app_progress_completed_days';
   static const _currentStreakDaysKey = 'app_progress_current_streak_days';
   static const _lastCompletedAtKey = 'app_progress_last_completed_at';
+  static const _xpPointsKey = 'app_progress_xp_points';
+  static const _dailyGoalKey = 'app_progress_daily_goal';
 
   static Future<AppProgressController> load({int totalDays = 30}) async {
     final preferences = await SharedPreferences.getInstance();
@@ -38,12 +44,16 @@ class AppProgressController extends ChangeNotifier {
     final lastCompletedAt = lastCompletedAtRaw == null
         ? null
         : DateTime.tryParse(lastCompletedAtRaw);
+    final xpPoints = preferences.getInt(_xpPointsKey) ?? 0;
+    final dailyGoalMinutes = preferences.getInt(_dailyGoalKey) ?? 10;
 
     return AppProgressController(
       totalDays: totalDays,
       completedDays: completedDays,
       currentStreakDays: currentStreakDays,
       lastCompletedAt: lastCompletedAt,
+      xpPoints: xpPoints,
+      dailyGoalMinutes: dailyGoalMinutes,
     );
   }
 
@@ -53,12 +63,19 @@ class AppProgressController extends ChangeNotifier {
   DateTime? _lastServerSyncAt;
   int _currentStreakDays;
   DateTime? _lastCompletedAt;
+  int _xpPoints;
+  int _dailyGoalMinutes;
 
   int get completedDaysCount => _completedDays.length;
   ProgressSyncState get syncState => _syncState;
   DateTime? get lastServerSyncAt => _lastServerSyncAt;
   int get currentStreakDays => _currentStreakDays;
   DateTime? get lastCompletedAt => _lastCompletedAt;
+  int get xpPoints => _xpPoints;
+  int get dailyGoalMinutes => _dailyGoalMinutes;
+
+  int get level => (_xpPoints / 100).floor() + 1;
+  double get levelProgress => (_xpPoints % 100) / 100;
 
   int get currentDayNumber {
     for (var day = 1; day <= totalDays; day++) {
@@ -125,14 +142,28 @@ class AppProgressController extends ChangeNotifier {
     }
 
     _lastCompletedAt = now;
+    _xpPoints += 50; // Give 50 XP for completing a day
     notifyListeners();
     _persistProgressSnapshot();
+  }
+
+  void addXp(int points) {
+    _xpPoints += points;
+    notifyListeners();
+    _persistProgressSnapshot();
+  }
+
+  Future<void> setDailyGoal(int minutes) async {
+    _dailyGoalMinutes = minutes;
+    notifyListeners();
+    await _persistProgressSnapshot();
   }
 
   Future<void> reset() async {
     _completedDays.clear();
     _currentStreakDays = 0;
     _lastCompletedAt = null;
+    _xpPoints = 0;
     notifyListeners();
     await _persistProgressSnapshot();
   }
@@ -228,6 +259,8 @@ class AppProgressController extends ChangeNotifier {
       serializedDays.map((day) => day.toString()).toList(),
     );
     await preferences.setInt(_currentStreakDaysKey, _currentStreakDays);
+    await preferences.setInt(_xpPointsKey, _xpPoints);
+    await preferences.setInt(_dailyGoalKey, _dailyGoalMinutes);
 
     if (_lastCompletedAt == null) {
       await preferences.remove(_lastCompletedAtKey);

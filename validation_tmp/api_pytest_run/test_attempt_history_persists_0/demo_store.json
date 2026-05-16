@@ -1,0 +1,71 @@
+{
+  "completed_days": [],
+  "attempts": [
+    {
+      "attempt_id": "attempt_day_05_014",
+      "exercise_id": "task_day_05_practice_dcba",
+      "day_number": 5,
+      "duration_seconds": 14,
+      "audio_url": "mock://recordings/day_05.wav",
+      "recording_id": null,
+      "pitch_accuracy": 82,
+      "rhythm_accuracy": 77,
+      "completion": 91,
+      "feedback_ar": "أداء قوي لليوم 5. النغمة والإيقاع متماسكين بشكل جيد. احرص على طول البلانش المنقوطة حتى نهاية العدة الثالثة.",
+      "next_recommendation": "ارفع السرعة تدريجياً بمقدار 5 BPM إذا حافظت على نفس الثبات.",
+      "retry_reason": null,
+      "analysis": {
+        "pitch_score": 82,
+        "rhythm_score": 77,
+        "detected_notes": [
+          {
+            "note": "A",
+            "frequency_hz": 196.0,
+            "confidence": 0.82
+          }
+        ],
+        "timing_errors": [],
+        "confidence": 0.82,
+        "source": "deterministic_mock"
+      },
+      "created_at": "2026-05-08T16:52:17.401084+00:00"
+    },
+    {
+      "attempt_id": "attempt_day_02_010",
+      "exercise_id": "task_day_02_practice_aagg",
+      "day_number": 2,
+      "duration_seconds": 10,
+      "audio_url": "mock://recordings/day_02.wav",
+      "recording_id": null,
+      "pitch_accuracy": 71,
+      "rhythm_accuracy": 66,
+      "completion": 72,
+      "feedback_ar": "المحاولة مستقرة إجمالاً، لكن ما زال هناك هامش لتحسين الدقة. حافظ على الفرق بين A و G من غير استعجال.",
+      "next_recommendation": "خفّض السرعة إلى BPM 50 وركّز على العدّ الداخلي قبل العزف.",
+      "retry_reason": "rhythm_needs_work",
+      "analysis": {
+        "pitch_score": 71,
+        "rhythm_score": 66,
+        "detected_notes": [
+          {
+            "note": "G",
+            "frequency_hz": 196.0,
+            "confidence": 0.68
+          }
+        ],
+        "timing_errors": [
+          {
+            "onset_seconds": 1.0,
+            "expected_seconds": 0.75,
+            "error_ms": 250.0
+          }
+        ],
+        "confidence": 0.68,
+        "source": "deterministic_mock"
+      },
+      "created_at": "2026-05-08T16:52:17.392445+00:00"
+    }
+  ],
+  "analytics_events": [],
+  "recordings": {}
+}

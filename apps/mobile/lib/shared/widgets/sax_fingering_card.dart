@@ -1,3 +1,4 @@
+import 'package:saxpath_mobile/shared/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -57,23 +58,25 @@ class _SaxFingeringCardState extends State<SaxFingeringCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            widget.title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-              color: AppColors.deepTeal,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                widget.title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.deepTeal,
+                ),
+              ),
+              if (focusedKey != null)
+                IconButton(
+                  icon: const Icon(Icons.info_outline_rounded, color: AppColors.muted),
+                  onPressed: () => _showKeyDetail(focusedKey),
+                ),
+            ],
           ),
-          const SizedBox(height: 8),
-          const Text(
-            'العرض هنا صار أقرب إلى chart نظيف ومسطح: أبيض، navy، ومفاتيح واضحة من غير جسم ساكسفون زخرفي.',
-            style: TextStyle(
-              color: AppColors.muted,
-              height: 1.45,
-            ),
-          ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           if (widget.fingering == null)
             Wrap(
               spacing: 8,
@@ -155,7 +158,7 @@ class _SaxFingeringCardState extends State<SaxFingeringCard> {
                 SizedBox(
                   height: 72,
                   child: CustomPaint(
-                    painter: _MiniStaffPainter(reference.staffStepFromBottom),
+                    painter: _MiniStaffPainter(reference.staffStepFromBottom, reference.token),
                     child: const SizedBox.expand(),
                   ),
                 ),
@@ -169,43 +172,48 @@ class _SaxFingeringCardState extends State<SaxFingeringCard> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.softMint,
-                    borderRadius: BorderRadius.circular(22),
-                    border: Border.all(color: AppColors.border),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        focusedKey?.label ?? 'مرجع النغمة ${reference.token}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 15,
-                          color: AppColors.deepTeal,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        focusedKey?.description ??
-                            widget.summary ??
-                            reference.summary,
-                        maxLines: 5,
-                        style: const TextStyle(
-                          color: AppColors.muted,
-                          height: 1.45,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                _buildSummaryPanel(reference, focusedKey),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showKeyDetail(_KeySpec spec) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(spec.label, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            Text(spec.description, textAlign: TextAlign.center),
+            const SizedBox(height: 24),
+            PrimaryButton(label: 'تم', onPressed: () => Navigator.pop(context)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSummaryPanel(SaxReferenceNote reference, _KeySpec? focusedKey) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.softMint.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Text(
+        focusedKey?.description ?? widget.summary ?? reference.summary,
+        textAlign: TextAlign.center,
+        style: const TextStyle(color: AppColors.muted, height: 1.4, fontSize: 13),
       ),
     );
   }
@@ -217,15 +225,31 @@ class _SaxFingeringCardState extends State<SaxFingeringCard> {
   }
 
   List<String> _extractTokens(String raw) {
-    final matches = RegExp(r'[A-G]').allMatches(raw.toUpperCase());
+    // Search for explicit register keys first (e.g. G4, Bb3)
+    final explicitMatches = RegExp(r'[A-G](?:#|b|d)?\d').allMatches(raw);
+    if (explicitMatches.isNotEmpty) {
+      return explicitMatches.map((m) => m.group(0)!).toList();
+    }
+
+    final matches = RegExp(r'[A-G](?:#|b|d)?').allMatches(raw.toUpperCase());
     final values = <String>[];
     for (final match in matches) {
       final token = match.group(0);
-      if (token != null && !values.contains(token)) {
-        values.add(token);
+      if (token != null) {
+        // Map simple token to a default register (usually 4 or 5)
+        String mapped = token;
+        if (RegExp(r'[D-G]').hasMatch(token)) {
+          mapped = '${token}4';
+        } else if (RegExp(r'[A-C]').hasMatch(token)) {
+          mapped = '${token}4'; // Standard A4, B4, C4
+        }
+
+        if (!values.contains(mapped)) {
+          values.add(mapped);
+        }
       }
     }
-    return values.isEmpty ? const ['G'] : values;
+    return values.isEmpty ? const ['G4'] : values;
   }
 
   Set<String> _pressedKeyIdsForFingering(SaxFingering fingering) {
@@ -349,9 +373,10 @@ class _ReferenceChartPainter extends CustomPainter {
 }
 
 class _MiniStaffPainter extends CustomPainter {
-  _MiniStaffPainter(this.staffStepFromBottom);
+  _MiniStaffPainter(this.staffStepFromBottom, this.token);
 
   final int staffStepFromBottom;
+  final String token;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -361,10 +386,11 @@ class _MiniStaffPainter extends CustomPainter {
 
     final left = size.width * 0.20;
     final right = size.width * 0.80;
-    final top = size.height * 0.24;
+    final top = size.height * 0.20;
     final lineSpacing = size.height * 0.12;
     final bottom = top + (lineSpacing * 4);
 
+    // Draw standard 5 lines
     for (var i = 0; i < 5; i++) {
       final y = top + (i * lineSpacing);
       canvas.drawLine(Offset(left, y), Offset(right, y), linePaint);
@@ -374,25 +400,52 @@ class _MiniStaffPainter extends CustomPainter {
       size.width * 0.50,
       bottom - (staffStepFromBottom * lineSpacing / 2),
     );
+
+    // Draw Accidental
+    if (token.contains('#') || token.contains('b') || token.contains('d')) {
+      final accidental = token.contains('#') ? '#' : (token.contains('d') ? 'd' : 'b');
+      final tp = TextPainter(
+        text: TextSpan(
+          text: accidental,
+          style: const TextStyle(fontSize: 18, color: AppColors.deepTeal, fontFamily: 'serif'),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      tp.paint(canvas, Offset(center.dx - 22, center.dy - 10));
+    }
+
+    // Draw Note Head
     final noteRect = Rect.fromCenter(center: center, width: 22, height: 15);
-    canvas.drawOval(
-      noteRect,
-      Paint()
-        ..color = AppColors.deepTeal
-        ..style = PaintingStyle.fill,
-    );
+    canvas.drawOval(noteRect, Paint()..color = AppColors.deepTeal);
+
+    // Draw Stem
     canvas.drawLine(
       Offset(center.dx + 10, center.dy),
-      Offset(center.dx + 10, center.dy - 28),
-      Paint()
-        ..color = AppColors.deepTeal
-        ..strokeWidth = 1.8,
+      Offset(center.dx + 10, center.dy - 35),
+      Paint()..color = AppColors.deepTeal..strokeWidth = 1.8,
     );
+
+    // Draw Ledger Lines
+    final ledgerPaint = Paint()..color = AppColors.deepTeal..strokeWidth = 1.4;
+    if (staffStepFromBottom < 0) {
+      for (var s = staffStepFromBottom; s <= 0; s += 2) {
+        if (s % 2 == 0) {
+          final y = bottom - (s * lineSpacing / 2);
+          canvas.drawLine(Offset(center.dx - 16, y), Offset(center.dx + 16, y), ledgerPaint);
+        }
+      }
+    }
+    if (staffStepFromBottom > 8) {
+      for (var s = 10; s <= staffStepFromBottom; s += 2) {
+        final y = bottom - (s * lineSpacing / 2);
+        canvas.drawLine(Offset(center.dx - 16, y), Offset(center.dx + 16, y), ledgerPaint);
+      }
+    }
   }
 
   @override
   bool shouldRepaint(covariant _MiniStaffPainter oldDelegate) {
-    return oldDelegate.staffStepFromBottom != staffStepFromBottom;
+    return oldDelegate.staffStepFromBottom != staffStepFromBottom || oldDelegate.token != token;
   }
 }
 
@@ -422,8 +475,7 @@ const _keySpecs = [
   _KeySpec(
     id: 'octave',
     label: 'مفتاح الأوكتاف',
-    description:
-        'هذا المفتاح الصغير في أعلى الشارت يستخدم مع نغمات السجل الأعلى في المرجع الحالي.',
+    description: 'يستخدم لنقل النغمات إلى السجل العالي (الأوكتاف الثاني).',
     x: 0.18,
     y: 0.16,
     width: 0.075,
@@ -432,8 +484,8 @@ const _keySpecs = [
   ),
   _KeySpec(
     id: 'p1',
-    label: 'Pearl 1',
-    description: 'المفتاح الأول لليد اليسرى في عمود الأصابع الرئيسي.',
+    label: 'B Key (Left Index)',
+    description: 'المفتاح الأول لليد اليسرى.',
     x: 0.31,
     y: 0.10,
     width: 0.09,
@@ -442,8 +494,8 @@ const _keySpecs = [
   ),
   _KeySpec(
     id: 'p2',
-    label: 'Pearl 2',
-    description: 'المفتاح الثاني لليد اليسرى في العمود الرئيسي.',
+    label: 'A Key (Left Middle)',
+    description: 'المفتاح الثاني لليد اليسرى.',
     x: 0.31,
     y: 0.21,
     width: 0.09,
@@ -452,8 +504,8 @@ const _keySpecs = [
   ),
   _KeySpec(
     id: 'p3',
-    label: 'Pearl 3',
-    description: 'المفتاح الثالث لليد اليسرى في العمود الرئيسي.',
+    label: 'G Key (Left Ring)',
+    description: 'المفتاح الثالث لليد اليسرى.',
     x: 0.31,
     y: 0.32,
     width: 0.09,
@@ -461,61 +513,9 @@ const _keySpecs = [
     radius: 999,
   ),
   _KeySpec(
-    id: 'side1',
-    label: 'Side Key 1',
-    description:
-        'مفتاح جانبي مساعد في يمين العمود، يظهر بوضوح في chart المرجعي.',
-    x: 0.54,
-    y: 0.29,
-    width: 0.10,
-    height: 0.052,
-    radius: 8,
-  ),
-  _KeySpec(
-    id: 'side2',
-    label: 'Side Key 2',
-    description: 'المفتاح الجانبي الثاني في نفس المجموعة اليمنى.',
-    x: 0.58,
-    y: 0.29,
-    width: 0.10,
-    height: 0.052,
-    radius: 8,
-  ),
-  _KeySpec(
-    id: 'palmD',
-    label: 'Palm D',
-    description:
-        'مفتاح Palm D العلوي المستخدم مع نغمة D في هذا السجل من الشارت المرجعي.',
-    x: 0.48,
-    y: 0.07,
-    width: 0.05,
-    height: 0.06,
-    radius: 999,
-  ),
-  _KeySpec(
-    id: 'palmE',
-    label: 'Palm E',
-    description: 'Palm E معروض كمرجع بصري في أعلى الشارت.',
-    x: 0.54,
-    y: 0.07,
-    width: 0.05,
-    height: 0.06,
-    radius: 999,
-  ),
-  _KeySpec(
-    id: 'palmF',
-    label: 'Palm F',
-    description: 'Palm F معروض كمرجع بصري في أعلى الشارت.',
-    x: 0.60,
-    y: 0.07,
-    width: 0.05,
-    height: 0.06,
-    radius: 999,
-  ),
-  _KeySpec(
     id: 'p4',
-    label: 'Pearl 4',
-    description: 'أول دائرة في الجزء السفلي من العمود.',
+    label: 'F Key (Right Index)',
+    description: 'أول مفتاح لليد اليمنى.',
     x: 0.31,
     y: 0.46,
     width: 0.09,
@@ -524,8 +524,8 @@ const _keySpecs = [
   ),
   _KeySpec(
     id: 'p5',
-    label: 'Pearl 5',
-    description: 'الدائرة الوسطى في الجزء السفلي.',
+    label: 'E Key (Right Middle)',
+    description: 'المفتاح الثاني لليد اليمنى.',
     x: 0.31,
     y: 0.58,
     width: 0.09,
@@ -534,8 +534,8 @@ const _keySpecs = [
   ),
   _KeySpec(
     id: 'p6',
-    label: 'Pearl 6',
-    description: 'آخر دائرة رئيسية في أسفل العمود.',
+    label: 'D Key (Right Ring)',
+    description: 'المفتاح الثالث لليد اليمنى.',
     x: 0.31,
     y: 0.70,
     width: 0.09,
@@ -543,14 +543,143 @@ const _keySpecs = [
     radius: 999,
   ),
   _KeySpec(
-    id: 'lowD',
-    label: 'Low D',
-    description:
-        'المفتاح السفلي الأفقي المستخدم فقط عندما يحتاجه المرجع لهذه النغمة.',
-    x: 0.12,
+    id: 'sideBb',
+    label: 'Side Bb',
+    description: 'مفتاح جانبي يستخدم لعزف سي بيمول الوسطى.',
+    x: 0.54,
+    y: 0.25,
+    width: 0.06,
+    height: 0.06,
+    radius: 8,
+  ),
+  _KeySpec(
+    id: 'sideC',
+    label: 'Side C',
+    description: 'مفتاح جانبي يستخدم لتنويعات دو.',
+    x: 0.54,
+    y: 0.32,
+    width: 0.06,
+    height: 0.06,
+    radius: 8,
+  ),
+  _KeySpec(
+    id: 'palmD',
+    label: 'Palm D',
+    description: 'مفتاح النخلة لنغمة ري العالية.',
+    x: 0.48,
+    y: 0.05,
+    width: 0.045,
+    height: 0.06,
+    radius: 999,
+  ),
+  _KeySpec(
+    id: 'palmEb',
+    label: 'Palm Eb',
+    description: 'مفتاح النخلة لمي بيمول العالية.',
+    x: 0.54,
+    y: 0.05,
+    width: 0.045,
+    height: 0.06,
+    radius: 999,
+  ),
+  _KeySpec(
+    id: 'palmE',
+    label: 'Palm E',
+    description: 'مفتاح النخلة لمي العالية.',
+    x: 0.60,
+    y: 0.05,
+    width: 0.045,
+    height: 0.06,
+    radius: 999,
+  ),
+  _KeySpec(
+    id: 'palmF',
+    label: 'Palm F',
+    description: 'مفتاح النخلة لفا العالية.',
+    x: 0.66,
+    y: 0.05,
+    width: 0.045,
+    height: 0.06,
+    radius: 999,
+  ),
+  _KeySpec(
+    id: 'lowC',
+    label: 'Low C',
+    description: 'مفتاح دو المنخفضة (اليد اليمنى).',
+    x: 0.44,
     y: 0.78,
-    width: 0.10,
-    height: 0.055,
+    width: 0.09,
+    height: 0.06,
+    radius: 12,
+  ),
+  _KeySpec(
+    id: 'lowEb',
+    label: 'Low Eb',
+    description: 'مفتاح مي بيمول المنخفضة.',
+    x: 0.44,
+    y: 0.85,
+    width: 0.09,
+    height: 0.06,
+    radius: 12,
+  ),
+  _KeySpec(
+    id: 'lowB',
+    label: 'Low B',
+    description: 'مفتاح سي المنخفضة (اليد اليسرى).',
+    x: 0.12,
+    y: 0.38,
+    width: 0.08,
+    height: 0.06,
+    radius: 8,
+  ),
+  _KeySpec(
+    id: 'lowBb',
+    label: 'Low Bb',
+    description: 'مفتاح سي بيمول المنخفضة (أقل نغمة).',
+    x: 0.12,
+    y: 0.46,
+    width: 0.08,
+    height: 0.06,
+    radius: 8,
+  ),
+  _KeySpec(
+    id: 'lowC#',
+    label: 'Low C#',
+    description: 'مفتاح دو دييز المنخفضة.',
+    x: 0.12,
+    y: 0.54,
+    width: 0.08,
+    height: 0.06,
+    radius: 8,
+  ),
+  _KeySpec(
+    id: 'leftPinkyAb',
+    label: 'G# / Ab Key',
+    description: 'مفتاح لا بيمول للخنصر الأيسر.',
+    x: 0.12,
+    y: 0.30,
+    width: 0.08,
+    height: 0.06,
+    radius: 8,
+  ),
+  _KeySpec(
+    id: 'sideF#',
+    label: 'Side F#',
+    description: 'المفتاح الجانبي العلوي لنغمة فا دييز العالية.',
+    x: 0.58,
+    y: 0.35,
+    width: 0.06,
+    height: 0.06,
+    radius: 8,
+  ),
+  _KeySpec(
+    id: 'quarterToneSide',
+    label: 'Quarter Tone Modifier',
+    description: 'مفتاح إضافي (تخيلي في هذا الشارت) لضبط الربع تون شرقيًا.',
+    x: 0.60,
+    y: 0.42,
+    width: 0.05,
+    height: 0.05,
     radius: 999,
   ),
 ];

@@ -1,28 +1,45 @@
 import 'package:flutter/material.dart';
 
 import 'package:saxpath_mobile/data/models/attempt_history_entry.dart';
+import 'package:saxpath_mobile/data/saxpath_api_client.dart';
 import 'package:saxpath_mobile/features/practice/models/mock_recording.dart';
 import 'package:saxpath_mobile/shared/widgets/recorded_audio_card.dart';
 import 'package:saxpath_mobile/shared/widgets/sax_card.dart';
 import 'package:saxpath_mobile/shared/widgets/section_title.dart';
 
-class AttemptDetailsScreen extends StatelessWidget {
+class AttemptDetailsScreen extends StatefulWidget {
   const AttemptDetailsScreen({
     super.key,
     required this.entry,
+    this.apiClient,
   });
 
   final AttemptHistoryEntry entry;
+  final SaxPathApiClient? apiClient;
+
+  @override
+  State<AttemptDetailsScreen> createState() => _AttemptDetailsScreenState();
+}
+
+class _AttemptDetailsScreenState extends State<AttemptDetailsScreen> {
+  late AttemptHistoryEntry _entry;
+  bool _isRequestingTeacherReview = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _entry = widget.entry;
+  }
 
   @override
   Widget build(BuildContext context) {
     final recording = MockRecording(
-      audioUrl: entry.audioUrl,
-      durationSeconds: entry.durationSeconds,
-      label: entry.audioUrl.split(RegExp(r'[\\/]')).last,
-      isRealRecording: !entry.audioUrl.startsWith('mock://'),
-      recordingId: entry.recordingId,
-      playbackUrl: entry.audioUrl,
+      audioUrl: _entry.audioUrl,
+      durationSeconds: _entry.durationSeconds,
+      label: _entry.audioUrl.split(RegExp(r'[\\/]')).last,
+      isRealRecording: !_entry.audioUrl.startsWith('mock://'),
+      recordingId: _entry.recordingId,
+      playbackUrl: _entry.audioUrl,
     );
 
     return Scaffold(
@@ -31,9 +48,9 @@ class AttemptDetailsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         children: [
           SectionTitle(
-            title: 'اليوم ${entry.dayNumber}',
+            title: 'اليوم ${_entry.dayNumber}',
             subtitle:
-                'محاولة محفوظة بتاريخ ${_buildDateLabel(entry.createdAt)}',
+                'محاولة محفوظة بتاريخ ${_buildDateLabel(_entry.createdAt)}',
           ),
           const SizedBox(height: 16),
           SaxCard(
@@ -42,19 +59,19 @@ class AttemptDetailsScreen extends StatelessWidget {
                 Expanded(
                   child: _Metric(
                     label: 'Pitch',
-                    value: '${entry.pitchAccuracy}%',
+                    value: '${_entry.pitchAccuracy}%',
                   ),
                 ),
                 Expanded(
                   child: _Metric(
                     label: 'Rhythm',
-                    value: '${entry.rhythmAccuracy}%',
+                    value: '${_entry.rhythmAccuracy}%',
                   ),
                 ),
                 Expanded(
                   child: _Metric(
                     label: 'Completion',
-                    value: '${entry.completion}%',
+                    value: '${_entry.completion}%',
                   ),
                 ),
               ],
@@ -70,41 +87,114 @@ class AttemptDetailsScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 8),
-                Text('المعرف: ${entry.attemptId}'),
+                Text('المعرف: ${_entry.attemptId}'),
                 const SizedBox(height: 6),
-                Text('التمرين: ${entry.exerciseId}'),
+                Text('التمرين: ${_entry.exerciseId}'),
                 const SizedBox(height: 6),
-                Text('المدة: ${entry.durationSeconds} ثانية'),
+                Text('المدة: ${_entry.durationSeconds} ثانية'),
                 const SizedBox(height: 6),
-                Text('المسار: ${entry.audioUrl}'),
+                Text('المسار: ${_entry.audioUrl}'),
                 const SizedBox(height: 6),
                 Text('حالة التسجيل: ${_recordingStatusLabel(recording)}'),
-                if (entry.recordingId != null) ...[
+                if (_entry.recordingId != null) ...[
                   const SizedBox(height: 6),
-                  Text('معرّف التسجيل: ${entry.recordingId}'),
+                  Text('معرّف التسجيل: ${_entry.recordingId}'),
                 ],
-                if (entry.retryReason != null) ...[
+                if (_entry.retryReason != null) ...[
                   const SizedBox(height: 6),
-                  Text('سبب إعادة المحاولة: ${entry.retryReason}'),
+                  Text('سبب إعادة المحاولة: ${_entry.retryReason}'),
                 ],
-                if (entry.analysis != null) ...[
+                const SizedBox(height: 6),
+                Text('مستوى الثقة: ${_entry.confidenceLabel}'),
+                if (_entry.recommendedRetryBlock != null) ...[
                   const SizedBox(height: 6),
-                  Text('مصدر التحليل: ${entry.analysis!.source}'),
+                  Text('بلوك الإعادة المقترح: ${_entry.recommendedRetryBlock}'),
+                ],
+                if (_entry.analysis != null) ...[
+                  const SizedBox(height: 6),
+                  Text('مصدر التحليل: ${_entry.analysis!.source}'),
                   const SizedBox(height: 6),
                   Text(
-                    'ثقة التحليل: ${(entry.analysis!.confidence * 100).round()}%',
+                    'ثقة التحليل: ${(_entry.analysis!.confidence * 100).round()}%',
                   ),
                 ],
               ],
             ),
           ),
+          if (_entry.masteryDelta.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            SaxCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                  'Mastery Delta',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                ),
+                const SizedBox(height: 8),
+                  for (final delta in _entry.masteryDelta) ...[
+                    Text(
+                      '${delta.skill}: ${delta.previousScore}% -> ${delta.newScore}% (${delta.delta >= 0 ? '+' : ''}${delta.delta})',
+                    ),
+                    if (delta != _entry.masteryDelta.last)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 6),
+                        child: Divider(height: 1),
+                      ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+          if (_entry.teacherReview != null) ...[
+            const SizedBox(height: 16),
+            SaxCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'AI + Teacher Review',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(_entry.teacherReview!.aiSummaryAr),
+                  const SizedBox(height: 10),
+                  for (final point in _entry.teacherReview!.focusPointsAr) ...[
+                    Text('• $point'),
+                    if (point != _entry.teacherReview!.focusPointsAr.last)
+                      const SizedBox(height: 6),
+                  ],
+                  const SizedBox(height: 10),
+                  Text(_entry.teacherReview!.teacherPromptAr),
+                  const SizedBox(height: 10),
+                  Text(_entry.teacherReview!.queueEtaAr),
+                  if (widget.apiClient != null) ...[
+                    const SizedBox(height: 12),
+                    OutlinedButton(
+                      onPressed: _entry.teacherReview!.status == 'requested' ||
+                              _isRequestingTeacherReview
+                          ? null
+                          : _requestTeacherReview,
+                      child: Text(
+                        _entry.teacherReview!.status == 'requested'
+                            ? 'تم طلب مراجعة المدرس'
+                            : _isRequestingTeacherReview
+                                ? 'جارٍ إرسال الطلب...'
+                                : 'اطلب مراجعة مدرس',
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 16),
           SaxCard(
-            child: Text(entry.feedbackAr),
+            child: Text(_entry.feedbackAr),
           ),
           const SizedBox(height: 16),
           SaxCard(
-            child: Text(entry.nextRecommendation),
+            child: Text(_entry.nextRecommendation),
           ),
           const SizedBox(height: 16),
           RecordedAudioCard(
@@ -116,6 +206,43 @@ class AttemptDetailsScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _requestTeacherReview() async {
+    final apiClient = widget.apiClient;
+    if (apiClient == null || _isRequestingTeacherReview) {
+      return;
+    }
+
+    setState(() {
+      _isRequestingTeacherReview = true;
+    });
+
+    try {
+      final updated = await apiClient.requestTeacherReview(_entry.attemptId);
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _entry = updated;
+      });
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('تعذر طلب مراجعة المدرس حالياً. حاول مرة أخرى.'),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isRequestingTeacherReview = false;
+        });
+      }
+    }
   }
 
   String _buildDateLabel(DateTime date) {

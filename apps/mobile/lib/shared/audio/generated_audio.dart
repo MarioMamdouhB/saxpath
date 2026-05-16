@@ -1,5 +1,9 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:path_provider/path_provider.dart';
+
+import 'package:saxpath_mobile/shared/education/sax_foundation_models.dart' show SaxType;
 
 class AudioSegment {
   const AudioSegment.tone({
@@ -37,7 +41,7 @@ class GeneratedAudio {
 }
 
 class GeneratedAudioFactory {
-  static const _sampleRate = 44100;
+  static const _sampleRate = 44100; // Most compatible rate
 
   static GeneratedAudio build({
     required PlaybackPattern pattern,
@@ -45,13 +49,15 @@ class GeneratedAudioFactory {
     required int durationSeconds,
     int? bpm,
     int countInBeats = 0,
+    bool includeBacking = false,
+    SaxType saxType = SaxType.altoEb,
   }) {
     final coreSegments = switch (pattern) {
-      PlaybackPattern.note => _buildNoteSegments(patternKey, durationSeconds),
+      PlaybackPattern.note => _buildNoteSegments(patternKey, durationSeconds, saxType: saxType),
       PlaybackPattern.rhythm =>
         _buildRhythmSegments(patternKey, durationSeconds, bpm: bpm),
       PlaybackPattern.phrase =>
-        _buildPhraseSegments(patternKey, durationSeconds, bpm: bpm),
+        _buildPhraseSegments(patternKey, durationSeconds, bpm: bpm, includeBacking: includeBacking, saxType: saxType),
     };
     final segments = [
       if (countInBeats > 0) ..._buildCountInSegments(
@@ -127,14 +133,14 @@ class GeneratedAudioFactory {
   }
 
   static List<AudioSegment> _buildNoteSegments(
-      String noteLabel, int durationSeconds) {
+      String noteLabel, int durationSeconds, {SaxType saxType = SaxType.altoEb}) {
     final sequence = _extractExplicitPhraseNotes(noteLabel);
     if (sequence.length > 1) {
       final baseSegments = <AudioSegment>[
         for (final note in sequence) ...[
           AudioSegment.tone(
             durationMs: 560,
-            frequencyHz: _noteFrequency(note),
+            frequencyHz: _noteFrequency(note, saxType: saxType),
             volume: 0.36,
           ),
           const AudioSegment.rest(durationMs: 180),
@@ -144,7 +150,7 @@ class GeneratedAudioFactory {
       return [for (var i = 0; i < repeats; i++) ...baseSegments];
     }
 
-    final frequency = _noteFrequency(noteLabel);
+    final frequency = _noteFrequency(noteLabel, saxType: saxType);
     final repeatCount = max(1, min(4, durationSeconds ~/ 2));
 
     return [
@@ -232,7 +238,7 @@ class GeneratedAudioFactory {
 
   static List<AudioSegment> _buildPhraseSegments(
       String practiceTaskId, int durationSeconds,
-      {int? bpm}) {
+      {int? bpm, bool includeBacking = false, SaxType saxType = SaxType.altoEb}) {
     final explicitNotes = _extractExplicitPhraseNotes(practiceTaskId);
     final phraseNotes = explicitNotes.isNotEmpty
         ? explicitNotes
@@ -249,9 +255,10 @@ class GeneratedAudioFactory {
 
     final baseSegments = <AudioSegment>[
       for (final note in phraseNotes) ...[
+        if (includeBacking) ..._drumKitLayer(),
         AudioSegment.tone(
           durationMs: (_beatMs(bpm) * 0.72).round(),
-          frequencyHz: _noteFrequency(note),
+          frequencyHz: _noteFrequency(note, saxType: saxType),
           volume: 0.36,
         ),
         AudioSegment.rest(durationMs: (_beatMs(bpm) * 0.28).round()),
@@ -262,12 +269,27 @@ class GeneratedAudioFactory {
     return [for (var i = 0; i < repeats; i++) ...baseSegments];
   }
 
+  static List<AudioSegment> _drumKitLayer() {
+    return const [
+      AudioSegment.tone(durationMs: 15, frequencyHz: 80, volume: 0.2), // Kick
+      AudioSegment.tone(durationMs: 10, frequencyHz: 3000, volume: 0.1), // Hat
+    ];
+  }
+
+  static Future<String> saveToFile(Uint8List bytes, String fileName) async {
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}${Platform.pathSeparator}$fileName');
+    await file.writeAsBytes(bytes);
+    return file.path;
+  }
+
   static Uint8List _buildWaveBytes(List<AudioSegment> segments) {
+    const numChannels = 1; // Mono is safest for built-in laptop speakers
     final totalSamples = segments.fold<int>(
       0,
       (sum, segment) => sum + ((_sampleRate * segment.durationMs) ~/ 1000),
     );
-    final dataLength = totalSamples * 2;
+    final dataLength = totalSamples * numChannels * 2;
     final bytes = ByteData(44 + dataLength);
 
     _writeString(bytes, 0, 'RIFF');
@@ -276,10 +298,10 @@ class GeneratedAudioFactory {
     _writeString(bytes, 12, 'fmt ');
     bytes.setUint32(16, 16, Endian.little);
     bytes.setUint16(20, 1, Endian.little);
-    bytes.setUint16(22, 1, Endian.little);
+    bytes.setUint16(22, numChannels, Endian.little);
     bytes.setUint32(24, _sampleRate, Endian.little);
-    bytes.setUint32(28, _sampleRate * 2, Endian.little);
-    bytes.setUint16(32, 2, Endian.little);
+    bytes.setUint32(28, _sampleRate * numChannels * 2, Endian.little);
+    bytes.setUint16(32, numChannels * 2, Endian.little);
     bytes.setUint16(34, 16, Endian.little);
     _writeString(bytes, 36, 'data');
     bytes.setUint32(40, dataLength, Endian.little);
@@ -328,30 +350,49 @@ class GeneratedAudioFactory {
     return (60000 / safeBpm).round();
   }
 
-  static double _noteFrequency(String noteLabel) {
-    final token = RegExp(r'[A-G](?:#|B)?')
+  static double _noteFrequency(String noteLabel, {SaxType saxType = SaxType.altoEb}) {
+    final token = RegExp(r'[A-G](?:#|B|D)?', caseSensitive: false)
             .firstMatch(noteLabel.toUpperCase())
             ?.group(0) ??
         'G';
 
-    return switch (token) {
+    // Base frequencies for written notes (Standard A=440Hz context)
+    double freq = switch (token.toUpperCase()) {
+      'C' => 261.63,
+      'C#' => 277.18,
+      'DB' => 277.18,
+      'D' => 293.66,
+      'D#' => 311.13,
+      'EB' => 311.13,
+      'E' => 329.63,
+      'F' => 349.23,
+      'F#' => 369.99,
+      'GB' => 369.99,
+      'G' => 392.00,
+      'G#' => 415.30,
       'AB' => 415.30,
       'A' => 440.00,
       'A#' => 466.16,
-      'B' => 493.88,
       'BB' => 466.16,
-      'C' => 523.25,
-      'C#' => 554.37,
-      'DB' => 554.37,
-      'D' => 587.33,
-      'D#' => 622.25,
-      'EB' => 622.25,
-      'E' => 659.25,
-      'F#' => 739.99,
-      'F' => 698.46,
-      'GB' => 739.99,
+      'BD' => 480.00,
+      'B' => 493.88,
       _ => 392.00,
     };
+
+    // Transpose written frequency to concert frequency
+    // Alto (Eb): Written C -> Concert Eb (Up 3 semitones)
+    // Tenor (Bb): Written C -> Concert Bb (Down 2 semitones)
+    final semitones = switch (saxType) {
+      SaxType.altoEb => 3,
+      SaxType.tenorBb => -2,
+      SaxType.sopranoBb => -2,
+      SaxType.baritoneEb => -9, // Down an octave and up 3
+    };
+
+    final res = freq * pow(2, semitones / 12);
+    // ignore: avoid_print
+    print('GeneratedAudioFactory: Transposed $noteLabel ($token) for $saxType -> $res Hz');
+    return res;
   }
 
   static List<String> _extractExplicitPhraseNotes(String rawPattern) {

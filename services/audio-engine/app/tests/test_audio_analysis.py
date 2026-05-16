@@ -48,6 +48,30 @@ def test_pitch_analysis_matches_expected_note_across_octaves() -> None:
     assert payload["detected_notes"][0]["note"] == "G"
 
 
+def test_phrase_analysis_returns_event_matches() -> None:
+    wav_bytes = _pulse_wav(duration_seconds=1.2, pulse_seconds=[0.0, 0.5, 1.0])
+
+    response = client.post(
+        "/api/v1/audio-analysis/evaluate",
+        data={
+            "expected_note": "G",
+            "bpm": "60",
+            "rhythm_target": "quarter_note",
+            "expected_event_timeline": (
+                '[{"note":"G","onset_seconds":0.0,"duration_seconds":0.4},'
+                '{"note":"G","onset_seconds":0.5,"duration_seconds":0.4}]'
+            ),
+        },
+        files={"file": ("phrase.wav", wav_bytes, "audio/wav")},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["analysis_version"] == "phrase_v2"
+    assert payload["tone_score"] >= 0
+    assert len(payload["event_matches"]) >= 1
+
+
 def test_rhythm_analysis_scores_on_grid_pulses() -> None:
     wav_bytes = _pulse_wav(duration_seconds=2.2, pulse_seconds=[0.0, 1.0, 2.0])
 

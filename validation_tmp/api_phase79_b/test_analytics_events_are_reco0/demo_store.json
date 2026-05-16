@@ -1,0 +1,19 @@
+{
+  "completed_days": [],
+  "attempts": [],
+  "analytics_events": [
+    {
+      "event_id": "event_1ec38b7231df",
+      "event_name": "practice_finish",
+      "day_number": 4,
+      "task_id": "task_day_04_practice_gabc",
+      "attempt_id": "attempt_day_04_010",
+      "metadata": {
+        "duration_seconds": 10,
+        "completion": 74
+      },
+      "created_at": "2026-05-08T18:54:22.754974+00:00"
+    }
+  ],
+  "recordings": {}
+}

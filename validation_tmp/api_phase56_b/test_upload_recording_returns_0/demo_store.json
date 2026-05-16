@@ -1,0 +1,16 @@
+{
+  "completed_days": [],
+  "attempts": [],
+  "analytics_events": [],
+  "recordings": {
+    "rec_5cc8693a237e4b8b": {
+      "recording_id": "rec_5cc8693a237e4b8b",
+      "filename": "take.wav",
+      "duration_seconds": 1,
+      "storage_path": "C:\\Users\\Dell\\Desktop\\sax path\\saxpath\\validation_tmp\\api_phase56_b\\test_upload_recording_returns_0\\recordings\\rec_5cc8693a237e4b8b_take.wav",
+      "playback_url": "/api/v1/recordings/rec_5cc8693a237e4b8b/file",
+      "content_type": "audio/wav",
+      "created_at": "2026-05-08T18:44:00.838702+00:00"
+    }
+  }
+}

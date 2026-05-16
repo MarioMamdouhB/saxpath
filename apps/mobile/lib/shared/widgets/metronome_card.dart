@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+import '../audio/audio_playback_coordinator.dart';
 import '../audio/generated_audio.dart';
 import 'sax_card.dart';
 
@@ -27,12 +29,14 @@ class MetronomeCard extends StatefulWidget {
 }
 
 class _MetronomeCardState extends State<MetronomeCard> {
-  final AudioPlayer _player = AudioPlayer();
+  final AudioPlayer _accentPlayer = AudioPlayer();
+  final AudioPlayer _regularPlayer = AudioPlayer();
+  final Object _playbackOwner = Object();
   Timer? _timer;
   late int _bpm;
   late int _currentBeat;
-  late final Source _accentClickSource;
-  late final Source _regularClickSource;
+  late String _accentPath;
+  late String _regularPath;
   bool _isRunning = false;
 
   @override
@@ -40,29 +44,56 @@ class _MetronomeCardState extends State<MetronomeCard> {
     super.initState();
     _bpm = widget.initialBpm;
     _currentBeat = 1;
-    _accentClickSource =
-        BytesSource(GeneratedAudioFactory.buildMetronomeClick(accented: true));
-    _regularClickSource =
-        BytesSource(GeneratedAudioFactory.buildMetronomeClick(accented: false));
+    _prepareFiles();
+  }
+
+  Future<void> _prepareFiles() async {
+    _accentPath = await GeneratedAudioFactory.saveToFile(
+      GeneratedAudioFactory.buildMetronomeClick(accented: true),
+      'met_accent.wav'
+    );
+    _regularPath = await GeneratedAudioFactory.saveToFile(
+      GeneratedAudioFactory.buildMetronomeClick(accented: false),
+      'met_regular.wav'
+    );
+
+    // Pre-set sources for faster response
+    await _accentPlayer.setSource(UrlSource(Uri.file(_accentPath).toString()));
+    await _regularPlayer.setSource(UrlSource(Uri.file(_regularPath).toString()));
   }
 
   @override
   void dispose() {
     _timer?.cancel();
-    _player.dispose();
+    AudioPlaybackCoordinator.instance.release(_playbackOwner);
+    unawaited(_accentPlayer.dispose());
+    unawaited(_regularPlayer.dispose());
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SaxCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'الميترونوم',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-          ),
+    return Focus(
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent) {
+          if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            _changeBpm(5);
+            return KeyEventResult.handled;
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+            _changeBpm(-5);
+            return KeyEventResult.handled;
+          }
+        }
+        return KeyEventResult.ignored;
+      },
+      child: SaxCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'الميترونوم',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+            ),
           const SizedBox(height: 8),
           const Text('استخدمه كدليل إيقاعي فعلي أثناء التمرين.'),
           if (widget.linkedPlaybackTitle != null) ...[
@@ -197,17 +228,21 @@ class _MetronomeCardState extends State<MetronomeCard> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
-  void _toggleRunning() {
+  Future<void> _toggleRunning() async {
     if (_isRunning) {
-      _timer?.cancel();
-      unawaited(_player.stop());
-      setState(() {
-        _isRunning = false;
-        _currentBeat = 1;
-      });
+      await _stopRunning(releaseOwnership: true);
+      return;
+    }
+
+    await AudioPlaybackCoordinator.instance.activate(
+      owner: _playbackOwner,
+      onInterrupt: _handleExternalInterruption,
+    );
+    if (!mounted) {
       return;
     }
 
@@ -215,7 +250,7 @@ class _MetronomeCardState extends State<MetronomeCard> {
       _isRunning = true;
       _currentBeat = 1;
     });
-    unawaited(_playBeatSound(1));
+    await _playBeatSound(1);
     _startTimer();
   }
 
@@ -247,8 +282,33 @@ class _MetronomeCardState extends State<MetronomeCard> {
   }
 
   Future<void> _playBeatSound(int beatNumber) async {
-    final source = beatNumber == 1 ? _accentClickSource : _regularClickSource;
-    await _player.stop();
-    await _player.play(source);
+    final player = beatNumber == 1 ? _accentPlayer : _regularPlayer;
+    try {
+      await player.stop();
+      await player.resume();
+    } catch (e) {
+      debugPrint('Metronome audio error: $e');
+    }
+  }
+
+  Future<void> _stopRunning({required bool releaseOwnership}) async {
+    _timer?.cancel();
+    await _accentPlayer.stop();
+    await _regularPlayer.stop();
+    if (releaseOwnership) {
+      AudioPlaybackCoordinator.instance.release(_playbackOwner);
+    }
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _isRunning = false;
+      _currentBeat = 1;
+    });
+  }
+
+  Future<void> _handleExternalInterruption() {
+    return _stopRunning(releaseOwnership: false);
   }
 }

@@ -39,6 +39,7 @@ void main() {
 
     expect(find.text('اليوم 1'), findsOneWidget);
     expect(find.text('ابدأ جلسة اليوم'), findsOneWidget);
+    expect(find.textContaining('بداية الجلسة اليوم:'), findsOneWidget);
     expect(
       find.textContaining('هذا اليوم ما زال مغلقاً'),
       findsNothing,
@@ -103,7 +104,12 @@ DailyPlan _buildDailyPlan({required int dayNumber}) {
         type: 'note_lesson',
         title: 'نغمة اليوم',
         durationMinutes: 5,
-        status: 'next',
+        status: 'focus',
+        blockType: 'note_fingering',
+        targetBpm: 54,
+        recommendedLoopTarget: 3,
+        adaptationReasonAr: 'هذه المهمة هي نقطة البدء الحالية.',
+        isFocusTask: true,
       ),
       DailyTask(
         id: 'task_day_${dayNumber.toString().padLeft(2, '0')}_rhythm',
@@ -111,6 +117,7 @@ DailyPlan _buildDailyPlan({required int dayNumber}) {
         title: 'إيقاع اليوم',
         durationMinutes: 7,
         status: 'locked',
+        blockType: 'rhythm_call_response',
       ),
       DailyTask(
         id: 'task_day_${dayNumber.toString().padLeft(2, '0')}_practice',
@@ -118,6 +125,7 @@ DailyPlan _buildDailyPlan({required int dayNumber}) {
         title: 'تمرين G A B A',
         durationMinutes: 10,
         status: 'locked',
+        blockType: 'record_check',
         expectedNotes: const ['G', 'A', 'B', 'A'],
       ),
     ],

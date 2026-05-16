@@ -1,0 +1,16 @@
+INFO:     Started server process [15364]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8010 (Press CTRL+C to quit)
+INFO:saxpath.audio_engine:{"event": "http_request", "service": "saxpath-audio-engine", "method": "GET", "path": "/health", "status_code": 200, "duration_ms": 39.64}
+INFO:     127.0.0.1:57464 - "GET /health HTTP/1.1" 200 OK
+INFO:saxpath.audio_engine:{"event": "http_request", "service": "saxpath-audio-engine", "method": "POST", "path": "/api/v1/audio-analysis/pitch", "status_code": 200, "duration_ms": 74.02}
+INFO:     127.0.0.1:57468 - "POST /api/v1/audio-analysis/pitch HTTP/1.1" 200 OK
+INFO:saxpath.audio_engine:{"event": "http_request", "service": "saxpath-audio-engine", "method": "POST", "path": "/api/v1/audio-analysis/rhythm", "status_code": 200, "duration_ms": 56.22}
+INFO:     127.0.0.1:57469 - "POST /api/v1/audio-analysis/rhythm HTTP/1.1" 200 OK
+INFO:saxpath.audio_engine:{"event": "http_request", "service": "saxpath-audio-engine", "method": "GET", "path": "/health", "status_code": 200, "duration_ms": 1.24}
+INFO:     127.0.0.1:57485 - "GET /health HTTP/1.1" 200 OK
+INFO:saxpath.audio_engine:{"event": "http_request", "service": "saxpath-audio-engine", "method": "GET", "path": "/health", "status_code": 200, "duration_ms": 1.49}
+INFO:     127.0.0.1:57503 - "GET /health HTTP/1.1" 200 OK
+INFO:saxpath.audio_engine:{"event": "http_request", "service": "saxpath-audio-engine", "method": "GET", "path": "/health", "status_code": 200, "duration_ms": 6.04}
+INFO:     127.0.0.1:57946 - "GET /health HTTP/1.1" 200 OK

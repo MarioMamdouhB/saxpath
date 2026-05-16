@@ -91,29 +91,3 @@ AttemptEvaluation _successfulEvaluation() {
     ),
   );
 }
-
-extension on AttemptEvaluation {
-  AttemptEvaluation copyWith({
-    String? attemptId,
-    int? pitchAccuracy,
-    int? rhythmAccuracy,
-    int? completion,
-    String? feedbackAr,
-    String? nextRecommendation,
-    String? recordingId,
-    String? retryReason,
-    AttemptAnalysis? analysis,
-  }) {
-    return AttemptEvaluation(
-      attemptId: attemptId ?? this.attemptId,
-      pitchAccuracy: pitchAccuracy ?? this.pitchAccuracy,
-      rhythmAccuracy: rhythmAccuracy ?? this.rhythmAccuracy,
-      completion: completion ?? this.completion,
-      feedbackAr: feedbackAr ?? this.feedbackAr,
-      nextRecommendation: nextRecommendation ?? this.nextRecommendation,
-      recordingId: recordingId ?? this.recordingId,
-      retryReason: retryReason ?? this.retryReason,
-      analysis: analysis ?? this.analysis,
-    );
-  }
-}

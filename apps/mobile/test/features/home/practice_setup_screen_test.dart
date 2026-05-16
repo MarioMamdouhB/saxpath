@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:saxpath_mobile/features/home/practice_setup_screen.dart';
+import 'package:saxpath_mobile/features/progress/state/app_progress_controller.dart';
+import 'package:saxpath_mobile/features/progress/state/app_progress_scope.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +19,10 @@ void main() {
     });
 
     await tester.pumpWidget(
-      const MaterialApp(home: PracticeSetupScreen()),
+      AppProgressScope(
+        controller: AppProgressController(),
+        child: const MaterialApp(home: PracticeSetupScreen()),
+      ),
     );
     await tester.pumpAndSettle();
 

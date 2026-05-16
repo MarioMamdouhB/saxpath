@@ -9,6 +9,7 @@ class Lesson {
     this.note,
     this.arabicName,
     this.rhythm,
+    this.videoUrl,
   });
 
   factory Lesson.fromJson(Map<String, dynamic> json) {
@@ -22,6 +23,7 @@ class Lesson {
       note: json['note'] as String?,
       arabicName: json['arabic_name'] as String?,
       rhythm: json['rhythm'] as String?,
+      videoUrl: json['video_url'] as String?,
     );
   }
 
@@ -34,4 +36,5 @@ class Lesson {
   final String? note;
   final String? arabicName;
   final String? rhythm;
+  final String? videoUrl;
 }

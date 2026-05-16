@@ -8,6 +8,7 @@ from app.schemas.attempt import (
 )
 from app.schemas.recording import RecordingResponse
 from app.services.audio_analysis import analyze_recording, build_deterministic_analysis
+from app.services.teacher_review import build_teacher_review
 
 _DAY_PATTERN = re.compile(r"day_(\d+)")
 
@@ -48,7 +49,7 @@ def submit_attempt(
         analysis=analysis,
     )
 
-    return AttemptEvaluationResponse(
+    evaluation = AttemptEvaluationResponse(
         attempt_id=_build_attempt_id(
             day_number=day_number,
             duration_seconds=duration_seconds,
@@ -71,10 +72,24 @@ def submit_attempt(
         recording_id=recording.recording_id,
         retry_reason=retry_reason,
         analysis=analysis,
+        recommended_retry_block=_recommended_retry_block(
+            retry_reason=retry_reason,
+            analysis=analysis,
+        ),
+        confidence_label=_confidence_label(analysis.confidence),
         metadata={
             "analysis_source": analysis.source,
             "confidence": analysis.confidence,
         },
+    )
+    return evaluation.model_copy(
+        update={
+            "teacher_review": build_teacher_review(
+                exercise_id=payload.exercise_id,
+                day_number=day_number,
+                evaluation=evaluation,
+            )
+        }
     )
 
 
@@ -89,8 +104,13 @@ def submit_mock_attempt(payload: AttemptCreateRequest) -> AttemptEvaluationRespo
         exercise_id=payload.exercise_id,
         duration_seconds=duration_seconds,
     )
+    retry_reason = _build_retry_reason(
+        duration_seconds=duration_seconds,
+        completion=completion,
+        analysis=analysis,
+    )
 
-    return AttemptEvaluationResponse(
+    evaluation = AttemptEvaluationResponse(
         attempt_id=_build_attempt_id(
             day_number=day_number,
             duration_seconds=duration_seconds,
@@ -111,13 +131,23 @@ def submit_mock_attempt(payload: AttemptCreateRequest) -> AttemptEvaluationRespo
             pitch_accuracy=pitch_accuracy,
         ),
         recording_id=payload.recording_id,
-        retry_reason=_build_retry_reason(
-            duration_seconds=duration_seconds,
-            completion=completion,
+        retry_reason=retry_reason,
+        analysis=analysis,
+        recommended_retry_block=_recommended_retry_block(
+            retry_reason=retry_reason,
             analysis=analysis,
         ),
-        analysis=analysis,
+        confidence_label=_confidence_label(analysis.confidence),
         metadata={"analysis_source": analysis.source},
+    )
+    return evaluation.model_copy(
+        update={
+            "teacher_review": build_teacher_review(
+                exercise_id=payload.exercise_id,
+                day_number=day_number,
+                evaluation=evaluation,
+            )
+        }
     )
 
 
@@ -240,3 +270,29 @@ def _build_retry_reason(
 def _build_attempt_id(*, day_number: int, duration_seconds: int) -> str:
     suffix = uuid4().hex[:8]
     return f"attempt_day_{day_number:02d}_{duration_seconds:03d}_{suffix}"
+
+
+def _recommended_retry_block(
+    *,
+    retry_reason: str | None,
+    analysis: AttemptAnalysis,
+) -> str | None:
+    if retry_reason == "recording_too_short":
+        return "record_check"
+    if retry_reason == "pitch_needs_work":
+        return "note_fingering"
+    if retry_reason == "rhythm_needs_work":
+        return "rhythm_call_response"
+    if retry_reason == "low_confidence_analysis" or analysis.tone_score < 70:
+        return "warm_up"
+    if retry_reason == "completion_below_threshold":
+        return "record_check"
+    return None
+
+
+def _confidence_label(confidence: float) -> str:
+    if confidence < 0.35:
+        return "low"
+    if confidence < 0.7:
+        return "medium"
+    return "high"

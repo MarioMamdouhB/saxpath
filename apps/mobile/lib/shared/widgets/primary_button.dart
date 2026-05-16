@@ -12,20 +12,19 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final hasBoundedWidth = constraints.hasBoundedWidth;
-        return ConstrainedBox(
-          constraints: BoxConstraints(
-            minWidth: hasBoundedWidth ? constraints.maxWidth : 0,
-            maxWidth: hasBoundedWidth ? constraints.maxWidth : 360,
-          ),
-          child: FilledButton(
-            onPressed: onPressed,
-            child: Text(label),
-          ),
-        );
-      },
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton(
+        onPressed: onPressed,
+        style: FilledButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+      ),
     );
   }
 }

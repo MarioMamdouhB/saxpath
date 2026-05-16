@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 import '../core/config/api_config.dart';
@@ -9,7 +10,10 @@ import 'models/attempt_history_entry.dart';
 import 'models/daily_plan.dart';
 import 'models/learner_progress.dart';
 import 'models/lesson.dart';
+import 'models/practice_session.dart';
 import 'models/recording_upload.dart';
+import 'models/skill_mastery.dart';
+import 'models/track.dart';
 
 class ApiException implements Exception {
   const ApiException(
@@ -41,7 +45,9 @@ class SaxPathApiClient {
   }
 
   Future<DailyPlan> getDailyPlan(int dayNumber) async {
-    final response = await _get('/api/v1/daily-plan/day/$dayNumber');
+    final prefs = await SharedPreferences.getInstance();
+    final saxType = prefs.getString('profile.sax_type') ?? 'alto_eb';
+    final response = await _get('/api/v1/daily-plan/day/$dayNumber?sax_type=$saxType');
     final payload = _decodeResponse(response);
     return DailyPlan.fromJson(payload as Map<String, dynamic>);
   }
@@ -136,10 +142,49 @@ class SaxPathApiClient {
         .toList();
   }
 
+  Future<AttemptHistoryEntry> getAttemptDetail(String attemptId) async {
+    final response = await _get('/api/v1/attempts/$attemptId');
+    final payload = _decodeResponse(response);
+    return AttemptHistoryEntry.fromJson(payload as Map<String, dynamic>);
+  }
+
+  Future<AttemptHistoryEntry> requestTeacherReview(String attemptId) async {
+    final response = await _post('/api/v1/attempts/$attemptId/teacher-review');
+    final payload = _decodeResponse(response);
+    return AttemptHistoryEntry.fromJson(payload as Map<String, dynamic>);
+  }
+
   Future<LearnerProgress> getLearnerProgress() async {
     final response = await _get('/api/v1/progress');
     final payload = _decodeResponse(response);
     return LearnerProgress.fromJson(payload as Map<String, dynamic>);
+  }
+
+  Future<PracticeSession> getTodayPracticeSession({
+    String track = 'beginner',
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final saxType = prefs.getString('profile.sax_type') ?? 'alto_eb';
+    final response =
+        await _get('/api/v1/practice-sessions/today?track=$track&sax_type=$saxType');
+    final payload = _decodeResponse(response);
+    return PracticeSession.fromJson(payload as Map<String, dynamic>);
+  }
+
+  Future<PracticeSession> getPracticeSessionForDay(
+    int dayNumber, {
+    String track = 'beginner',
+  }) async {
+    final response =
+        await _get('/api/v1/practice-sessions/day/$dayNumber?track=$track');
+    final payload = _decodeResponse(response);
+    return PracticeSession.fromJson(payload as Map<String, dynamic>);
+  }
+
+  Future<SkillMasterySnapshot> getSkillMastery() async {
+    final response = await _get('/api/v1/mastery');
+    final payload = _decodeResponse(response);
+    return SkillMasterySnapshot.fromJson(payload as Map<String, dynamic>);
   }
 
   Future<LearnerProgress> completeDay(int dayNumber) async {
@@ -185,6 +230,14 @@ class SaxPathApiClient {
         .toList();
   }
 
+  Future<List<Track>> getTracks() async {
+    final response = await _get('/api/v1/tracks');
+    final payload = _decodeResponse(response) as List<dynamic>;
+    return payload
+        .map((json) => Track.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
   Uri _buildUri(String path) => Uri.parse('${ApiConfig.baseUrl}$path');
 
   Future<http.Response> _get(String path) {
@@ -208,15 +261,26 @@ class SaxPathApiClient {
   Future<http.Response> _withTimeout(
     Future<http.Response> Function() request,
   ) async {
-    try {
-      return await request().timeout(_timeout);
-    } on ApiException {
-      rethrow;
-    } catch (_) {
-      throw const ApiException(
-        'تعذر الوصول إلى الخادم الآن. تحقق من الاتصال ثم حاول مرة أخرى.',
-      );
+    int attempts = 0;
+    const maxAttempts = 3;
+
+    while (attempts < maxAttempts) {
+      try {
+        attempts++;
+        return await request().timeout(_timeout);
+      } on ApiException {
+        rethrow;
+      } catch (e) {
+        if (attempts >= maxAttempts) {
+          throw const ApiException(
+            'تعذر الوصول إلى الخادم الآن. تحقق من الاتصال ثم حاول مرة أخرى.',
+          );
+        }
+        // Wait a bit before retrying (exponential backoff could be better, but simple delay for now)
+        await Future.delayed(Duration(milliseconds: 500 * attempts));
+      }
     }
+    throw const ApiException('حدث خطأ غير متوقع.');
   }
 
   dynamic _decodeResponse(http.Response response) {

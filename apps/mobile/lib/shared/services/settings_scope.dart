@@ -1,0 +1,16 @@
+import 'package:flutter/material.dart';
+import 'settings_controller.dart';
+
+class SettingsScope extends InheritedNotifier<SettingsController> {
+  const SettingsScope({
+    super.key,
+    required SettingsController controller,
+    required super.child,
+  }) : super(notifier: controller);
+
+  static SettingsController of(BuildContext context) {
+    final scope = context.dependOnInheritedWidgetOfExactType<SettingsScope>();
+    assert(scope != null, 'No SettingsScope found in context');
+    return scope!.notifier!;
+  }
+}

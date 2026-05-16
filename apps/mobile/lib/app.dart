@@ -2,15 +2,23 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'core/constants/app_strings.dart';
-import 'core/theme/app_colors.dart';
-import 'core/theme/app_theme.dart';
-import 'data/saxpath_api_client.dart';
-import 'features/home/home_screen.dart';
-import 'features/progress/state/app_progress_controller.dart';
-import 'features/progress/state/app_progress_scope.dart';
-import 'shared/widgets/saxpath_brand_mark.dart';
+import 'package:saxpath_mobile/features/auth/login_screen.dart';
+import 'package:saxpath_mobile/shared/services/language_controller.dart';
+import 'package:saxpath_mobile/shared/services/language_scope.dart';
+import 'package:saxpath_mobile/shared/services/settings_controller.dart';
+import 'package:saxpath_mobile/shared/services/settings_scope.dart';
+import 'package:saxpath_mobile/features/shell/main_app_shell.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:saxpath_mobile/core/constants/app_strings.dart';
+import 'package:saxpath_mobile/core/theme/app_colors.dart';
+import 'package:saxpath_mobile/core/theme/app_theme.dart';
+import 'package:saxpath_mobile/data/saxpath_api_client.dart';
+import 'package:saxpath_mobile/features/onboarding/screens/onboarding_questionnaire_screen.dart';
+import 'package:saxpath_mobile/features/progress/state/app_progress_controller.dart';
+import 'package:saxpath_mobile/features/progress/state/app_progress_scope.dart';
+import 'package:saxpath_mobile/shared/widgets/saxpath_brand_mark.dart';
 
 class SaxPathApp extends StatefulWidget {
   const SaxPathApp({
@@ -26,9 +34,14 @@ class SaxPathApp extends StatefulWidget {
 
 class _SaxPathAppState extends State<SaxPathApp> with WidgetsBindingObserver {
   late final Future<AppProgressController> _progressControllerFuture;
+  late final SettingsController _settingsController;
+  late final LanguageController _languageController;
   late final SaxPathApiClient _apiClient;
   AppProgressController? _progressController;
   bool _isServerSyncInFlight = false;
+  bool _hasInitialSyncFailed = false;
+  bool _isOnboardingCompleted = false;
+  bool _isCheckingOnboarding = true;
 
   @override
   void initState() {
@@ -36,6 +49,19 @@ class _SaxPathAppState extends State<SaxPathApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _apiClient = widget.apiClient ?? SaxPathApiClient();
     _progressControllerFuture = _loadProgressController();
+    _settingsController = SettingsController();
+    _languageController = LanguageController();
+    _checkOnboarding();
+  }
+
+  Future<void> _checkOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _isOnboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
+        _isCheckingOnboarding = false;
+      });
+    }
   }
 
   Future<AppProgressController> _loadProgressController() async {
@@ -64,7 +90,11 @@ class _SaxPathAppState extends State<SaxPathApp> with WidgetsBindingObserver {
       return;
     }
 
-    _isServerSyncInFlight = true;
+    setState(() {
+      _isServerSyncInFlight = true;
+      _hasInitialSyncFailed = false;
+    });
+
     final controller =
         _progressController ?? await _progressControllerFuture;
     controller.markSyncing();
@@ -81,8 +111,17 @@ class _SaxPathAppState extends State<SaxPathApp> with WidgetsBindingObserver {
     } catch (_) {
       // Keep local progress as a safe fallback when the backend is unavailable.
       controller.markServerSyncFailed();
+      if (mounted) {
+        setState(() {
+          _hasInitialSyncFailed = true;
+        });
+      }
     } finally {
-      _isServerSyncInFlight = false;
+      if (mounted) {
+        setState(() {
+          _isServerSyncInFlight = false;
+        });
+      }
     }
   }
 
@@ -96,65 +135,98 @@ class _SaxPathAppState extends State<SaxPathApp> with WidgetsBindingObserver {
             debugShowCheckedModeBanner: false,
             title: AppStrings.appName,
             theme: AppTheme.build(),
-            home: const Scaffold(
-              body: _AppBootSplash(),
+            home: Scaffold(
+              body: _AppBootSplash(
+                isSyncing: _isServerSyncInFlight,
+                hasFailed: _hasInitialSyncFailed,
+                onRetry: _syncProgressFromServer,
+              ),
             ),
           );
         }
 
         final progressController = snapshot.requireData;
 
-        return AppProgressScope(
-          controller: progressController,
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: AppStrings.appName,
-            theme: AppTheme.build(),
-            locale: const Locale('ar'),
-            supportedLocales: const [Locale('ar'), Locale('en')],
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            builder: (context, child) {
-              return DecoratedBox(
-                decoration: const BoxDecoration(
-                  color: AppColors.offWhite,
-                ),
-                child: Stack(
-                  children: [
-                    const PositionedDirectional(
-                      top: -90,
-                      end: -70,
-                      child: _BackdropOrb(
-                        size: 240,
-                        colors: [
-                          Color(0x140F2747),
-                          Color(0x040F2747),
-                        ],
-                      ),
+        return LanguageScope(
+          controller: _languageController,
+          child: SettingsScope(
+            controller: _settingsController,
+            child: AppProgressScope(
+              controller: progressController,
+              child: ListenableBuilder(
+                listenable: Listenable.merge([_languageController, _settingsController]),
+                builder: (context, _) {
+                  return MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    title: AppStrings.appName,
+                    theme: AppTheme.build(),
+                    locale: _languageController.locale,
+                    supportedLocales: const [Locale('ar'), Locale('en')],
+                    localizationsDelegates: const [
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                    ],
+                    builder: (context, child) {
+                      return DecoratedBox(
+                        decoration: const BoxDecoration(
+                          color: AppColors.offWhite,
+                        ),
+                        child: Stack(
+                          children: [
+                            const PositionedDirectional(
+                              top: -90,
+                              end: -70,
+                              child: _BackdropOrb(
+                                size: 240,
+                                colors: [
+                                  Color(0x140F2747),
+                                  Color(0x040F2747),
+                                ],
+                              ),
+                            ),
+                            const PositionedDirectional(
+                              top: 220,
+                              start: -90,
+                              child: _BackdropOrb(
+                                size: 220,
+                                colors: [
+                                  Color(0x100F2747),
+                                  Color(0x030F2747),
+                                ],
+                              ),
+                            ),
+                            Directionality(
+                              textDirection: _languageController.locale.languageCode == 'ar' ? TextDirection.rtl : TextDirection.ltr,
+                              child: child ?? const SizedBox.shrink(),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    home: StreamBuilder<AuthState>(
+                      stream: Supabase.instance.client.auth.onAuthStateChange,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+                        }
+
+                        final session = snapshot.data?.session;
+                        if (session == null) {
+                          return const LoginScreen();
+                        }
+
+                        return _isCheckingOnboarding
+                            ? const Scaffold(body: Center(child: CircularProgressIndicator()))
+                            : (_isOnboardingCompleted
+                                ? MainAppShell(apiClient: _apiClient)
+                                : const OnboardingQuestionnaireScreen());
+                      },
                     ),
-                    const PositionedDirectional(
-                      top: 220,
-                      start: -90,
-                      child: _BackdropOrb(
-                        size: 220,
-                        colors: [
-                          Color(0x100F2747),
-                          Color(0x030F2747),
-                        ],
-                      ),
-                    ),
-                    Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: child ?? const SizedBox.shrink(),
-                    ),
-                  ],
-                ),
-              );
-            },
-            home: HomeScreen(apiClient: _apiClient),
+                  );
+                },
+              ),
+            ),
           ),
         );
       },
@@ -163,7 +235,15 @@ class _SaxPathAppState extends State<SaxPathApp> with WidgetsBindingObserver {
 }
 
 class _AppBootSplash extends StatelessWidget {
-  const _AppBootSplash();
+  const _AppBootSplash({
+    required this.isSyncing,
+    required this.hasFailed,
+    required this.onRetry,
+  });
+
+  final bool isSyncing;
+  final bool hasFailed;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -185,32 +265,62 @@ class _AppBootSplash extends StatelessWidget {
                 ),
               ],
             ),
-            child: const Padding(
-              padding: EdgeInsets.all(24),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SaxPathBrandMark(),
-                  SizedBox(height: 18),
+                  const SaxPathBrandMark(),
+                  const SizedBox(height: 18),
                   Text(
-                    'جارٍ فتح جلسة اليوم...',
+                    hasFailed ? 'عذراً، تعذر الاتصال بالسيرفر' : 'جارٍ فتح جلسة اليوم...',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
-                    'سنبدأ ببياناتك المحلية أولاً ثم نكمل المزامنة في الخلفية.',
+                    hasFailed
+                        ? 'يمكنك المحاولة مرة أخرى أو البدء ببياناتك المحلية.'
+                        : 'سنبدأ ببياناتك المحلية أولاً ثم نكمل المزامنة في الخلفية.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.muted,
                       height: 1.4,
                     ),
                   ),
-                  SizedBox(height: 16),
-                  CircularProgressIndicator(),
+                  const SizedBox(height: 24),
+                  if (isSyncing)
+                    const CircularProgressIndicator()
+                  else if (hasFailed)
+                    Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: onRetry,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text('إعادة المحاولة'),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextButton(
+                          onPressed: () {
+                            // Bypass for offline mode
+                          },
+                          child: const Text('المتابعة بدون مزامنة'),
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ),

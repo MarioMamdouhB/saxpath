@@ -40,6 +40,9 @@ def test_attempts_returns_mock_evaluation() -> None:
     assert payload["completion"] == 87
     assert "المحاولة مستقرة" in payload["feedback_ar"]
     assert "ارفع السرعة تدريجياً" in payload["next_recommendation"]
+    assert payload["confidence_label"] in {"low", "medium", "high"}
+    assert isinstance(payload["mastery_delta"], list)
+    assert payload["teacher_review"]["status"] == "available"
 
 
 def test_attempts_returns_short_attempt_feedback() -> None:
@@ -139,3 +142,23 @@ def test_attempt_ids_are_unique_for_same_day_and_duration() -> None:
     assert first_response.status_code == 200
     assert second_response.status_code == 200
     assert first_response.json()["attempt_id"] != second_response.json()["attempt_id"]
+
+
+def test_teacher_review_request_updates_attempt_status() -> None:
+    create_response = client.post(
+        "/api/v1/attempts",
+        json={
+            "exercise_id": "task_day_03_practice_gaba",
+            "duration_seconds": 9,
+            "audio_url": "mock://recordings/day_03.wav",
+        },
+    )
+
+    assert create_response.status_code == 200
+    attempt_id = create_response.json()["attempt_id"]
+
+    review_response = client.post(f"/api/v1/attempts/{attempt_id}/teacher-review")
+
+    assert review_response.status_code == 200
+    payload = review_response.json()
+    assert payload["teacher_review"]["status"] == "requested"

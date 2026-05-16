@@ -4,8 +4,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:saxpath_mobile/data/models/analytics_event.dart';
 import 'package:saxpath_mobile/data/models/attempt_history_entry.dart';
+import 'package:saxpath_mobile/data/models/attempt_evaluation.dart';
 import 'package:saxpath_mobile/data/models/daily_plan.dart';
 import 'package:saxpath_mobile/data/models/learner_progress.dart';
+import 'package:saxpath_mobile/data/models/practice_session.dart';
+import 'package:saxpath_mobile/data/models/skill_mastery.dart';
 import 'package:saxpath_mobile/data/saxpath_api_client.dart';
 import 'package:saxpath_mobile/features/progress/progress_screen.dart';
 import 'package:saxpath_mobile/features/progress/state/app_progress_controller.dart';
@@ -36,22 +39,16 @@ void main() {
     expect(find.text('خطة 30 يوم'), findsOneWidget);
     expect(find.text('اليوم الحالي: 3'), findsOneWidget);
     expect(find.text('الأيام المكتملة: 2 من 7'), findsOneWidget);
-    expect(find.text('أدوات المطور'), findsOneWidget);
-    expect(find.text('اليوم 4'), findsWidgets);
-
-    final dayFourChip = find.widgetWithText(ChoiceChip, 'اليوم 4');
-    await tester.dragUntilVisible(
-      dayFourChip,
-      find.byType(ListView),
-      const Offset(0, -200),
-    );
-    await tester.ensureVisible(dayFourChip);
-    final chip = tester.widget<ChoiceChip>(dayFourChip);
-    chip.onSelected?.call(true);
+    expect(find.text('Skill Mastery'), findsOneWidget);
+    expect(find.textContaining('ثبات الإيقاع'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Mastery Timeline'), 250);
     await tester.pumpAndSettle();
-
-    expect(find.text('اليوم الحالي: 4'), findsOneWidget);
-    expect(find.text('تم ضبط اليوم الحالي إلى 4.'), findsOneWidget);
+    expect(find.text('Mastery Timeline'), findsOneWidget);
+    expect(find.textContaining('Recommended Next Drill:'), findsWidgets);
+    await tester.scrollUntilVisible(find.text('المسار الموجه الآن'), 300);
+    await tester.pumpAndSettle();
+    expect(find.text('المسار الموجه الآن'), findsOneWidget);
+    expect(find.text('AI + Teacher Review'), findsWidgets);
   });
 
   testWidgets('reset progress returns the learner to day one', (tester) async {
@@ -161,6 +158,16 @@ class _FakeSaxPathApiClient extends SaxPathApiClient {
         completion: 82,
         feedbackAr: 'ممتاز',
         nextRecommendation: 'أعد التمرين',
+        confidenceLabel: 'medium',
+        recommendedRetryBlock: 'rhythm_call_response',
+        teacherReview: const TeacherReview(
+          status: 'available',
+          aiSummaryAr: 'هناك فرصة جيدة لتحسين الإيقاع قبل رفع السرعة.',
+          teacherPromptAr: 'راجع الاستجابة بعد السماع واقترح drill واحد.',
+          queueEtaAr: 'يمكن طلب مراجعة مدرس لاحقاً.',
+          focusPointsAr: ['ثبّت العد الداخلي'],
+          source: 'ai_teacher_bridge_v1',
+        ),
         createdAt: DateTime(2026, 5, 7),
       ),
     ];
@@ -241,6 +248,61 @@ class _FakeSaxPathApiClient extends SaxPathApiClient {
           totalMinutes: 22,
           status: 'planned',
           progressPercent: 0,
+        ),
+      ],
+    );
+  }
+
+  @override
+  Future<SkillMasterySnapshot> getSkillMastery() async {
+    return const SkillMasterySnapshot(
+      weakSkill: 'rhythm',
+      skills: [
+        SkillMasteryEntry(
+          skill: 'rhythm',
+          score: 48,
+          status: 'developing',
+          focusLabel: 'ثبات الإيقاع',
+        ),
+        SkillMasteryEntry(
+          skill: 'tone',
+          score: 61,
+          status: 'steady',
+          focusLabel: 'ثبات الصوت',
+        ),
+      ],
+    );
+  }
+
+  @override
+  Future<PracticeSession> getTodayPracticeSession({
+    String track = 'beginner',
+  }) async {
+    return const PracticeSession(
+      track: 'beginner',
+      dayNumber: 3,
+      totalMinutes: 10,
+      stageId: 'first_sound',
+      stageTitle: 'Stage 1: First Sound',
+      stageSubtitleAr: 'تثبيت النفس والوضعية وأول انتقالات بين النغمات.',
+      stageProgressPercent: 66,
+      guidedPathLabel: 'ابدأ بالصوت ثم ابنِ أول جملة قصيرة.',
+      weakSkill: 'rhythm',
+      recommendedFocusAr: 'ثبات الإيقاع',
+      source: 'rule_based_v2',
+      blocks: [
+        PracticeBlock(
+          id: 'rhythm_call_response',
+          title: 'Rhythm / Call-and-Response',
+          blockType: 'rhythm_call_response',
+          durationMinutes: 3,
+          status: 'ready',
+          focusHintAr: 'عدّ ثم رد.',
+          taskIds: ['task_day_03_practice_gaba'],
+          skillTags: ['rhythm'],
+          loopTarget: 3,
+          supportsWaitMode: true,
+          visualFocusNotes: ['G', 'A', 'B'],
         ),
       ],
     );

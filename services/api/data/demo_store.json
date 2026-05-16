@@ -1,0 +1,686 @@
+{
+  "completed_days": [],
+  "attempts": [
+    {
+      "attempt_id": "attempt_day_01_001_8f143c80",
+      "exercise_id": "task_day_01_recording",
+      "day_number": 1,
+      "duration_seconds": 1,
+      "audio_url": "/api/v1/recordings/rec_e23ad4c6fe084606/file",
+      "recording_id": "rec_e23ad4c6fe084606",
+      "pitch_accuracy": 100,
+      "rhythm_accuracy": 0,
+      "completion": 50,
+      "feedback_ar": "المحاولة كانت قصيرة، لكن البداية مبشرة. ثبّت نغمة G مع نبضة واضحة. أعطِ نفسك وقتاً أطول في التسجيل القادم.",
+      "next_recommendation": "أعد التسجيل لمدة أطول مع عدّ واضح قبل أول نغمة.",
+      "retry_reason": "recording_too_short",
+      "analysis": {
+        "pitch_score": 100,
+        "rhythm_score": 0,
+        "detected_notes": [
+          {
+            "note": "F#",
+            "frequency_hz": 1567.47,
+            "confidence": 0.03
+          }
+        ],
+        "timing_errors": [],
+        "tone_score": 55,
+        "event_matches": [
+          {
+            "expected_note": "G",
+            "detected_note": "-",
+            "expected_seconds": 0.0,
+            "observed_seconds": null,
+            "timing_error_ms": 1000.0,
+            "pitch_ok": false
+          }
+        ],
+        "sustain_stability": 0.0,
+        "confidence": 0.21,
+        "source": "audio_engine_phrase_v2",
+        "analysis_version": "phrase_v2"
+      },
+      "mastery_delta": [
+        {
+          "skill": "tone",
+          "previous_score": 52,
+          "new_score": 53,
+          "delta": 1
+        },
+        {
+          "skill": "breath",
+          "previous_score": 51,
+          "new_score": 45,
+          "delta": -6
+        },
+        {
+          "skill": "fingering",
+          "previous_score": 48,
+          "new_score": 50,
+          "delta": 2
+        },
+        {
+          "skill": "note_accuracy",
+          "previous_score": 50,
+          "new_score": 58,
+          "delta": 8
+        },
+        {
+          "skill": "rhythm",
+          "previous_score": 51,
+          "new_score": 45,
+          "delta": -6
+        },
+        {
+          "skill": "response_imitation",
+          "previous_score": 46,
+          "new_score": 40,
+          "delta": -6
+        }
+      ],
+      "recommended_retry_block": "record_check",
+      "confidence_label": "low",
+      "teacher_review": {
+        "status": "available",
+        "ai_summary_ar": "الـ AI coach يرى أن محاولة اليوم 1 ما زالت في مرحلة التثبيت، والأولوية الآن هي إزالة نقطة الضعف الأساسية قبل الانتقال.",
+        "teacher_prompt_ar": "لو أرسلت هذه المحاولة لمدرس، اطلب منه مراجعة task_day_01_recording مع التركيز على وضوح التسجيل وبناء المحاولة وإعطاء drill واحد فقط لليوم التالي.",
+        "queue_eta_ar": "يمكن طلب مراجعة مدرس لاحقاً، والـ AI جهّز ملخصاً مختصراً للحالة الحالية.",
+        "focus_points_ar": [
+          "سجّل محاولة أوضح وأطول قليلاً بدل جمع محاولات قصيرة ومربكة.",
+          "ثبات النغمة الأساسي جيد ويمكن البناء عليه في الجملة التالية.",
+          "النبض الداخلي يحتاج وضوح أكثر من مجرد زيادة وقت التدريب."
+        ],
+        "source": "ai_teacher_bridge_v1"
+      },
+      "created_at": "2026-05-12T02:11:05.867179+00:00"
+    },
+    {
+      "attempt_id": "attempt_day_02_008_10bd19a3",
+      "exercise_id": "task_day_02_practice_aagg",
+      "day_number": 2,
+      "duration_seconds": 8,
+      "audio_url": "mock://day_02/task_day_02_practice_aagg.wav",
+      "recording_id": null,
+      "pitch_accuracy": 71,
+      "rhythm_accuracy": 66,
+      "completion": 72,
+      "feedback_ar": "المحاولة مستقرة إجمالاً، لكن ما زال هناك هامش لتحسين الدقة. حافظ على الفرق بين A و G من غير استعجال.",
+      "next_recommendation": "خفّض السرعة إلى BPM 50 وركّز على العدّ الداخلي قبل العزف.",
+      "retry_reason": "rhythm_needs_work",
+      "analysis": {
+        "pitch_score": 71,
+        "rhythm_score": 66,
+        "detected_notes": [
+          {
+            "note": "A",
+            "frequency_hz": 196.0,
+            "confidence": 0.68
+          }
+        ],
+        "timing_errors": [
+          {
+            "onset_seconds": 1.0,
+            "expected_seconds": 0.75,
+            "error_ms": 250.0
+          }
+        ],
+        "tone_score": 70,
+        "event_matches": [
+          {
+            "expected_note": "A",
+            "detected_note": "A",
+            "expected_seconds": 0.0,
+            "observed_seconds": 0.0,
+            "timing_error_ms": 0.0,
+            "pitch_ok": true
+          }
+        ],
+        "sustain_stability": 0.76,
+        "confidence": 0.68,
+        "source": "deterministic_mock",
+        "analysis_version": "deterministic_v2"
+      },
+      "mastery_delta": [],
+      "recommended_retry_block": null,
+      "confidence_label": "medium",
+      "created_at": "2026-05-11T00:24:49.140693+00:00"
+    },
+    {
+      "attempt_id": "attempt_day_02_008_c8094dfd",
+      "exercise_id": "task_day_02_practice_aagg",
+      "day_number": 2,
+      "duration_seconds": 8,
+      "audio_url": "mock://fallback_day_2.wav",
+      "recording_id": null,
+      "pitch_accuracy": 71,
+      "rhythm_accuracy": 66,
+      "completion": 72,
+      "feedback_ar": "المحاولة مستقرة إجمالاً، لكن ما زال هناك هامش لتحسين الدقة. حافظ على الفرق بين A و G من غير استعجال.",
+      "next_recommendation": "خفّض السرعة إلى BPM 50 وركّز على العدّ الداخلي قبل العزف.",
+      "retry_reason": "rhythm_needs_work",
+      "analysis": {
+        "pitch_score": 71,
+        "rhythm_score": 66,
+        "detected_notes": [
+          {
+            "note": "A",
+            "frequency_hz": 196.0,
+            "confidence": 0.68
+          }
+        ],
+        "timing_errors": [
+          {
+            "onset_seconds": 1.0,
+            "expected_seconds": 0.75,
+            "error_ms": 250.0
+          }
+        ],
+        "tone_score": 70,
+        "event_matches": [
+          {
+            "expected_note": "A",
+            "detected_note": "A",
+            "expected_seconds": 0.0,
+            "observed_seconds": 0.0,
+            "timing_error_ms": 0.0,
+            "pitch_ok": true
+          }
+        ],
+        "sustain_stability": 0.76,
+        "confidence": 0.68,
+        "source": "deterministic_mock",
+        "analysis_version": "deterministic_v2"
+      },
+      "mastery_delta": [],
+      "recommended_retry_block": null,
+      "confidence_label": "medium",
+      "created_at": "2026-05-11T00:05:47.838611+00:00"
+    },
+    {
+      "attempt_id": "attempt_day_01_008",
+      "exercise_id": "task_day_01_practice_ggaa",
+      "day_number": 1,
+      "duration_seconds": 8,
+      "audio_url": "mock://day_01/task_day_01_practice_ggaa.wav",
+      "pitch_accuracy": 70,
+      "rhythm_accuracy": 65,
+      "completion": 71,
+      "feedback_ar": "المحاولة مستقرة إجمالاً، لكن ما زال هناك هامش لتحسين الدقة. ثبّت نغمة G مع نبضة واضحة.",
+      "next_recommendation": "خفّض السرعة إلى BPM 50 وركّز على العدّ الداخلي قبل العزف.",
+      "created_at": "2026-05-08T13:37:40.425920+00:00"
+    },
+    {
+      "attempt_id": "attempt_day_01_008",
+      "exercise_id": "task_day_01_practice_ggaa",
+      "day_number": 1,
+      "duration_seconds": 8,
+      "audio_url": "/api/v1/recordings/rec_412eada509b44f92/file",
+      "recording_id": "rec_412eada509b44f92",
+      "pitch_accuracy": 100,
+      "rhythm_accuracy": 0,
+      "completion": 58,
+      "feedback_ar": "المحاولة مستقرة إجمالاً، لكن ما زال هناك هامش لتحسين الدقة. ثبّت نغمة G مع نبضة واضحة.",
+      "next_recommendation": "خفّض السرعة إلى BPM 50 وركّز على العدّ الداخلي قبل العزف.",
+      "retry_reason": "rhythm_needs_work",
+      "analysis": {
+        "pitch_score": 100,
+        "rhythm_score": 0,
+        "detected_notes": [
+          {
+            "note": "G",
+            "frequency_hz": 392.01,
+            "confidence": 1.0
+          }
+        ],
+        "timing_errors": [],
+        "confidence": 0.5,
+        "source": "audio_engine"
+      },
+      "created_at": "2026-05-08T13:24:59.896311+00:00"
+    },
+    {
+      "attempt_id": "attempt_day_01_008",
+      "exercise_id": "task_day_01_practice_ggaa",
+      "day_number": 1,
+      "duration_seconds": 8,
+      "audio_url": "mock://day_01/task_day_01_practice_ggaa.wav",
+      "pitch_accuracy": 70,
+      "rhythm_accuracy": 65,
+      "completion": 71,
+      "feedback_ar": "المحاولة مستقرة إجمالاً، لكن ما زال هناك هامش لتحسين الدقة. ثبّت نغمة G مع نبضة واضحة.",
+      "next_recommendation": "خفّض السرعة إلى BPM 50 وركّز على العدّ الداخلي قبل العزف.",
+      "created_at": "2026-05-08T04:18:53.723023+00:00"
+    },
+    {
+      "attempt_id": "attempt_day_01_008",
+      "exercise_id": "task_day_01_practice_ggaa",
+      "day_number": 1,
+      "duration_seconds": 8,
+      "audio_url": "mock://day_01/task_day_01_practice_ggaa.wav",
+      "pitch_accuracy": 70,
+      "rhythm_accuracy": 65,
+      "completion": 71,
+      "feedback_ar": "المحاولة مستقرة إجمالاً، لكن ما زال هناك هامش لتحسين الدقة. ثبّت نغمة G مع نبضة واضحة.",
+      "next_recommendation": "خفّض السرعة إلى BPM 50 وركّز على العدّ الداخلي قبل العزف.",
+      "created_at": "2026-05-07T20:15:51.272649+00:00"
+    },
+    {
+      "attempt_id": "attempt_day_02_008",
+      "exercise_id": "task_day_02_practice_aagg",
+      "day_number": 2,
+      "duration_seconds": 8,
+      "audio_url": "mock://day_02/task_day_02_practice_aagg.wav",
+      "pitch_accuracy": 71,
+      "rhythm_accuracy": 66,
+      "completion": 72,
+      "feedback_ar": "المحاولة مستقرة إجمالاً، لكن ما زال هناك هامش لتحسين الدقة. حافظ على الفرق بين A و G من غير استعجال.",
+      "next_recommendation": "خفّض السرعة إلى BPM 50 وركّز على العدّ الداخلي قبل العزف.",
+      "created_at": "2026-05-07T17:58:46.993064+00:00"
+    },
+    {
+      "attempt_id": "attempt_day_01_008",
+      "exercise_id": "task_day_01_practice_ggaa",
+      "day_number": 1,
+      "duration_seconds": 8,
+      "audio_url": "mock://day_01/task_day_01_practice_ggaa.wav",
+      "pitch_accuracy": 70,
+      "rhythm_accuracy": 65,
+      "completion": 71,
+      "feedback_ar": "المحاولة مستقرة إجمالاً، لكن ما زال هناك هامش لتحسين الدقة. ثبّت نغمة G مع نبضة واضحة.",
+      "next_recommendation": "خفّض السرعة إلى BPM 50 وركّز على العدّ الداخلي قبل العزف.",
+      "created_at": "2026-05-07T17:56:03.291283+00:00"
+    }
+  ],
+  "analytics_events": [
+    {
+      "event_id": "event_a4edcb07effd",
+      "event_name": "session_start",
+      "day_number": 1,
+      "task_id": null,
+      "attempt_id": null,
+      "metadata": {},
+      "created_at": "2026-05-12T01:02:22.715408+00:00"
+    },
+    {
+      "event_id": "event_3850a6d60f7e",
+      "event_name": "lesson_start",
+      "day_number": 2,
+      "task_id": "task_day_02_note_a",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-11T01:40:20.980707+00:00"
+    },
+    {
+      "event_id": "event_d49693d2d3e9",
+      "event_name": "lesson_start",
+      "day_number": 2,
+      "task_id": "task_day_02_note_a",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-11T01:37:30.502969+00:00"
+    },
+    {
+      "event_id": "event_7d82e6b1aaeb",
+      "event_name": "practice_finish",
+      "day_number": 2,
+      "task_id": "task_day_02_practice_aagg",
+      "attempt_id": "attempt_day_02_008_10bd19a3",
+      "metadata": {
+        "duration_seconds": 8,
+        "completion": 72,
+        "analysis_source": "deterministic_mock",
+        "retry_reason": "rhythm_needs_work"
+      },
+      "created_at": "2026-05-11T00:24:49.319491+00:00"
+    },
+    {
+      "event_id": "event_d03f6f07c79b",
+      "event_name": "lesson_start",
+      "day_number": 2,
+      "task_id": "task_day_02_note_a",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-11T00:23:30.703771+00:00"
+    },
+    {
+      "event_id": "event_fabbd37112d9",
+      "event_name": "lesson_start",
+      "day_number": 2,
+      "task_id": "task_day_02_note_a",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-11T00:00:19.251822+00:00"
+    },
+    {
+      "event_id": "event_1778247460442",
+      "event_name": "practice_finish",
+      "day_number": 1,
+      "task_id": "task_day_01_practice_ggaa",
+      "attempt_id": "attempt_day_01_008",
+      "metadata": {
+        "duration_seconds": 8,
+        "completion": 71
+      },
+      "created_at": "2026-05-08T13:37:40.442469+00:00"
+    },
+    {
+      "event_id": "event_1778247332017",
+      "event_name": "lesson_start",
+      "day_number": 1,
+      "task_id": "task_day_01_note_g",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-08T13:35:32.017215+00:00"
+    },
+    {
+      "event_id": "event_1778245211016",
+      "event_name": "lesson_start",
+      "day_number": 1,
+      "task_id": "task_day_01_note_g",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-08T13:00:11.018146+00:00"
+    },
+    {
+      "event_id": "event_1778213940519",
+      "event_name": "day_complete",
+      "day_number": 1,
+      "task_id": null,
+      "attempt_id": "attempt_day_01_008",
+      "metadata": {
+        "next_day_number": 2,
+        "completion": 71
+      },
+      "created_at": "2026-05-08T04:19:00.519683+00:00"
+    },
+    {
+      "event_id": "event_1778213933761",
+      "event_name": "practice_finish",
+      "day_number": 1,
+      "task_id": "task_day_01_practice_ggaa",
+      "attempt_id": "attempt_day_01_008",
+      "metadata": {
+        "duration_seconds": 8,
+        "completion": 71
+      },
+      "created_at": "2026-05-08T04:18:53.761596+00:00"
+    },
+    {
+      "event_id": "event_1778213903764",
+      "event_name": "lesson_start",
+      "day_number": 1,
+      "task_id": "task_day_01_note_g",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-08T04:18:23.764751+00:00"
+    },
+    {
+      "event_id": "event_1778213049736",
+      "event_name": "lesson_start",
+      "day_number": 1,
+      "task_id": "task_day_01_note_g",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-08T04:04:09.737056+00:00"
+    },
+    {
+      "event_id": "event_1778184959007",
+      "event_name": "day_complete",
+      "day_number": 1,
+      "task_id": null,
+      "attempt_id": "attempt_day_01_008",
+      "metadata": {
+        "next_day_number": 2,
+        "completion": 71
+      },
+      "created_at": "2026-05-07T20:15:59.007392+00:00"
+    },
+    {
+      "event_id": "event_1778184951305",
+      "event_name": "practice_finish",
+      "day_number": 1,
+      "task_id": "task_day_01_practice_ggaa",
+      "attempt_id": "attempt_day_01_008",
+      "metadata": {
+        "duration_seconds": 8,
+        "completion": 71
+      },
+      "created_at": "2026-05-07T20:15:51.305201+00:00"
+    },
+    {
+      "event_id": "event_1778184897804",
+      "event_name": "lesson_start",
+      "day_number": 1,
+      "task_id": "task_day_01_note_g",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-07T20:14:57.806356+00:00"
+    },
+    {
+      "event_id": "event_1778176727081",
+      "event_name": "practice_finish",
+      "day_number": 2,
+      "task_id": "task_day_02_practice_aagg",
+      "attempt_id": "attempt_day_02_008",
+      "metadata": {
+        "duration_seconds": 8,
+        "completion": 72
+      },
+      "created_at": "2026-05-07T17:58:47.081443+00:00"
+    },
+    {
+      "event_id": "event_1778176578080",
+      "event_name": "lesson_start",
+      "day_number": 2,
+      "task_id": "task_day_02_note_a",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-07T17:56:18.080656+00:00"
+    },
+    {
+      "event_id": "event_1778176571175",
+      "event_name": "day_complete",
+      "day_number": 1,
+      "task_id": null,
+      "attempt_id": "attempt_day_01_008",
+      "metadata": {
+        "next_day_number": 2,
+        "completion": 71
+      },
+      "created_at": "2026-05-07T17:56:11.175088+00:00"
+    },
+    {
+      "event_id": "event_1778176563356",
+      "event_name": "practice_finish",
+      "day_number": 1,
+      "task_id": "task_day_01_practice_ggaa",
+      "attempt_id": "attempt_day_01_008",
+      "metadata": {
+        "duration_seconds": 8,
+        "completion": 71
+      },
+      "created_at": "2026-05-07T17:56:03.356865+00:00"
+    },
+    {
+      "event_id": "event_1778176467421",
+      "event_name": "lesson_start",
+      "day_number": 1,
+      "task_id": "task_day_01_note_g",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-07T17:54:27.421148+00:00"
+    },
+    {
+      "event_id": "event_1778175688521",
+      "event_name": "lesson_start",
+      "day_number": 1,
+      "task_id": "task_day_01_note_g",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-07T17:41:28.521908+00:00"
+    },
+    {
+      "event_id": "event_1778174899523",
+      "event_name": "lesson_start",
+      "day_number": 1,
+      "task_id": "task_day_01_note_g",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-07T17:28:19.523181+00:00"
+    },
+    {
+      "event_id": "event_1778174171822",
+      "event_name": "lesson_start",
+      "day_number": 1,
+      "task_id": "task_day_01_note_g",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-07T17:16:11.822472+00:00"
+    },
+    {
+      "event_id": "event_1778168305744",
+      "event_name": "lesson_start",
+      "day_number": 1,
+      "task_id": "task_day_01_note_g",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-07T15:38:25.745010+00:00"
+    },
+    {
+      "event_id": "event_1778168202423",
+      "event_name": "lesson_start",
+      "day_number": 2,
+      "task_id": "task_day_02_note_a",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-07T15:36:42.423905+00:00"
+    },
+    {
+      "event_id": "event_1778165926673",
+      "event_name": "lesson_start",
+      "day_number": 1,
+      "task_id": "task_day_01_note_g",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-07T14:58:46.673646+00:00"
+    },
+    {
+      "event_id": "event_1778163966497",
+      "event_name": "lesson_start",
+      "day_number": 1,
+      "task_id": "task_day_01_note_g",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-07T14:26:06.497039+00:00"
+    },
+    {
+      "event_id": "event_1778163388015",
+      "event_name": "lesson_start",
+      "day_number": 1,
+      "task_id": "task_day_01_note_g",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-07T14:16:28.015720+00:00"
+    },
+    {
+      "event_id": "event_1778163354245",
+      "event_name": "lesson_start",
+      "day_number": 1,
+      "task_id": "task_day_01_note_g",
+      "attempt_id": null,
+      "metadata": {
+        "screen": "note_lesson"
+      },
+      "created_at": "2026-05-07T14:15:54.245328+00:00"
+    }
+  ],
+  "recordings": {
+    "rec_e23ad4c6fe084606": {
+      "recording_id": "rec_e23ad4c6fe084606",
+      "filename": "day_01_task_day_01_recording.wav",
+      "duration_seconds": 1,
+      "storage_path": "C:\\Users\\Dell\\Desktop\\sax path\\saxpath\\services\\api\\data\\recordings\\rec_e23ad4c6fe084606_day_01_task_day_01_recording.wav",
+      "playback_url": "/api/v1/recordings/rec_e23ad4c6fe084606/file",
+      "content_type": "application/octet-stream",
+      "created_at": "2026-05-12T02:11:03.404532+00:00"
+    }
+  },
+  "completion_log": {},
+  "skill_mastery": {
+    "tone": {
+      "score": 53,
+      "last_updated_at": "2026-05-12T02:11:05.855176+00:00",
+      "focus_label": "ثبات الصوت",
+      "status": "developing"
+    },
+    "breath": {
+      "score": 45,
+      "last_updated_at": "2026-05-12T02:11:05.855176+00:00",
+      "focus_label": "النفَس والدعم",
+      "status": "developing"
+    },
+    "fingering": {
+      "score": 50,
+      "last_updated_at": "2026-05-12T02:11:05.855176+00:00",
+      "focus_label": "راحة الأصابع",
+      "status": "developing"
+    },
+    "note_accuracy": {
+      "score": 58,
+      "last_updated_at": "2026-05-12T02:11:05.855176+00:00",
+      "focus_label": "دقة النغمة",
+      "status": "developing"
+    },
+    "rhythm": {
+      "score": 45,
+      "last_updated_at": "2026-05-12T02:11:05.855176+00:00",
+      "focus_label": "ثبات الإيقاع",
+      "status": "developing"
+    },
+    "response_imitation": {
+      "score": 40,
+      "last_updated_at": "2026-05-12T02:11:05.855176+00:00",
+      "focus_label": "الاستجابة والتقليد",
+      "status": "starting"
+    }
+  }
+}

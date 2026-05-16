@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:saxpath_mobile/app.dart';
 import 'package:saxpath_mobile/data/models/learner_progress.dart';
+import 'package:saxpath_mobile/data/models/practice_session.dart';
+import 'package:saxpath_mobile/data/models/skill_mastery.dart';
 import 'package:saxpath_mobile/data/saxpath_api_client.dart';
 
 void main() {
@@ -17,14 +19,11 @@ void main() {
     await tester.pumpWidget(
       SaxPathApp(apiClient: _StartupOnlyApiClient()),
     );
+    await tester.pumpAndSettle();
 
     expect(find.byType(MaterialApp), findsOneWidget);
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    expect(find.text('جارٍ فتح جلسة اليوم...'), findsOneWidget);
-    expect(
-      find.text('سنبدأ ببياناتك المحلية أولاً ثم نكمل المزامنة في الخلفية.'),
-      findsOneWidget,
-    );
+    expect(find.text('ما هو حلمك مع الساكسفون؟'), findsOneWidget);
+    expect(find.text('سنقوم بتخصيص دروسك بناءً على هدفك'), findsOneWidget);
   });
 }
 
@@ -37,5 +36,29 @@ class _StartupOnlyApiClient extends SaxPathApiClient {
       currentDayNumber: 1,
       totalDays: 7,
     );
+  }
+
+  @override
+  Future<PracticeSession> getTodayPracticeSession({
+    String track = 'beginner',
+  }) async {
+    return const PracticeSession(
+      track: 'beginner',
+      dayNumber: 1,
+      totalMinutes: 10,
+      stageId: 'first_sound',
+      stageTitle: 'Stage 1: First Sound',
+      stageSubtitleAr: 'تثبيت النفس والوضعية.',
+      stageProgressPercent: 33,
+      guidedPathLabel: 'ابدأ بالصوت ثم ابنِ أول جملة قصيرة.',
+      recommendedFocusAr: 'تركيز اليوم: ثبات الإيقاع',
+      source: 'rule_based_v2',
+      blocks: [],
+    );
+  }
+
+  @override
+  Future<SkillMasterySnapshot> getSkillMastery() async {
+    return const SkillMasterySnapshot(skills: []);
   }
 }

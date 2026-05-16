@@ -20,18 +20,18 @@ class MvpCurriculumScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('30-Day MVP Curriculum')),
+      appBar: AppBar(title: const Text('منهج الـ 30 يوم (MVP)')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           SectionTitle(
             title: program.title,
-            subtitle: '${program.summary} · ${program.totalDays} days',
+            subtitle: '${program.summary} · ${program.totalDays} يوماً',
           ),
           const SizedBox(height: 16),
           const SaxCard(
             child: Text(
-              'كل درس هنا مكتمل فقط إذا أجاب بوضوح على: What do I hear? What do I play? Why does it work? Where does it appear in real jazz? How do I use it in my own solo?',
+              'كل درس هنا مكتمل فقط إذا أجاب بوضوح على: ماذا أسمع؟ ماذا أعزف؟ لماذا ينجح هذا؟ أين يظهر في الجاز الحقيقي؟ كيف أستخدمه في عزفي المنفرد؟',
             ),
           ),
           const SizedBox(height: 16),
@@ -40,7 +40,7 @@ class MvpCurriculumScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'MVP Modules',
+                  'وحدات المنهج',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 10),
@@ -146,7 +146,7 @@ class _DayExpansion extends StatelessWidget {
         tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
         title: Text(
-          'Day ${day.dayNumber} · ${day.title}',
+          'اليوم ${day.dayNumber} · ${day.title}',
           style: const TextStyle(fontWeight: FontWeight.w800),
         ),
         subtitle: Text(day.focus),
@@ -158,45 +158,45 @@ class _DayExpansion extends StatelessWidget {
               _InfoChip(label: difficultyLevelLabel(day.lesson.level)),
               _InfoChip(
                 label:
-                    '${day.lesson.tempoRange.minBpm}-${day.lesson.tempoRange.maxBpm} BPM',
+                    '${day.lesson.tempoRange.minBpm}-${day.lesson.tempoRange.maxBpm} نبضة/د',
               ),
               for (final module in matchedModules)
                 _InfoChip(label: module.title),
               _InfoChip(
-                  label: day.isComplete ? 'Complete Lesson' : 'Incomplete'),
+                  label: day.isComplete ? 'درس مكتمل' : 'غير مكتمل'),
             ],
           ),
           const SizedBox(height: 12),
           Text(day.lesson.description),
           const SizedBox(height: 12),
           const Text(
-            'Five Lesson Questions',
+            'الأسئلة الخمسة للدرس',
             style: TextStyle(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 8),
           _QuestionLine(
-            question: '1. What do I hear?',
+            question: '1. ماذا أسمع؟',
             answer: day.fiveQuestions.whatDoIHear,
           ),
           _QuestionLine(
-            question: '2. What do I play?',
+            question: '2. ماذا أعزف؟',
             answer: day.fiveQuestions.whatDoIPlay,
           ),
           _QuestionLine(
-            question: '3. Why does it work?',
+            question: '3. لماذا ينجح هذا؟',
             answer: day.fiveQuestions.whyDoesItWork,
           ),
           _QuestionLine(
-            question: '4. Where does it appear in real jazz?',
+            question: '4. أين يظهر في الجاز الحقيقي؟',
             answer: day.fiveQuestions.whereInRealJazz,
           ),
           _QuestionLine(
-            question: '5. How do I use it in my own solo?',
+            question: '5. كيف أستخدمه في عزفي المنفرد؟',
             answer: day.fiveQuestions.howDoIUseItInMySolo,
           ),
           const SizedBox(height: 12),
           const Text(
-            'Listen → Understand → Sing → Play → Improvise → Record → Evaluate → Repeat',
+            'استمع ← افهم ← غنِّ ← اعزف ← ارتجل ← سجّل ← قيّم ← كرر',
             style: TextStyle(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 8),
@@ -212,7 +212,7 @@ class _DayExpansion extends StatelessWidget {
           if (day.lesson.exercises.isNotEmpty) ...[
             const SizedBox(height: 4),
             const Text(
-              'Core Exercise',
+              'التمرين الأساسي',
               style: TextStyle(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 8),
@@ -221,12 +221,12 @@ class _DayExpansion extends StatelessWidget {
             Text(day.lesson.exercises.first.goal),
           ],
           const SizedBox(height: 12),
-          Text('Listening Assignment: ${day.listeningAssignment}'),
+          Text('مهمة الاستماع: ${day.listeningAssignment}'),
           const SizedBox(height: 6),
-          Text('Improvisation Task: ${day.improvisationAssignment}'),
+          Text('مهمة الارتجال: ${day.improvisationAssignment}'),
           if (day.recordCheckpoint != null) ...[
             const SizedBox(height: 6),
-            Text('Record Checkpoint: ${day.recordCheckpoint}'),
+            Text('نقطة التسجيل: ${day.recordCheckpoint}'),
           ],
         ],
       ),

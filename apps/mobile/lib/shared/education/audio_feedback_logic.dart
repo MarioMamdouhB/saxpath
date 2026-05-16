@@ -581,9 +581,21 @@ class HeuristicAudioFeedbackAnalyzer implements AudioFeedbackAnalyzer {
     AudioAnalysisRequest request,
     List<AudioFeedbackInsight> insights,
   ) {
+    // V3.1 Pro: Conversational Musical Advice
+    final pitch = request.evaluation.pitchAccuracy;
+    final rhythm = request.evaluation.rhythmAccuracy;
+
+    if (pitch < 70) {
+      return 'يا بطل، النغمات محتاجة تركيز أكتر. اسمع النغمة المرجعية وحاول تعزفها "بالراحة" من غير ما تستعجل، وخلي ودنك مع الموبايل.';
+    }
+
+    if (rhythm < 70) {
+      return 'عزفك حلو بس "الوزن" هرب منك شوية. حاول تصفق مع الميترونوم الأول وبعدين أمسك الساكس، الإيقاع هو روح المزيكا!';
+    }
+
     if (insights.isEmpty) {
       if (_isFoundationFlow(request)) {
-        return 'محاولتك الأساسية مستقرة عمومًا. النغمة والوقت وشكل الجملة في مكان جيد، والخطوة التالية هي تثبيت نفس الجودة في محاولة ثانية.';
+        return 'عاش جداً! عزفك النهاردة موزون وصوتك نضيف. إنت كدة جاهز تنقل على اللي بعده بقلب جامد.';
       }
 
       return 'محاولتك مستقرة عمومًا. النغمات والوقت والبناء العام في مكان جيد، والخطوة التالية هي زيادة التحدي من غير التضحية بالوضوح.';

@@ -2982,23 +2982,23 @@ String generatedFlowDescription({
 String lessonStepTypeLabel(LessonStepType type) {
   switch (type) {
     case LessonStepType.listen:
-      return 'Listen';
+      return 'استماع';
     case LessonStepType.understand:
-      return 'Understand';
+      return 'فهم';
     case LessonStepType.sing:
-      return 'Sing';
+      return 'غناء';
     case LessonStepType.play:
-      return 'Play';
+      return 'عزف';
     case LessonStepType.analyze:
-      return 'Analyze';
+      return 'تحليل';
     case LessonStepType.improvise:
-      return 'Improvise';
+      return 'ارتجال';
     case LessonStepType.record:
-      return 'Record';
+      return 'تسجيل';
     case LessonStepType.evaluate:
-      return 'Evaluate';
+      return 'تقييم';
     case LessonStepType.repeat:
-      return 'Repeat';
+      return 'تكرار';
   }
 }
 
@@ -3153,36 +3153,36 @@ RepeatRecommendationType repeatRecommendationTypeFromName(String name) {
 String conceptMusicContextTypeLabel(ConceptMusicContextType type) {
   switch (type) {
     case ConceptMusicContextType.blues:
-      return 'Blues';
+      return 'البلوز';
     case ConceptMusicContextType.iiVI:
       return 'ii-V-I';
     case ConceptMusicContextType.jazzStandardProgression:
-      return 'Standard-style Progression';
+      return 'تتابع جاز قياسي';
     case ConceptMusicContextType.bebopLine:
-      return 'Bebop Line';
+      return 'خط بيبوب';
     case ConceptMusicContextType.saxEtude:
-      return 'Sax Etude';
+      return 'دراسة ساكسفون (Etude)';
     case ConceptMusicContextType.earTraining:
-      return 'Ear Training';
+      return 'تدريب أذن';
     case ConceptMusicContextType.backingTrack:
-      return 'Backing Track';
+      return 'مسار مصاحب';
     case ConceptMusicContextType.rhythmExercise:
-      return 'Rhythm Exercise';
+      return 'تمرين إيقاعي';
     case ConceptMusicContextType.improvisationPrompt:
-      return 'Improvisation Prompt';
+      return 'موضوع للارتجال';
   }
 }
 
 String rhythmTrainerModeLabel(RhythmTrainerMode mode) {
   switch (mode) {
     case RhythmTrainerMode.clapBack:
-      return 'Clap Back';
+      return 'صفّق خلفي';
     case RhythmTrainerMode.playBackOneNote:
-      return 'Play Back One Note';
+      return 'اعزف خلفي (نغمة واحدة)';
     case RhythmTrainerMode.playRhythmUsingScale:
-      return 'Play with Scale';
+      return 'اعزف الإيقاع بالسلم';
     case RhythmTrainerMode.improviseTwoBarsSameRhythm:
-      return 'Improvise 2 Bars';
+      return 'ارتجل مازورتين بنفس الإيقاع';
   }
 }
 
@@ -3249,144 +3249,144 @@ String saxTypeDisplayLabel(SaxType saxType) {
 String practiceGoalLabel(PracticeGoal goal) {
   switch (goal) {
     case PracticeGoal.betterSwing:
-      return 'Better Swing';
+      return 'سوينغ أفضل';
     case PracticeGoal.betterBluesImprovisation:
-      return 'Blues Improvisation';
+      return 'ارتجال بلوز أفضل';
     case PracticeGoal.strongerTone:
-      return 'Stronger Tone';
+      return 'صوت أقوى وأثبت';
     case PracticeGoal.cleanerArticulation:
-      return 'Cleaner Articulation';
+      return 'نطق (Articulation) أنظف';
     case PracticeGoal.transcriptionGrowth:
-      return 'Transcription Growth';
+      return 'تطور في الكتابة السماعية';
     case PracticeGoal.repertoireFluency:
-      return 'Repertoire Fluency';
+      return 'طلاقة في المقطوعات';
     case PracticeGoal.balancedDevelopment:
-      return 'Balanced Development';
+      return 'تطور متوازن';
   }
 }
 
 String practiceAdaptationTypeLabel(PracticeAdaptationType type) {
   switch (type) {
     case PracticeAdaptationType.repeatTomorrow:
-      return 'Repeat Tomorrow';
+      return 'كرر غداً';
     case PracticeAdaptationType.reduceTempo:
-      return 'Reduce Tempo';
+      return 'قلل السرعة (Tempo)';
     case PracticeAdaptationType.articulationVariation:
-      return 'Articulation Focus';
+      return 'تركيز على النطق';
     case PracticeAdaptationType.unlockHarderVariation:
-      return 'Unlock Harder Variation';
+      return 'فتح تنويع أصعب';
     case PracticeAdaptationType.reduceComplexity:
-      return 'Reduce Complexity';
+      return 'تقليل التعقيد';
     case PracticeAdaptationType.increaseComplexity:
-      return 'Increase Complexity';
+      return 'زيادة التعقيد';
   }
 }
 
 String skillTreeNodeStatusLabel(SkillTreeNodeStatus status) {
   switch (status) {
     case SkillTreeNodeStatus.locked:
-      return 'Locked';
+      return 'مغلق';
     case SkillTreeNodeStatus.available:
-      return 'Available';
+      return 'متاح';
     case SkillTreeNodeStatus.inProgress:
-      return 'In Progress';
+      return 'قيد التقدم';
     case SkillTreeNodeStatus.mastered:
-      return 'Mastered';
+      return 'مُتقن';
   }
 }
 
 String audioFeedbackIssueLabel(AudioFeedbackIssue issue) {
   switch (issue) {
     case AudioFeedbackIssue.wrongNote:
-      return 'Wrong Note';
+      return 'نغمة خاطئة';
     case AudioFeedbackIssue.intonationSharp:
-      return 'Sharp Intonation';
+      return 'حدة عالية (Sharp)';
     case AudioFeedbackIssue.intonationFlat:
-      return 'Flat Intonation';
+      return 'حدة منخفضة (Flat)';
     case AudioFeedbackIssue.unstableLongTones:
-      return 'Unstable Long Tones';
+      return 'نغمات طويلة غير مستقرة';
     case AudioFeedbackIssue.earlyAttack:
-      return 'Early Attack';
+      return 'دخول مبكر';
     case AudioFeedbackIssue.lateAttack:
-      return 'Late Attack';
+      return 'دخول متأخر';
     case AudioFeedbackIssue.noteDuration:
-      return 'Note Duration';
+      return 'مدة النغمة';
     case AudioFeedbackIssue.swingRatio:
-      return 'Swing Ratio';
+      return 'نسبة السوينغ';
     case AudioFeedbackIssue.offbeatPlacement:
-      return 'Offbeat Placement';
+      return 'تموضع الـ Offbeat';
     case AudioFeedbackIssue.pulseConsistency:
-      return 'Pulse Consistency';
+      return 'ثبات النبض';
     case AudioFeedbackIssue.toneConsistency:
-      return 'Tone Consistency';
+      return 'ثبات جودة الصوت';
     case AudioFeedbackIssue.breathNoise:
-      return 'Breath Noise';
+      return 'ضجيج التنفس';
     case AudioFeedbackIssue.dynamicControl:
-      return 'Dynamic Control';
+      return 'التحكم في قوة الصوت';
     case AudioFeedbackIssue.toneStability:
-      return 'Tone Stability';
+      return 'استقرار النغمة';
     case AudioFeedbackIssue.registerQuality:
-      return 'Register Quality';
+      return 'جودة المنطقة الصوتية';
     case AudioFeedbackIssue.articulationTooHeavy:
-      return 'Too Heavy';
+      return 'نطق ثقيل جداً';
     case AudioFeedbackIssue.articulationTooLegato:
-      return 'Too Legato';
+      return 'نطق متصل جداً (Legato)';
     case AudioFeedbackIssue.missingAccents:
-      return 'Missing Accents';
+      return 'غياب النبرات (Accents)';
     case AudioFeedbackIssue.unclearGhostNotes:
-      return 'Unclear Ghost Notes';
+      return 'نغمات شبحية غير واضحة';
     case AudioFeedbackIssue.poorPhraseEndings:
-      return 'Poor Phrase Endings';
+      return 'نهايات جمل ضعيفة';
     case AudioFeedbackIssue.chordToneTargeting:
-      return 'Chord Tone Targeting';
+      return 'استهداف نغمات الكورد';
     case AudioFeedbackIssue.phraseLength:
-      return 'Phrase Length';
+      return 'طول الجملة';
     case AudioFeedbackIssue.useOfSpace:
-      return 'Use of Space';
+      return 'استخدام المساحات';
     case AudioFeedbackIssue.repetition:
-      return 'Repetition';
+      return 'التكرار';
     case AudioFeedbackIssue.motivicDevelopment:
-      return 'Motivic Development';
+      return 'تطوير الموتيف (Motif)';
     case AudioFeedbackIssue.rhythmicVariety:
-      return 'Rhythmic Variety';
+      return 'التنوع الإيقاعي';
     case AudioFeedbackIssue.resolutionQuality:
-      return 'Resolution Quality';
+      return 'جودة الاستقرار (Resolution)';
   }
 }
 
 String feedbackCategoryLabel(FeedbackCategory category) {
   switch (category) {
     case FeedbackCategory.pitch:
-      return 'Pitch';
+      return 'حدة النغمة (Pitch)';
     case FeedbackCategory.intonation:
-      return 'Intonation';
+      return 'الدوزان (Intonation)';
     case FeedbackCategory.rhythm:
-      return 'Rhythm';
+      return 'الإيقاع';
     case FeedbackCategory.swingFeel:
-      return 'Swing Feel';
+      return 'إحساس السوينغ';
     case FeedbackCategory.articulation:
-      return 'Articulation';
+      return 'النطق (Articulation)';
     case FeedbackCategory.tone:
-      return 'Tone';
+      return 'جودة الصوت (Tone)';
     case FeedbackCategory.phraseShape:
-      return 'Phrase Shape';
+      return 'شكل الجملة';
     case FeedbackCategory.improvisationLogic:
-      return 'Improvisation';
+      return 'الارتجال';
     case FeedbackCategory.chordToneTargeting:
-      return 'Chord Targeting';
+      return 'أهداف الكورد';
   }
 }
 
 String difficultyLevelLabel(DifficultyLevel level) {
   switch (level) {
     case DifficultyLevel.beginner:
-      return 'Beginner';
+      return 'مبتدئ';
     case DifficultyLevel.earlyIntermediate:
-      return 'Early Intermediate';
+      return 'فوق المبتدئ';
     case DifficultyLevel.intermediate:
-      return 'Intermediate';
+      return 'متوسط';
     case DifficultyLevel.advanced:
-      return 'Advanced';
+      return 'متقدم';
   }
 }
 

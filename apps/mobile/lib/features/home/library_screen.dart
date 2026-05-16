@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:saxpath_mobile/core/theme/app_colors.dart';
 import 'package:saxpath_mobile/data/saxpath_api_client.dart';
 import 'package:saxpath_mobile/features/academy/jazz_academy_screen.dart';
-import 'package:saxpath_mobile/features/academy/mvp_curriculum_screen.dart';
-import 'package:saxpath_mobile/features/foundation/foundation_scale_lessons_screen.dart';
 import 'package:saxpath_mobile/features/foundation/sax_foundation_screen.dart';
-import 'package:saxpath_mobile/features/home/practice_room_screen.dart';
+import 'package:saxpath_mobile/features/academy/notation_masterclass_screen.dart';
+import 'package:saxpath_mobile/features/academy/method_book_drills_screen.dart';
+import 'package:saxpath_mobile/features/home/widgets/oriental_reference_card.dart';
 import 'package:saxpath_mobile/shared/education/curriculum_service.dart';
 import 'package:saxpath_mobile/shared/education/sax_foundation_repository.dart';
 import 'package:saxpath_mobile/shared/widgets/primary_button.dart';
@@ -31,65 +31,42 @@ class LibraryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final practicalTracks = [
       _TrackData(
-        title: 'النغمة والصوت من البداية',
-        subtitle:
-            'وضع اليد، أول نغمة، الفينجرينج، وتثبيت الصوت قبل أي سرعة أو نظري.',
+        title: 'Notation Masterclass',
+        subtitle: 'تعلم قراءة النوتة الموسيقية من الصفر بنظام تفاعلي حديث.',
         bullets: const [
-          'Long tones',
-          'First notes',
-          'Finger placement',
+          'Treble Clef',
+          'Note Reading',
+          'Rhythm Basics',
         ],
-        actionLabel: 'افتح Foundation',
+        actionLabel: 'ابدأ مختبر النوتة',
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) => const SaxFoundationScreen(),
+              builder: (_) => const NotationMasterclassScreen(),
             ),
           );
         },
       ),
       _TrackData(
-        title: 'Scales + Phrase + Speed',
-        subtitle:
-            'ابدأ بالسلالم الأساسية، ثم حوّلها إلى phrases صغيرة، وبعدها ارفع السرعة تدريجيًا.',
+        title: 'Jazz & Western Method Drills',
+        subtitle: 'تمارين عملية من كتب Rubank و DeVille محولة لنظام تفاعلي.',
         bullets: const [
-          'Major scales',
-          'Pentatonic',
-          'Blues scale',
+          'Technical Drills',
+          'Method Book Study',
+          'Jazz Vocabulary',
         ],
-        actionLabel: 'افتح دروس السلالم',
+        actionLabel: 'افتح تمارين الكتب',
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) => FoundationScaleLessonsScreen(
-                repository: foundationRepository,
-              ),
+              builder: (_) => const MethodBookDrillsScreen(),
             ),
           );
         },
       ),
       _TrackData(
-        title: 'Rhythm + Tempo + Recording',
-        subtitle:
-            'عدّ، صفّق، عزف على نغمة واحدة، ثم تسجيل وتحليل بدل الحفظ النظري.',
-        bullets: const [
-          'Metronome work',
-          'Tempo ladders',
-          'Record and retry',
-        ],
-        actionLabel: 'افتح غرفة التدريب',
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const PracticeRoomScreen(),
-            ),
-          );
-        },
-      ),
-      _TrackData(
-        title: 'Blues + Jazz Language + Styles',
-        subtitle:
-            'بلوز، swing، guide tones، ii-V-I، وأمثلة كثيرة تبني لغة عزف حقيقية.',
+        title: 'Jazz Foundations & Improvisation',
+        subtitle: 'بلوز، swing، guide tones، ii-V-I، وأمثلة كثيرة تبني لغة عزف حقيقية.',
         bullets: const [
           'Blues language',
           'Guide tones',
@@ -105,21 +82,18 @@ class LibraryScreen extends StatelessWidget {
         },
       ),
       _TrackData(
-        title: 'مسار الشهر الأول الجاد',
-        subtitle:
-            'خطة أوسع تنقلك من tone وtime إلى البلوز، الجمل، التسجيل، وأول solo كامل.',
+        title: 'النغمة والصوت (Foundation)',
+        subtitle: 'وضع اليد، أول نغمة، الفينجرينج، وتثبيت الصوت قبل أي سرعة أو نظري.',
         bullets: const [
-          '30-day structure',
-          'Backing tracks',
-          'Capstone review',
+          'Long tones',
+          'First notes',
+          'Finger placement',
         ],
-        actionLabel: 'افتح منهج 30 يوم',
+        actionLabel: 'افتح التأسيس',
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) => MvpCurriculumScreen(
-                curriculumService: curriculumService,
-              ),
+              builder: (_) => const SaxFoundationScreen(),
             ),
           );
         },
@@ -202,9 +176,9 @@ class LibraryScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               const SectionTitle(
-                title: 'مسارات عملية',
+                title: 'مسارات عملية غربية وجاز',
                 subtitle:
-                    'ابدأ من الهدف الذي تريد بناءه: sound، scales، rhythm، jazz language، أو خطة شهر كامل.',
+                    'ابدأ من قراءة النوتة، ثم تمارين الكتب العالمية، وصولاً إلى الارتجال في أكاديمية الجاز.',
               ),
               const SizedBox(height: 12),
               for (final track in practicalTracks) ...[
@@ -212,6 +186,8 @@ class LibraryScreen extends StatelessWidget {
                 const SizedBox(height: 12),
               ],
               const SizedBox(height: 8),
+              const OrientalReferenceCard(),
+              const SizedBox(height: 16),
               const SectionTitle(
                 title: 'خزنة المراجع',
                 subtitle:

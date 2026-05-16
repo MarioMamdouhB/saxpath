@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 import wave
@@ -6,7 +7,7 @@ import httpx
 from fastapi import UploadFile
 
 from app.core.config import get_settings
-from app.schemas.attempt import AttemptAnalysis, DetectedNote, TimingError
+from app.schemas.attempt import AttemptAnalysis, DetectedNote, EventMatch, TimingError
 from app.schemas.recording import RecordingResponse
 from app.services.mock_content import get_task_targets
 
@@ -37,26 +38,48 @@ def analyze_recording(
         if not path.exists():
             raise AudioAnalysisError("Recording file does not exist.")
 
-        pitch_payload = _post_file(
-            endpoint="/api/v1/audio-analysis/pitch",
-            path=path,
-            data={"expected_note": _expected_note_for_exercise(exercise_id)},
-        )
+        task_targets = get_task_targets(exercise_id) or {}
         rhythm_target = _rhythm_target_for_exercise(exercise_id)
-        rhythm_payload = _post_file(
-            endpoint="/api/v1/audio-analysis/rhythm",
-            path=path,
-            data={
-                "bpm": str(_target_bpm_for_exercise(exercise_id)),
-                "rhythm_target": rhythm_target,
-            },
-        )
+        target_bpm = _target_bpm_for_exercise(exercise_id)
+        expected_event_timeline = task_targets.get("expected_event_timeline")
+        try:
+            phrase_payload = _post_file(
+                endpoint="/api/v1/audio-analysis/evaluate",
+                path=path,
+                data={
+                    "expected_note": _expected_note_for_exercise(exercise_id),
+                    "bpm": str(target_bpm),
+                    "rhythm_target": rhythm_target,
+                    "expected_event_timeline": json.dumps(
+                        expected_event_timeline if isinstance(expected_event_timeline, list) else [],
+                        ensure_ascii=False,
+                    ),
+                },
+            )
+            return _analysis_from_payload(
+                phrase_payload,
+                source="audio_engine_phrase_v2",
+            )
+        except (AudioAnalysisError, httpx.HTTPError, ValueError):
+            pitch_payload = _post_file(
+                endpoint="/api/v1/audio-analysis/pitch",
+                path=path,
+                data={"expected_note": _expected_note_for_exercise(exercise_id)},
+            )
+            rhythm_payload = _post_file(
+                endpoint="/api/v1/audio-analysis/rhythm",
+                path=path,
+                data={
+                    "bpm": str(target_bpm),
+                    "rhythm_target": rhythm_target,
+                },
+            )
 
-        return _combine_audio_engine_payloads(
-            pitch_payload=pitch_payload,
-            rhythm_payload=rhythm_payload,
-            source="audio_engine",
-        )
+            return _combine_audio_engine_payloads(
+                pitch_payload=pitch_payload,
+                rhythm_payload=rhythm_payload,
+                source="audio_engine",
+            )
     except (AudioAnalysisError, OSError, httpx.HTTPError, ValueError):
         return build_deterministic_analysis(
             exercise_id=exercise_id,
@@ -177,8 +200,21 @@ def build_deterministic_analysis(
                 error_ms=250,
             )
         ],
+        tone_score=max(55, round((pitch_score * 0.7) + (rhythm_score * 0.3))),
+        event_matches=[
+            EventMatch(
+                expected_note=_expected_note_for_exercise(exercise_id),
+                detected_note=_expected_note_for_exercise(exercise_id),
+                expected_seconds=0,
+                observed_seconds=0,
+                timing_error_ms=0,
+                pitch_ok=pitch_score >= 70,
+            )
+        ],
+        sustain_stability=round(min(0.92, confidence + 0.08), 2),
         confidence=round(confidence, 2),
         source=source,
+        analysis_version="deterministic_v2",
     )
 
 
@@ -220,8 +256,12 @@ def _combine_audio_engine_payloads(
         rhythm_score=rhythm.rhythm_score,
         detected_notes=pitch.detected_notes,
         timing_errors=rhythm.timing_errors,
+        tone_score=pitch.tone_score or pitch.pitch_score,
+        event_matches=pitch.event_matches,
+        sustain_stability=pitch.sustain_stability,
         confidence=round((pitch.confidence + rhythm.confidence) / 2, 2),
         source=source,
+        analysis_version=pitch.analysis_version,
     )
 
 
@@ -239,8 +279,16 @@ def _analysis_from_payload(payload: dict[str, object], source: str) -> AttemptAn
             for error in payload.get("timing_errors", [])
             if isinstance(error, dict)
         ],
+        tone_score=_coerce_score(payload.get("tone_score")),
+        event_matches=[
+            EventMatch(**event)
+            for event in payload.get("event_matches", [])
+            if isinstance(event, dict)
+        ],
+        sustain_stability=float(payload.get("sustain_stability") or 0),
         confidence=float(payload.get("confidence") or 0),
         source=source,
+        analysis_version=str(payload.get("analysis_version") or "v1"),
     )
 
 

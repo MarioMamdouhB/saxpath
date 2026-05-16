@@ -5,13 +5,13 @@ import 'package:saxpath_mobile/data/models/attempt_evaluation.dart';
 import 'package:saxpath_mobile/data/saxpath_api_client.dart';
 import 'package:saxpath_mobile/features/practice/models/mock_recording.dart';
 import 'package:saxpath_mobile/features/progress/state/app_progress_scope.dart';
+import 'package:saxpath_mobile/features/shell/main_app_shell.dart';
 import 'package:saxpath_mobile/shared/education/jazz_curriculum_models.dart';
 import 'package:saxpath_mobile/shared/education/services/feedback_service.dart';
 import 'package:saxpath_mobile/shared/widgets/primary_button.dart';
 import 'package:saxpath_mobile/shared/widgets/recorded_audio_card.dart';
 import 'package:saxpath_mobile/shared/widgets/sax_card.dart';
 import 'package:saxpath_mobile/shared/widgets/section_title.dart';
-import '../home/home_screen.dart';
 import '../progress/progress_screen.dart';
 import 'results_completion.dart';
 
@@ -39,11 +39,30 @@ class ResultsScreen extends StatefulWidget {
 
 class _ResultsScreenState extends State<ResultsScreen> {
   final ScrollController _scrollController = ScrollController();
+  late AttemptEvaluation _evaluation;
+  bool _isRequestingTeacherReview = false;
+  bool _showStageCelebration = false;
 
   @override
   void initState() {
     super.initState();
+    _evaluation = widget.evaluation;
     _scheduleScrollReset();
+    _checkStageCompletion();
+  }
+
+  void _checkStageCompletion() {
+    // Stage completion logic based on the day number
+    final stageDays = {
+      10: 'الأساسيات الأولى',
+      14: 'الأوكتاف الثاني والسلم الكامل',
+    };
+
+    if (stageDays.containsKey(widget.dayNumber) && widget.evaluation.completion >= 70) {
+      setState(() {
+        _showStageCelebration = true;
+      });
+    }
   }
 
   @override
@@ -59,15 +78,15 @@ class _ResultsScreenState extends State<ResultsScreen> {
       exerciseId: widget.exerciseId,
       dayNumber: widget.dayNumber,
       recording: widget.recording,
-      evaluation: widget.evaluation,
+      evaluation: _evaluation,
     );
     final coachingPoints = _buildCoachingPoints(
-      evaluation: widget.evaluation,
+      evaluation: _evaluation,
       recording: widget.recording,
       dayNumber: widget.dayNumber,
     );
     final completionState = buildResultsCompletionState(
-      evaluation: widget.evaluation,
+      evaluation: _evaluation,
       recording: widget.recording,
       dayNumber: widget.dayNumber,
       totalDays: progressController.totalDays,
@@ -79,27 +98,48 @@ class _ResultsScreenState extends State<ResultsScreen> {
         controller: _scrollController,
         padding: const EdgeInsets.all(20),
         children: [
+          if (_showStageCelebration) ...[
+            _StageCelebrationCard(
+              stageName: widget.dayNumber == 10
+                ? 'الأساسيات الأولى'
+                : 'الأوكتاف الثاني والسلم الكامل',
+            ),
+            const SizedBox(height: 16),
+          ],
           const SectionTitle(
             title: 'نتيجة اليوم',
             subtitle: 'خذ القرار أولاً، ثم راجع التفاصيل التي تساعدك على الخطوة التالية.',
           ),
           const SizedBox(height: 16),
           _DecisionBannerCard(
-            evaluation: widget.evaluation,
+            evaluation: _evaluation,
             recording: widget.recording,
             completionState: completionState,
             dayNumber: widget.dayNumber,
           ),
           const SizedBox(height: 16),
           _LabeledMessageCard(
-            title: 'الحكم السريع',
-            body: widget.evaluation.feedbackAr,
+            title: 'ما نجح',
+            body: _whatWorkedMessage(_evaluation),
           ),
           const SizedBox(height: 16),
           _LabeledMessageCard(
-            title: 'نفّذ الآن',
-            body: widget.evaluation.nextRecommendation,
+            title: 'ما يحتاج إعادة',
+            body: _whatNeedsRetryMessage(_evaluation),
           ),
+          const SizedBox(height: 16),
+          _LabeledMessageCard(
+            title: 'الخطوة التالية الآن',
+            body: _evaluation.nextRecommendation,
+          ),
+          if (_evaluation.confidenceLabel == 'low') ...[
+            const SizedBox(height: 16),
+            const _LabeledMessageCard(
+              title: 'ملاحظة مهمة',
+              body:
+                  'التحليل الصوتي الحالي منخفض الثقة، لذلك اعتبر الملاحظات إرشادية ولا تمنعك من إكمال اليوم.',
+            ),
+          ],
           const SizedBox(height: 16),
           SaxCard(
             child: Row(
@@ -107,34 +147,42 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 Expanded(
                   child: _Metric(
                     label: 'النغمة',
-                    value: '${widget.evaluation.pitchAccuracy}%',
+                    value: '${_evaluation.pitchAccuracy}%',
                   ),
                 ),
                 Expanded(
                   child: _Metric(
                     label: 'الإيقاع',
-                    value: '${widget.evaluation.rhythmAccuracy}%',
+                    value: '${_evaluation.rhythmAccuracy}%',
                   ),
                 ),
                 Expanded(
                   child: _Metric(
                     label: 'الإكمال',
-                    value: '${widget.evaluation.completion}%',
+                    value: '${_evaluation.completion}%',
                   ),
                 ),
               ],
             ),
           ),
-          if (widget.evaluation.analysis != null) ...[
+          if (_evaluation.analysis != null) ...[
             const SizedBox(height: 16),
             SaxCard(
-              child: _AnalysisSummary(evaluation: widget.evaluation),
+              child: _AnalysisSummary(evaluation: _evaluation),
             ),
           ],
-          if (widget.evaluation.retryReason != null) ...[
+          if (_evaluation.retryReason != null) ...[
             const SizedBox(height: 16),
             SaxCard(
-              child: Text(retryReasonMessage(widget.evaluation.retryReason)),
+              child: Text(retryReasonMessage(_evaluation.retryReason)),
+            ),
+          ],
+          if (_evaluation.teacherReview != null) ...[
+            const SizedBox(height: 16),
+            _TeacherReviewCard(
+              review: _evaluation.teacherReview!,
+              isRequesting: _isRequestingTeacherReview,
+              onRequestReview: _requestTeacherReview,
             ),
           ],
           const SizedBox(height: 16),
@@ -262,11 +310,11 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 await widget.apiClient.trackEvent(
                   eventName: 'day_complete',
                   dayNumber: widget.dayNumber,
-                  attemptId: widget.evaluation.attemptId,
+                  attemptId: _evaluation.attemptId,
                   metadata: {
                     'next_day_number': completionState.nextDayNumber,
-                    'completion': widget.evaluation.completion,
-                    'analysis_source': widget.evaluation.analysis?.source,
+                    'completion': _evaluation.completion,
+                    'analysis_source': _evaluation.analysis?.source,
                   },
                 );
               } catch (_) {
@@ -279,9 +327,8 @@ class _ResultsScreenState extends State<ResultsScreen> {
 
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
-                  builder: (_) => HomeScreen(
+                  builder: (_) => MainAppShell(
                     apiClient: widget.apiClient,
-                    dayNumber: completionState.nextDayNumber,
                   ),
                 ),
                 (route) => false,
@@ -326,6 +373,134 @@ class _ResultsScreenState extends State<ResultsScreen> {
         _scrollController.jumpTo(0);
       }
     });
+  }
+
+  Future<void> _requestTeacherReview() async {
+    if (_isRequestingTeacherReview) {
+      return;
+    }
+
+    setState(() {
+      _isRequestingTeacherReview = true;
+    });
+
+    try {
+      final updated =
+          await widget.apiClient.requestTeacherReview(_evaluation.attemptId);
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _evaluation = _evaluation.copyWith(
+          teacherReview: updated.teacherReview,
+        );
+      });
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('تعذر طلب مراجعة المدرس حالياً. حاول مرة أخرى.'),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isRequestingTeacherReview = false;
+        });
+      }
+    }
+  }
+
+  String _whatWorkedMessage(AttemptEvaluation evaluation) {
+    if (evaluation.analysis != null && evaluation.analysis!.toneScore >= 75) {
+      return 'الصوت الأساسي ثابت، ومعه أساس جيد لبناء الجملة التالية.';
+    }
+    if (evaluation.pitchAccuracy >= 75 && evaluation.rhythmAccuracy >= 75) {
+      return 'الدقة العامة متماسكة، وده معناه إن حلقة التدريب بدأت تثبت.';
+    }
+    return evaluation.feedbackAr;
+  }
+
+  String _whatNeedsRetryMessage(AttemptEvaluation evaluation) {
+    if (evaluation.retryReason == null &&
+        evaluation.recommendedRetryBlock == null) {
+      return 'لا توجد نقطة إعادة حرجة الآن. يمكنك تثبيت نفس الجودة ثم المتابعة.';
+    }
+
+    return switch (evaluation.recommendedRetryBlock) {
+      'warm_up' => 'ارجع إلى warm-up وثبّت النفس والصوت قبل إعادة الجملة.',
+      'note_fingering' =>
+        'ركز على note/fingering: النغمة أو انتقالات الأصابع ما زالت تحتاج إعادة هادئة.',
+      'rhythm_call_response' =>
+        'أعد جزء rhythm/call-and-response بسرعة أبطأ قبل التسجيل التالي.',
+      'record_check' =>
+        'كرر التسجيل مرة أوضح وأطول قليلاً حتى يظهر الأداء الحقيقي بشكل أدق.',
+      _ => retryReasonMessage(evaluation.retryReason),
+    };
+  }
+}
+
+class _TeacherReviewCard extends StatelessWidget {
+  const _TeacherReviewCard({
+    required this.review,
+    required this.isRequesting,
+    required this.onRequestReview,
+  });
+
+  final TeacherReview review;
+  final bool isRequesting;
+  final Future<void> Function() onRequestReview;
+
+  @override
+  Widget build(BuildContext context) {
+    final isRequested = review.status == 'requested';
+
+    return SaxCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'AI + Teacher Review',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 8),
+          Text(review.aiSummaryAr),
+          const SizedBox(height: 10),
+          for (var index = 0; index < review.focusPointsAr.length; index++) ...[
+            Text('${index + 1}. ${review.focusPointsAr[index]}'),
+            if (index < review.focusPointsAr.length - 1)
+              const SizedBox(height: 6),
+          ],
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Text(review.teacherPromptAr),
+          ),
+          const SizedBox(height: 10),
+          Text(review.queueEtaAr),
+          const SizedBox(height: 12),
+          OutlinedButton(
+            onPressed: isRequested || isRequesting ? null : onRequestReview,
+            child: Text(
+              isRequested
+                  ? 'تم طلب مراجعة المدرس'
+                  : isRequesting
+                      ? 'جارٍ إرسال الطلب...'
+                      : 'اطلب مراجعة مدرس',
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -820,4 +995,52 @@ class _CoachingAdvice {
 
   final String title;
   final String body;
+}
+
+class _StageCelebrationCard extends StatelessWidget {
+  final String stageName;
+
+  const _StageCelebrationCard({required this.stageName});
+
+  @override
+  Widget build(BuildContext context) {
+    return SaxCard(
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.amber[50],
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.amber[300]!, width: 2),
+        ),
+        child: Column(
+          children: [
+            const Icon(Icons.workspace_premium_rounded, size: 64, color: Colors.amber),
+            const SizedBox(height: 16),
+            const Text(
+              '🎉 إنجاز عظيم!',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.brown),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'لقد أكملت بنجاح مرحلة:',
+              style: TextStyle(fontSize: 16, color: Colors.brown[700]),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              stageName,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.deepTeal),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'أنت الآن جاهز للانتقال إلى تحديات أكثر إثارة في المرحلة القادمة.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.black54),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

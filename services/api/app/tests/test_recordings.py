@@ -1,4 +1,5 @@
 import io
+import json
 import math
 import struct
 import wave
@@ -51,24 +52,21 @@ def test_attempt_with_recording_uses_audio_analysis(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def fake_post_file(*, endpoint: str, path: Path, data: dict[str, str]):
-        if endpoint.endswith("/pitch"):
+        if endpoint.endswith("/evaluate"):
             return {
                 "pitch_score": 92,
-                "rhythm_score": 0,
+                "rhythm_score": 88,
                 "detected_notes": [
                     {"note": "G", "frequency_hz": 196.0, "confidence": 0.94}
                 ],
                 "timing_errors": [],
+                "tone_score": 86,
+                "event_matches": [],
+                "sustain_stability": 0.82,
                 "confidence": 0.94,
+                "analysis_version": "phrase_v2",
             }
-
-        return {
-            "pitch_score": 0,
-            "rhythm_score": 88,
-            "detected_notes": [],
-            "timing_errors": [],
-            "confidence": 0.9,
-        }
+        raise AssertionError(f"Unexpected endpoint: {endpoint}")
 
     monkeypatch.setattr(audio_analysis, "_post_file", fake_post_file)
 
@@ -92,7 +90,7 @@ def test_attempt_with_recording_uses_audio_analysis(
     assert payload["recording_id"] == recording_id
     assert payload["pitch_accuracy"] == 92
     assert payload["rhythm_accuracy"] == 88
-    assert payload["analysis"]["source"] == "audio_engine"
+    assert payload["analysis"]["source"] == "audio_engine_phrase_v2"
     assert payload["retry_reason"] is None
 
 
@@ -149,24 +147,21 @@ def test_attempt_uses_curriculum_targets_for_generated_days(
 
     def fake_post_file(*, endpoint: str, path: Path, data: dict[str, str]):
         captured_calls.append((endpoint, data))
-        if endpoint.endswith("/pitch"):
+        if endpoint.endswith("/evaluate"):
             return {
                 "pitch_score": 90,
-                "rhythm_score": 0,
+                "rhythm_score": 84,
                 "detected_notes": [
                     {"note": "C", "frequency_hz": 261.63, "confidence": 0.9}
                 ],
                 "timing_errors": [],
+                "tone_score": 82,
+                "event_matches": [],
+                "sustain_stability": 0.79,
                 "confidence": 0.9,
+                "analysis_version": "phrase_v2",
             }
-
-        return {
-            "pitch_score": 0,
-            "rhythm_score": 84,
-            "detected_notes": [],
-            "timing_errors": [],
-            "confidence": 0.85,
-        }
+        raise AssertionError(f"Unexpected endpoint: {endpoint}")
 
     monkeypatch.setattr(audio_analysis, "_post_file", fake_post_file)
 
@@ -185,13 +180,15 @@ def test_attempt_uses_curriculum_targets_for_generated_days(
     )
 
     assert attempt_response.status_code == 200
-    assert captured_calls == [
-        ("/api/v1/audio-analysis/pitch", {"expected_note": "C"}),
-        (
-            "/api/v1/audio-analysis/rhythm",
-            {"bpm": "76", "rhythm_target": "syncopation_intro"},
-        ),
-    ]
+    assert len(captured_calls) == 1
+    endpoint, data = captured_calls[0]
+    assert endpoint == "/api/v1/audio-analysis/evaluate"
+    assert data["expected_note"] == "C"
+    assert data["bpm"] == "76"
+    assert data["rhythm_target"] == "syncopation_intro"
+    timeline = json.loads(data["expected_event_timeline"])
+    assert len(timeline) == 4
+    assert timeline[0]["note"] == "C"
 
 
 def _wav_bytes(*, seconds: int = 1, frequency: float = 196.0) -> bytes:

@@ -13,6 +13,7 @@ class AppColors {
   static const paleMint = Color(0xFFE7ECF6);
   static const mistBlue = Color(0xFFF5F7FB);
   static const peach = Color(0xFFF5F7FB);
+  static const primary = Color(0xFF0F2747);
   static const success = Color(0xFF0F2747);
   static const cardShadow = Color(0x140F2747);
 }

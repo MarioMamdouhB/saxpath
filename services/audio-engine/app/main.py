@@ -6,7 +6,7 @@ import wave
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from starlette.requests import Request
 
-from app.analysis import analyze_pitch_wav, analyze_rhythm_wav
+from app.analysis import analyze_phrase_wav, analyze_pitch_wav, analyze_rhythm_wav
 from app.schemas import AudioAnalysisResponse
 
 app = FastAPI(title="SaxPath Audio Engine", version="0.1.0")
@@ -66,4 +66,30 @@ async def analyze_rhythm(
             rhythm_target=rhythm_target,
         )
     except (ValueError, wave.Error, EOFError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/api/v1/audio-analysis/evaluate", response_model=AudioAnalysisResponse)
+async def analyze_phrase(
+    file: UploadFile = File(...),
+    expected_note: str = Form("G"),
+    bpm: int = Form(60),
+    rhythm_target: str = Form("quarter_note"),
+    expected_event_timeline: str = Form("[]"),
+) -> AudioAnalysisResponse:
+    wav_bytes = await file.read()
+    try:
+        raw_timeline = json.loads(expected_event_timeline)
+        if not isinstance(raw_timeline, list):
+            raw_timeline = []
+        return analyze_phrase_wav(
+            wav_bytes,
+            expected_note=expected_note,
+            bpm=bpm,
+            rhythm_target=rhythm_target,
+            expected_event_timeline=[
+                item for item in raw_timeline if isinstance(item, dict)
+            ],
+        )
+    except (ValueError, wave.Error, EOFError, json.JSONDecodeError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

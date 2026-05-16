@@ -1,8 +1,24 @@
+from pathlib import Path
+
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.services import persistence
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def isolated_demo_store(
+    isolated_service_dir: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        persistence,
+        "get_store_path",
+        lambda: isolated_service_dir / "demo_store.json",
+    )
 
 
 def test_daily_plan_returns_day_one() -> None:
@@ -55,3 +71,26 @@ def test_daily_plan_returns_generated_day_with_targets() -> None:
     assert payload["tasks"][2]["type"] == "practice"
     assert payload["tasks"][2]["expected_notes"]
     assert payload["tasks"][2]["rhythm_target"]
+
+
+def test_daily_plan_adapts_after_weak_attempt() -> None:
+    create_response = client.post(
+        "/api/v1/attempts",
+        json={
+            "exercise_id": "task_day_02_practice_aagg",
+            "duration_seconds": 8,
+            "audio_url": "mock://recordings/day_02_short.wav",
+        },
+    )
+
+    assert create_response.status_code == 200
+
+    response = client.get("/api/v1/daily-plan/day/3")
+
+    assert response.status_code == 200
+    payload = response.json()
+    focus_tasks = [task for task in payload["tasks"] if task["is_focus_task"]]
+
+    assert focus_tasks
+    assert any(task["adaptation_reason_ar"] for task in payload["tasks"])
+    assert any(task["recommended_loop_target"] for task in payload["tasks"])

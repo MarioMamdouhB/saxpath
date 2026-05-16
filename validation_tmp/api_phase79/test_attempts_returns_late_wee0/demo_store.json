@@ -1,0 +1,36 @@
+{
+  "completed_days": [],
+  "attempts": [
+    {
+      "attempt_id": "attempt_day_07_013_e06f2c4d",
+      "exercise_id": "task_day_07_practice_phrase",
+      "day_number": 7,
+      "duration_seconds": 13,
+      "audio_url": "mock://recordings/day_07_phrase.wav",
+      "recording_id": null,
+      "pitch_accuracy": 84,
+      "rhythm_accuracy": 79,
+      "completion": 93,
+      "feedback_ar": "أداء قوي لليوم 7. النغمة والإيقاع متماسكين بشكل جيد. العِب الجملة كاملة كنَفَس واحد مع ختام هادئ.",
+      "next_recommendation": "أعد الجملة كاملة مرتين متتاليتين قبل الانتقال لليوم التالي.",
+      "retry_reason": null,
+      "analysis": {
+        "pitch_score": 84,
+        "rhythm_score": 79,
+        "detected_notes": [
+          {
+            "note": "D",
+            "frequency_hz": 196.0,
+            "confidence": 0.82
+          }
+        ],
+        "timing_errors": [],
+        "confidence": 0.82,
+        "source": "deterministic_mock"
+      },
+      "created_at": "2026-05-08T18:53:27.067292+00:00"
+    }
+  ],
+  "analytics_events": [],
+  "recordings": {}
+}

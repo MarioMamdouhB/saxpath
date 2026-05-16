@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'package:saxpath_mobile/core/config/api_config.dart';
 import 'package:saxpath_mobile/features/practice/models/mock_recording.dart';
+import 'package:saxpath_mobile/shared/audio/audio_playback_coordinator.dart';
 import 'package:saxpath_mobile/shared/widgets/sax_card.dart';
 
 class RecordedAudioCard extends StatefulWidget {
@@ -27,6 +28,7 @@ class RecordedAudioCard extends StatefulWidget {
 
 class _RecordedAudioCardState extends State<RecordedAudioCard> {
   final AudioPlayer _player = AudioPlayer();
+  final Object _playbackOwner = Object();
   StreamSubscription<PlayerState>? _playerStateSubscription;
   StreamSubscription<Duration>? _positionSubscription;
   StreamSubscription<Duration>? _durationSubscription;
@@ -81,6 +83,9 @@ class _RecordedAudioCardState extends State<RecordedAudioCard> {
           _position = _effectiveDuration;
         }
       });
+      if (state == PlayerState.completed) {
+        AudioPlaybackCoordinator.instance.release(_playbackOwner);
+      }
     });
 
     _positionSubscription = _player.onPositionChanged.listen((position) {
@@ -121,6 +126,8 @@ class _RecordedAudioCardState extends State<RecordedAudioCard> {
     _playerStateSubscription?.cancel();
     _positionSubscription?.cancel();
     _durationSubscription?.cancel();
+    AudioPlaybackCoordinator.instance.release(_playbackOwner);
+    unawaited(_player.stop());
     _player.dispose();
     super.dispose();
   }
@@ -194,6 +201,7 @@ class _RecordedAudioCardState extends State<RecordedAudioCard> {
     });
 
     await _player.stop();
+    AudioPlaybackCoordinator.instance.release(_playbackOwner);
 
     if (!_isReplayableLocalFile && _remotePlaybackUrl == null) {
       if (!mounted) {
@@ -232,6 +240,10 @@ class _RecordedAudioCardState extends State<RecordedAudioCard> {
         throw StateError('No playable recording source.');
       }
 
+      await AudioPlaybackCoordinator.instance.activate(
+        owner: _playbackOwner,
+        onInterrupt: _handleExternalInterruption,
+      );
       await _player.play(source);
       if (!mounted) {
         return;
@@ -253,14 +265,24 @@ class _RecordedAudioCardState extends State<RecordedAudioCard> {
   }
 
   Future<void> _stopPlayback() async {
+    await _stopPlaybackInternal();
+  }
+
+  Future<void> _stopPlaybackInternal({
+    bool releaseOwnership = true,
+    String? statusMessage,
+  }) async {
     await _player.stop();
+    if (releaseOwnership) {
+      AudioPlaybackCoordinator.instance.release(_playbackOwner);
+    }
     if (!mounted) {
       return;
     }
 
     setState(() {
       _position = Duration.zero;
-      _statusMessage = 'تم إيقاف تشغيل التسجيل.';
+      _statusMessage = statusMessage ?? 'تم إيقاف تشغيل التسجيل.';
     });
   }
 
@@ -271,6 +293,10 @@ class _RecordedAudioCardState extends State<RecordedAudioCard> {
         throw StateError('No playable recording source.');
       }
 
+      await AudioPlaybackCoordinator.instance.activate(
+        owner: _playbackOwner,
+        onInterrupt: _handleExternalInterruption,
+      );
       await _player.stop();
       await _player.play(source);
       if (!mounted) {
@@ -290,6 +316,13 @@ class _RecordedAudioCardState extends State<RecordedAudioCard> {
         _statusMessage = 'تعذر إعادة تشغيل التسجيل من البداية.';
       });
     }
+  }
+
+  Future<void> _handleExternalInterruption() {
+    return _stopPlaybackInternal(
+      releaseOwnership: false,
+      statusMessage: 'تم إيقاف التسجيل الحالي لتشغيل مصدر صوت آخر.',
+    );
   }
 
   String _defaultStatus() {

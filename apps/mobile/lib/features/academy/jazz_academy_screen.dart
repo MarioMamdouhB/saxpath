@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:saxpath_mobile/data/models/attempt_history_entry.dart';
 import 'package:saxpath_mobile/data/models/learner_progress.dart';
 import 'package:saxpath_mobile/data/saxpath_api_client.dart';
+import 'package:saxpath_mobile/features/academy/notation_masterclass_screen.dart';
+import 'package:saxpath_mobile/features/academy/method_book_drills_screen.dart';
 import 'package:saxpath_mobile/features/academy/jazz_daily_practice_generator_screen.dart';
 import 'package:saxpath_mobile/features/academy/jazz_pillar_detail_screen.dart';
 import 'package:saxpath_mobile/features/academy/mvp_curriculum_screen.dart';
-import 'package:saxpath_mobile/features/foundation/sax_foundation_screen.dart';
 import 'package:saxpath_mobile/shared/education/services/curriculum_service.dart';
 import 'package:saxpath_mobile/shared/education/jazz_curriculum_models.dart';
 import 'package:saxpath_mobile/shared/education/jazz_curriculum_repository.dart';
@@ -85,22 +86,35 @@ class JazzAcademyScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     _AcademyEntryTile(
-                      title: 'Sax Foundation',
+                      title: 'Notation Masterclass (مختبر النوتة)',
                       subtitle:
-                          'ابدأ بالتأسيس: الوضعية، الفينجرينج، أول النغمات، والسلالم الأولى.',
+                          'تعلم قراءة النوتة من الصفر بتمارين تفاعلية من الكتب العالمية.',
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => const SaxFoundationScreen(),
+                            builder: (_) => const NotationMasterclassScreen(),
                           ),
                         );
                       },
                     ),
                     const SizedBox(height: 10),
                     _AcademyEntryTile(
-                      title: '30-Day MVP Curriculum',
+                      title: 'Method Book Drills (تمارين الكتب)',
                       subtitle:
-                          'منهج الشهر الأول: sound, swing, blues, guide tones, ii-V-I, first chorus solo.',
+                          'تدريبات عملية من كتب Rubank و DeVille محولة لنظام تفاعلي.',
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const MethodBookDrillsScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    _AcademyEntryTile(
+                      title: 'Jazz Foundations (أساسيات الجاز)',
+                      subtitle:
+                          'منهج الشهر الأول: sound, swing, blues, guide tones, ii-V-I.',
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(

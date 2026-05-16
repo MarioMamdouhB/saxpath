@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:saxpath_mobile/shared/education/sax_foundation_models.dart' show SaxType;
 
+import '../audio/audio_playback_coordinator.dart';
 import '../audio/generated_audio.dart';
 import 'sax_card.dart';
 
@@ -39,6 +41,9 @@ class MockPlaybackCard extends StatefulWidget {
     this.presets = const <PlaybackPreset>[],
     this.countInBeats = 0,
     this.countInLabel,
+    this.onPlayStateChanged,
+    this.includeBacking = false,
+    this.saxType = SaxType.altoEb,
   });
 
   final String title;
@@ -51,6 +56,9 @@ class MockPlaybackCard extends StatefulWidget {
   final List<PlaybackPreset> presets;
   final int countInBeats;
   final String? countInLabel;
+  final ValueChanged<bool>? onPlayStateChanged;
+  final bool includeBacking;
+  final SaxType saxType;
 
   @override
   State<MockPlaybackCard> createState() => _MockPlaybackCardState();
@@ -58,6 +66,7 @@ class MockPlaybackCard extends StatefulWidget {
 
 class _MockPlaybackCardState extends State<MockPlaybackCard> {
   final AudioPlayer _player = AudioPlayer();
+  final Object _playbackOwner = Object();
   Timer? _timer;
   late GeneratedAudio _generatedAudio;
   int _selectedPresetIndex = 0;
@@ -78,6 +87,7 @@ class _MockPlaybackCardState extends State<MockPlaybackCard> {
         _elapsedMilliseconds = _generatedAudio.totalDurationMs;
         _isPlaying = false;
       });
+      AudioPlaybackCoordinator.instance.release(_playbackOwner);
     });
   }
 
@@ -97,6 +107,8 @@ class _MockPlaybackCardState extends State<MockPlaybackCard> {
   @override
   void dispose() {
     _timer?.cancel();
+    AudioPlaybackCoordinator.instance.release(_playbackOwner);
+    unawaited(_player.stop());
     _player.dispose();
     super.dispose();
   }
@@ -200,6 +212,8 @@ class _MockPlaybackCardState extends State<MockPlaybackCard> {
       durationSeconds: _effectiveDurationSeconds,
       bpm: _effectiveBpm,
       countInBeats: widget.countInBeats,
+      includeBacking: widget.includeBacking,
+      saxType: widget.saxType,
     );
   }
 
@@ -219,26 +233,53 @@ class _MockPlaybackCardState extends State<MockPlaybackCard> {
 
   Future<void> _togglePlayback() async {
     if (_isPlaying) {
-      await _stopPlayback(resetProgress: false);
+      await _stopPlayback(resetProgress: true);
       return;
     }
 
-    if (_elapsedMilliseconds >= _generatedAudio.totalDurationMs) {
-      _elapsedMilliseconds = 0;
+    await AudioPlaybackCoordinator.instance.activate(
+      owner: _playbackOwner,
+      onInterrupt: _handleExternalInterruption,
+    );
+    if (!mounted) {
+      return;
     }
 
+    final filePath = await GeneratedAudioFactory.saveToFile(
+      _generatedAudio.bytes,
+      'playback_${_effectivePatternKey.hashCode}.wav'
+    );
+    final fileUri = Uri.file(filePath).toString();
+
     setState(() {
+      _elapsedMilliseconds = 0;
       _isPlaying = true;
     });
+    widget.onPlayStateChanged?.call(true);
 
     await _player.stop();
-    await _player.play(BytesSource(_generatedAudio.bytes));
-    _startProgressTimer();
+    try {
+      await _player.play(UrlSource(fileUri));
+      _startProgressTimer();
+    } catch (e) {
+      debugPrint('Playback error: $e');
+      if (mounted) {
+        setState(() {
+          _isPlaying = false;
+        });
+      }
+    }
   }
 
-  Future<void> _stopPlayback({required bool resetProgress}) async {
+  Future<void> _stopPlayback({
+    required bool resetProgress,
+    bool releaseOwnership = true,
+  }) async {
     _timer?.cancel();
     await _player.stop();
+    if (releaseOwnership) {
+      AudioPlaybackCoordinator.instance.release(_playbackOwner);
+    }
     if (!mounted) {
       return;
     }
@@ -249,6 +290,14 @@ class _MockPlaybackCardState extends State<MockPlaybackCard> {
         _elapsedMilliseconds = 0;
       }
     });
+    widget.onPlayStateChanged?.call(false);
+  }
+
+  Future<void> _handleExternalInterruption() {
+    return _stopPlayback(
+      resetProgress: true,
+      releaseOwnership: false,
+    );
   }
 
   Future<void> _resetPlayback() async {

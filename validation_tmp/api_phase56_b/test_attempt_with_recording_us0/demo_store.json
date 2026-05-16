@@ -1,0 +1,46 @@
+{
+  "completed_days": [],
+  "attempts": [
+    {
+      "attempt_id": "attempt_day_01_008",
+      "exercise_id": "task_day_01_practice_ggaa",
+      "day_number": 1,
+      "duration_seconds": 8,
+      "audio_url": "/api/v1/recordings/rec_b8272672a70c4189/file",
+      "recording_id": "rec_b8272672a70c4189",
+      "pitch_accuracy": 92,
+      "rhythm_accuracy": 88,
+      "completion": 92,
+      "feedback_ar": "أداء قوي لليوم 1. النغمة والإيقاع متماسكين بشكل جيد. ثبّت نغمة G مع نبضة واضحة.",
+      "next_recommendation": "ارفع السرعة تدريجياً بمقدار 5 BPM إذا حافظت على نفس الثبات.",
+      "retry_reason": null,
+      "analysis": {
+        "pitch_score": 92,
+        "rhythm_score": 88,
+        "detected_notes": [
+          {
+            "note": "G",
+            "frequency_hz": 196.0,
+            "confidence": 0.94
+          }
+        ],
+        "timing_errors": [],
+        "confidence": 0.92,
+        "source": "audio_engine"
+      },
+      "created_at": "2026-05-08T18:44:01.875914+00:00"
+    }
+  ],
+  "analytics_events": [],
+  "recordings": {
+    "rec_b8272672a70c4189": {
+      "recording_id": "rec_b8272672a70c4189",
+      "filename": "take.wav",
+      "duration_seconds": 8,
+      "storage_path": "C:\\Users\\Dell\\Desktop\\sax path\\saxpath\\validation_tmp\\api_phase56_b\\test_attempt_with_recording_us0\\recordings\\rec_b8272672a70c4189_take.wav",
+      "playback_url": "/api/v1/recordings/rec_b8272672a70c4189/file",
+      "content_type": "audio/wav",
+      "created_at": "2026-05-08T18:44:01.671450+00:00"
+    }
+  }
+}

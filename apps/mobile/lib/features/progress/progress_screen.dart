@@ -1,10 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'package:saxpath_mobile/core/theme/app_colors.dart';
 import 'package:saxpath_mobile/data/models/analytics_event.dart';
 import 'package:saxpath_mobile/data/models/attempt_history_entry.dart';
 import 'package:saxpath_mobile/data/models/daily_plan.dart';
 import 'package:saxpath_mobile/data/models/learner_progress.dart';
+import 'package:saxpath_mobile/data/models/practice_session.dart';
+import 'package:saxpath_mobile/data/models/skill_mastery.dart';
 import 'package:saxpath_mobile/data/saxpath_api_client.dart';
 import 'package:saxpath_mobile/features/progress/state/app_progress_controller.dart';
 import 'package:saxpath_mobile/features/progress/state/app_progress_scope.dart';
@@ -12,6 +15,7 @@ import 'package:saxpath_mobile/shared/education/services/progress_service.dart';
 import 'package:saxpath_mobile/shared/widgets/primary_button.dart';
 import 'package:saxpath_mobile/shared/widgets/sax_card.dart';
 import 'package:saxpath_mobile/shared/widgets/section_title.dart';
+import 'package:saxpath_mobile/features/progress/widgets/mastery_trend_graph.dart';
 import 'attempt_details_screen.dart';
 import '../home/home_screen.dart';
 
@@ -57,6 +61,8 @@ class ProgressScreen extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.all(20),
                 children: [
+              _V31RecommendationsCard(apiClient: apiClient),
+              const SizedBox(height: 16),
               const SectionTitle(
                 title: 'خطة 30 يوم',
                 subtitle: 'استعرض الأيام المتاحة واعرف سبب قفل كل مرحلة',
@@ -158,6 +164,72 @@ class ProgressScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _ProgressSyncCard(apiClient: apiClient),
+              const SizedBox(height: 16),
+              FutureBuilder<SkillMasterySnapshot>(
+                future: apiClient.getSkillMastery(),
+                builder: (context, masterySnapshot) {
+                  if (masterySnapshot.connectionState !=
+                      ConnectionState.done) {
+                    return const SaxCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Skill Mastery',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          LinearProgressIndicator(),
+                        ],
+                      ),
+                    );
+                  }
+
+                  if (masterySnapshot.hasError || !masterySnapshot.hasData) {
+                    return const SizedBox.shrink();
+                  }
+
+                  final mastery = masterySnapshot.requireData;
+                  return SaxCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Skill Mastery',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          mastery.weakSkill == null
+                              ? 'لا توجد نقطة ضعف محددة حتى الآن.'
+                              : 'نقطة التركيز الحالية: ${mastery.weakSkill}',
+                        ),
+                        const SizedBox(height: 12),
+                        for (final entry in mastery.skills) ...[
+                          _SkillMasteryRow(entry: entry),
+                          if (entry != mastery.skills.last)
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: Divider(height: 1),
+                            ),
+                        ],
+                      ],
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              _MasteryTimelineCard(apiClient: apiClient),
+              const SizedBox(height: 16),
+              _GuidedPathProgressCard(apiClient: apiClient),
+              const SizedBox(height: 16),
+              _TeacherReviewQueueCard(apiClient: apiClient),
               if (kDebugMode) ...[
                 const SizedBox(height: 16),
                 SaxCard(
@@ -268,6 +340,100 @@ class ProgressScreen extends StatelessWidget {
   }
 }
 
+class _V31RecommendationsCard extends StatelessWidget {
+  final SaxPathApiClient apiClient;
+
+  const _V31RecommendationsCard({required this.apiClient});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<SkillMasterySnapshot>(
+      future: apiClient.getSkillMastery(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || snapshot.data?.weakSkill == null) {
+          return const SizedBox.shrink();
+        }
+
+        final mastery = snapshot.data!;
+        final weakSkill = mastery.skills.firstWhere((s) => s.skill == mastery.weakSkill);
+
+        return SaxCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Row(
+                children: [
+                  Icon(Icons.bolt_rounded, color: Colors.orange),
+                  SizedBox(width: 8),
+                  Text(
+                    'توصية V3.1 للتدريب',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'بناءً على أدائك الأخير، ننصح بالتركيز على: ${weakSkill.focusLabel}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'التمرين المقترح: ${weakSkill.recommendedNextDrillAr}',
+                style: TextStyle(color: Theme.of(context).hintColor),
+              ),
+              const SizedBox(height: 16),
+              PrimaryButton(
+                label: 'ابدأ تمرين التقوية الآن',
+                onPressed: () {
+                  // V3.1 Guided Navigation: Take the user directly to the Learn tab
+                  // In a real multi-shell app, we'd use a controller,
+                  // but here we can just show a snackbar or guidance for now.
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('الآن توجه إلى قسم "تعلم" واختر ${weakSkill.focusLabel} لتقويتها!'),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _SkillMasteryRow extends StatelessWidget {
+  const _SkillMasteryRow({
+    required this.entry,
+  });
+
+  final SkillMasteryEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                entry.focusLabel,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+            Text('${entry.score}%'),
+          ],
+        ),
+        const SizedBox(height: 8),
+        LinearProgressIndicator(value: entry.score / 100),
+      ],
+    );
+  }
+}
+
 class _ProgressSyncCard extends StatefulWidget {
   const _ProgressSyncCard({
     required this.apiClient,
@@ -373,6 +539,356 @@ class _ProgressSyncCardState extends State<_ProgressSyncCard> {
     final hour = value.hour.toString().padLeft(2, '0');
     final minute = value.minute.toString().padLeft(2, '0');
     return '$hour:$minute';
+  }
+}
+
+class _GuidedPathProgressCard extends StatelessWidget {
+  const _GuidedPathProgressCard({
+    required this.apiClient,
+  });
+
+  final SaxPathApiClient apiClient;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<PracticeSession>(
+      future: apiClient.getTodayPracticeSession(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const SaxCard(
+            child: Text('جارٍ تحميل المرحلة الحالية من المسار الموجه...'),
+          );
+        }
+
+        if (snapshot.hasError || !snapshot.hasData) {
+          return const SaxCard(
+            child: Text('تعذر تحميل بيانات المرحلة الحالية حالياً.'),
+          );
+        }
+
+        final session = snapshot.requireData;
+        final strongestBlock = session.blocks.isEmpty ? null : session.blocks.first;
+        return SaxCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'المسار الموجه الآن',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 8),
+              Text(session.stageTitle),
+              const SizedBox(height: 6),
+              Text(session.stageSubtitleAr),
+              const SizedBox(height: 12),
+              LinearProgressIndicator(
+                value: session.stageProgressPercent / 100,
+                minHeight: 10,
+                borderRadius: BorderRadius.circular(999),
+              ),
+              const SizedBox(height: 10),
+              Text(session.guidedPathLabel),
+              if (session.adaptationReasonAr != null) ...[
+                const SizedBox(height: 8),
+                Text(session.adaptationReasonAr!),
+              ],
+              const SizedBox(height: 10),
+              Text('تركيز اليوم: ${session.recommendedFocusAr}'),
+              if (strongestBlock != null) ...[
+                const SizedBox(height: 10),
+                Text(
+                  'ابدأ من: ${strongestBlock.title} • ${strongestBlock.loopTarget} loops${strongestBlock.supportsWaitMode ? ' • Wait Mode' : ''}',
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _MasteryTimelineCard extends StatelessWidget {
+  const _MasteryTimelineCard({
+    required this.apiClient,
+  });
+
+  final SaxPathApiClient apiClient;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<dynamic>>(
+      future: Future.wait<dynamic>([
+        apiClient.getSkillMastery(),
+        apiClient.getAttemptHistory(limit: 8),
+      ]),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const SaxCard(
+            child: Text('جارٍ تحميل Mastery Timeline...'),
+          );
+        }
+
+        if (snapshot.hasError || !snapshot.hasData) {
+          return const SaxCard(
+            child: Text('تعذر تحميل Mastery Timeline حالياً.'),
+          );
+        }
+
+        final mastery = snapshot.requireData[0] as SkillMasterySnapshot;
+        final attempts = snapshot.requireData[1] as List<AttemptHistoryEntry>;
+
+        return SaxCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Mastery Timeline',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                mastery.updatedAt == null
+                    ? 'اعرف كيف تتحرك المهارات من محاولة إلى أخرى.'
+                    : 'آخر تحديث mastery: ${_formatProgressTimestamp(mastery.updatedAt!)}',
+              ),
+              const SizedBox(height: 12),
+              if (mastery.weakSkill != null) ...[
+                Text(
+                  'الضعف الأوضح الآن: ${_skillFocusLabel(mastery.weakSkill!, mastery.skills)}',
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 10),
+              ],
+              for (final entry in mastery.skills) ...[
+                _MasteryTimelineRow(
+                  entry: entry,
+                  recentAttempts: attempts
+                      .where(
+                        (attempt) => attempt.masteryDelta.any(
+                          (delta) => delta.skill == entry.skill,
+                        ),
+                      )
+                      .take(4)
+                      .toList(growable: false),
+                ),
+                if (entry != mastery.skills.last)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Divider(height: 1),
+                  ),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String _skillFocusLabel(
+    String skill,
+    List<SkillMasteryEntry> skills,
+  ) {
+    for (final entry in skills) {
+      if (entry.skill == skill) {
+        return entry.focusLabel;
+      }
+    }
+    return skill;
+  }
+}
+
+class _MasteryTimelineRow extends StatelessWidget {
+  const _MasteryTimelineRow({
+    required this.entry,
+    required this.recentAttempts,
+  });
+
+  final SkillMasteryEntry entry;
+  final List<AttemptHistoryEntry> recentAttempts;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasTrend = entry.recentDeltas.isNotEmpty;
+    final trendLabel = entry.trendLabel;
+    final nextDrill = entry.recommendedNextDrillAr;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                entry.focusLabel,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+            Text('${entry.score}%'),
+          ],
+        ),
+        const SizedBox(height: 8),
+        LinearProgressIndicator(value: entry.score / 100),
+        const SizedBox(height: 12),
+        MasteryTrendGraph(deltas: entry.recentDeltas, currentScore: entry.score),
+        const SizedBox(height: 10),
+        Text(
+          'Trend: $trendLabel',
+          style: const TextStyle(fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 8),
+        if (hasTrend)
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: entry.recentDeltas
+                .map((delta) => _TimelineDeltaChip(delta: delta))
+                .toList(),
+          )
+        else
+          const Text('لا توجد تغييرات mastery محفوظة بعد لهذه المهارة.'),
+        const SizedBox(height: 10),
+        Text(
+          'Recommended Next Drill: $nextDrill',
+          style: const TextStyle(height: 1.4),
+        ),
+        if (recentAttempts.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: recentAttempts
+                .map(
+                  (attempt) => _AttemptDayChip(
+                    dayNumber: attempt.dayNumber,
+                    completion: attempt.completion,
+                  ),
+                )
+                .toList(),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _TimelineDeltaChip extends StatelessWidget {
+  const _TimelineDeltaChip({
+    required this.delta,
+  });
+
+  final int delta;
+
+  @override
+  Widget build(BuildContext context) {
+    final positive = delta >= 0;
+    final color = positive ? const Color(0xFF1E7D57) : const Color(0xFFB54747);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        positive ? '+$delta' : '$delta',
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+}
+
+class _AttemptDayChip extends StatelessWidget {
+  const _AttemptDayChip({
+    required this.dayNumber,
+    required this.completion,
+  });
+
+  final int dayNumber;
+  final int completion;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        'Day $dayNumber • $completion%',
+        style: const TextStyle(fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+}
+
+class _TeacherReviewQueueCard extends StatelessWidget {
+  const _TeacherReviewQueueCard({
+    required this.apiClient,
+  });
+
+  final SaxPathApiClient apiClient;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<AttemptHistoryEntry>>(
+      future: apiClient.getAttemptHistory(limit: 6),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const SaxCard(
+            child: Text('جارٍ تحميل مراجعات الـ AI والمدرس...'),
+          );
+        }
+
+        if (snapshot.hasError || !snapshot.hasData) {
+          return const SaxCard(
+            child: Text('تعذر تحميل حالة المراجعات حالياً.'),
+          );
+        }
+
+        final attempts = snapshot.requireData;
+        final reviewAttempts = attempts
+            .where((entry) => entry.teacherReview != null)
+            .toList(growable: false);
+        final requestedCount = reviewAttempts
+            .where((entry) => entry.teacherReview!.status == 'requested')
+            .length;
+        final availableCount = reviewAttempts.length - requestedCount;
+
+        return SaxCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'AI + Teacher Review',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                reviewAttempts.isEmpty
+                    ? 'لا توجد محاولات وصلت بعد إلى طبقة المراجعة.'
+                    : 'المتاح الآن: $availableCount • المطلوب من المدرس: $requestedCount',
+              ),
+              if (reviewAttempts.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                for (var index = 0; index < reviewAttempts.length; index++) ...[
+                  _ReviewQueueTile(entry: reviewAttempts[index]),
+                  if (index < reviewAttempts.length - 1)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Divider(height: 1),
+                    ),
+                ],
+              ],
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -647,6 +1163,7 @@ class _AttemptHistoryCard extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (_) => AttemptDetailsScreen(
                             entry: history[index],
+                            apiClient: apiClient,
                           ),
                         ),
                       );
@@ -743,6 +1260,18 @@ class _AttemptHistoryTile extends StatelessWidget {
                   Text(
                     'Pitch ${entry.pitchAccuracy}% | Rhythm ${entry.rhythmAccuracy}%',
                   ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Confidence ${entry.confidenceLabel} • ${entry.recommendedRetryBlock ?? 'stable'}',
+                  ),
+                  if (entry.teacherReview != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      entry.teacherReview!.status == 'requested'
+                          ? 'Teacher Review: requested'
+                          : 'Teacher Review: available',
+                    ),
+                  ],
                   if (entry.retryReason != null) ...[
                     const SizedBox(height: 4),
                     Text('Retry: ${entry.retryReason}'),
@@ -757,6 +1286,36 @@ class _AttemptHistoryTile extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ReviewQueueTile extends StatelessWidget {
+  const _ReviewQueueTile({
+    required this.entry,
+  });
+
+  final AttemptHistoryEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    final review = entry.teacherReview!;
+    final statusLabel = review.status == 'requested'
+        ? 'تم إرسال الطلب'
+        : 'متاح للطلب';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'اليوم ${entry.dayNumber} • $statusLabel',
+          style: const TextStyle(fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 4),
+        Text(review.aiSummaryAr),
+        const SizedBox(height: 6),
+        Text(review.queueEtaAr),
+      ],
     );
   }
 }
