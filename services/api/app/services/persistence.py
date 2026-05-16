@@ -915,6 +915,15 @@ def _connect(*, row_factory: Any | None = None) -> Any:
         raise RuntimeError("psycopg is required when PERSISTENCE_BACKEND=postgres.")
 
     settings = get_settings()
+
+    # Priority 1: DATABASE_URL (Cloud Hosting)
+    import os
+    db_url = os.getenv("DATABASE_URL")
+    if db_url:
+        conn = psycopg.connect(db_url, row_factory=row_factory)
+        return conn
+
+    # Priority 2: Individual settings (Local/Custom)
     kwargs: dict[str, object] = {
         "host": settings.postgres_host,
         "port": settings.postgres_port,
